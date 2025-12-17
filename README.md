@@ -133,34 +133,8 @@ Self Attendance solves these by being **calendar-first**:
 
 ---
 
-## Download
 
-### Latest Release
-- **Version:** v1.9.0
-- **Build:** 14
-- **Min Android:** 8.0 (API 26)
-- **Target Android:** 14.0 (API 36)
 
-### Available APKs
-Split APKs for optimal size:
-- `app-arm64-v8a-release.apk` - Modern 64-bit ARM devices (6.05 MB)
-- `app-armeabi-v7a-release.apk` - Older 32-bit ARM devices (6.05 MB)
-- `app-x86_64-release.apk` - Intel 64-bit devices (6.05 MB)
-- `app-x86-release.apk` - Intel 32-bit devices (6.05 MB)
-
-Download the APK for your device architecture from the [Releases](../../releases) page.
-
----
-
-## Installation
-
-1. Download the appropriate APK for your device
-2. Enable "Install from Unknown Sources" in your Android settings
-3. Open the downloaded APK and install
-4. Grant necessary permissions (notifications, storage for backup)
-5. Start tracking your attendance!
-
----
 
 ## Usage
 
@@ -195,7 +169,7 @@ Download the APK for your device architecture from the [Releases](../../releases
 ## Developer
 
 **Developed by:** Md Farhan  
-**Contact:** [GitHub Profile](https://github.com/DP-Hridayan)
+**Contact:** [GitHub Profile](https://github.com/xtractiion)
 
 ---
 
@@ -227,16 +201,14 @@ If you find this app useful, please:
 - 💡 **Suggest features** you'd like to see
 - 🔄 **Share** with friends who need attendance tracking
 
-### 💖 Want to Sponsor This Project?
+###  Want to Sponsor This Project?
 
-If you'd like to support the development of Self Attendance, please contact me:
+If you'd like to sponser:
 
 - 📧 **Email:** farhanfp20@gmail.com
 - 💬 **Telegram:** [@hourslow](https://t.me/hourslow)
 
-Your support helps me continue improving this app and adding new features!
 
----
 
 <p align="center">
   <b>Self Attendance - The Smart Way to Track Attendance</b>
