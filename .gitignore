@@ -1,0 +1,16 @@
+*.iml
+.gradle
+/local.properties
+.idea
+.kotlin
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Signing keys and passwords - DO NOT COMMIT
+*.jks
+*.keystore
+password.md
