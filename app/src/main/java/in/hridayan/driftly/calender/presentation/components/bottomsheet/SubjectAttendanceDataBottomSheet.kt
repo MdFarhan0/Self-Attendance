@@ -37,16 +37,12 @@ import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
 fun SubjectAttendanceDataBottomSheet(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
-    subjectId: Int = 0,
-    viewModel: HomeViewModel = hiltViewModel()
+    data: SubjectAttendance,
+    title: String = "Attendance Overview"
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
-
-    // Get data directly - no tabs, no pager, just simple data loading
-    val counts by viewModel.getSubjectAttendanceCounts(subjectId)
-        .collectAsState(initial = SubjectAttendance())
 
     ModalBottomSheet(
         modifier = modifier,
@@ -63,7 +59,7 @@ fun SubjectAttendanceDataBottomSheet(
         ) {
             // Title
             Text(
-                text = "Attendance Overview",
+                text = title,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
@@ -72,7 +68,7 @@ fun SubjectAttendanceDataBottomSheet(
             )
 
             // Stats content
-            AttendanceStats(counts = counts)
+            AttendanceStats(counts = data)
         }
     }
 }

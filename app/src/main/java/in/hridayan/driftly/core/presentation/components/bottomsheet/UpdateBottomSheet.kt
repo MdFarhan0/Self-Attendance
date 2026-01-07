@@ -246,12 +246,9 @@ fun UpdateBottomSheet(
                         viewModel.cancelDownload()
                     }
                 },
-                shapes = ButtonDefaults.shapes(),
                 modifier = Modifier
-                    .weight(1f)
-                    .animateWidth(interactionSources[0]),
-                interactionSource = interactionSources[0],
-            ) {
+                    .weight(1f),
+                    ) {
                 Text(text = stringResource(R.string.cancel))
             }
 
@@ -267,12 +264,9 @@ fun UpdateBottomSheet(
 
                         weakHaptic()
                     },
-                    shapes = ButtonDefaults.shapes(),
                     modifier = Modifier
-                        .weight(1f)
-                        .animateWidth(interactionSources[1]),
-                    interactionSource = interactionSources[1],
-                ) {
+                        .weight(1f),
+                        ) {
                     Text(text = stringResource(R.string.download))
                 }
         }

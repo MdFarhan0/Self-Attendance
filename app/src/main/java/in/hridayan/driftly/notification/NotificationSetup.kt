@@ -51,4 +51,43 @@ object NotificationSetup {
             smallIconResId = R.drawable.ic_release_alert,
         )
     }
+
+    const val TIMETABLE_CHANNEL_ID = "timetable_channel"
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showTimetableNotification(
+        context: Context,
+        subjectId: Int,
+        subjectName: String,
+        startTime: String,
+        endTime: String,
+        location: String?,
+        scheduleId: Int
+    ) {
+        val formattedStart = `in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(startTime)
+        val formattedEnd = `in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(endTime)
+        val duration = `in`.hridayan.driftly.core.utils.TimeUtils.formatDuration(
+            `in`.hridayan.driftly.core.utils.TimeUtils.calculateDuration(startTime, endTime)
+        )
+
+        val message = buildString {
+            append("$formattedStart - $formattedEnd ($duration)")
+            if (!location.isNullOrBlank()) {
+                append("\n📍 $location")
+            }
+        }
+
+        NotificationHelper.showNotificationWithActions(
+            context = context,
+            channelId = TIMETABLE_CHANNEL_ID,
+            channelName = "Class Timetable",
+            channelDescription = "Notifications for scheduled classes",
+            notificationId = scheduleId,
+            title = "Class Started: $subjectName",
+            message = message,
+            smallIconResId = android.R.drawable.ic_dialog_info,
+            subjectId = subjectId,
+            scheduleId = scheduleId
+        )
+    }
 }

@@ -9,7 +9,7 @@ interface SubjectRepository {
     fun getSubjectById(id: Int): Flow<SubjectEntity>
     suspend fun insertSubject(subject: SubjectEntity)
     suspend fun insertAllSubjects(subjects: List<SubjectEntity>)
-    suspend fun updateSubject(subjectId: Int, newName: String, newCode: String? = null)
+    suspend fun updateSubject(subjectId: Int, newName: String, newCode: String? = null, histogramLabel: String? = null)
     suspend fun deleteSubject(subjectId: Int)
     suspend fun deleteAllSubjects()
     fun getSubjectCount(): Flow<Int>

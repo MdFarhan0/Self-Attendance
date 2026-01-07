@@ -49,5 +49,10 @@ enum class SettingsKeys(val default: Any?) {
     UPDATE_AVAILABLE_NOTIFICATION(true),
     NOTIFICATION_PERMISSION_DIALOG_SHOWN(false),
     SHOW_GITHUB_WARNING_DIALOG(true),
-    FONT_FAMILY(CustomFontFamily.ONE_UI_SANS)
+    FONT_FAMILY(CustomFontFamily.ONE_UI_SANS),
+    ENABLE_TIMETABLE_NOTIFICATIONS(true),
+    PERSISTENT_NOTIFICATIONS(true),  // Keep notifications until user acts
+    GRACE_PERIOD_MINUTES(60),  // Default: 1 hour
+    DEFAULT_START_MINUTE(45), // Default start minute (e.g., 9:45)
+    DEFAULT_CLASS_DURATION(60) // Default duration in minutes
 }

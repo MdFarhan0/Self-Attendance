@@ -69,9 +69,8 @@ class CalendarViewModel @Inject constructor(
     ): Flow<SubjectAttendance> {
         val presentFlow = attendanceRepository.getPresentCountForMonth(subjectId, year, month)
         val absentFlow = attendanceRepository.getAbsentCountForMonth(subjectId, year, month)
-        val totalFlow = attendanceRepository.getTotalCountForMonth(subjectId, year, month)
-        return combine(presentFlow, absentFlow, totalFlow) { p, a, t ->
-            SubjectAttendance(p, a, t)
+        return combine(presentFlow, absentFlow) { p, a ->
+            SubjectAttendance(p, a, p + a)
         }
     }
 

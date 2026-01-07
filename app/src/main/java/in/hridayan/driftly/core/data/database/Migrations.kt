@@ -33,3 +33,20 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         db.execSQL("ALTER TABLE subjects ADD COLUMN isTargetSet INTEGER NOT NULL DEFAULT 0")
     }
 }
+
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS class_schedules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                subjectId INTEGER NOT NULL,
+                dayOfWeek INTEGER NOT NULL,
+                startTime TEXT NOT NULL,
+                endTime TEXT NOT NULL,
+                location TEXT,
+                isEnabled INTEGER NOT NULL DEFAULT 1
+            )
+        """.trimIndent())
+    }
+}
+

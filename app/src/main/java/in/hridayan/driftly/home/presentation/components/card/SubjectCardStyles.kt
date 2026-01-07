@@ -46,6 +46,7 @@ fun CardStyleA(
     modifier: Modifier = Modifier,
     subject: String,
     subjectCode: String? = null,
+    subjectId: Int = 0,
     progress: Float,
     isLongClicked: Boolean,
     isTotalCountZero: Boolean,
@@ -72,12 +73,18 @@ fun CardStyleA(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        SubjectText(
-            modifier = Modifier.weight(1f),
-            subject = subject,
-            subjectCode = subjectCode,
-            subjectTextColor = subjectTextColor
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            SubjectText(
+                subject = subject,
+                subjectCode = subjectCode,
+                subjectTextColor = subjectTextColor
+            )
+            
+            // Show next class if timetable exists
+            if (subjectId != 0) {
+                NextClassBadge(subjectId = subjectId)
+            }
+        }
 
         if (isLongClicked) {
             UtilityRow(
@@ -98,6 +105,7 @@ fun CardStyleB(
     progress: Float,
     subject: String,
     subjectCode: String? = null,
+    subjectId: Int = 0,
     isLongClicked: Boolean,
     isTotalCountZero: Boolean,
     onEditButtonClicked: () -> Unit,
@@ -139,11 +147,17 @@ fun CardStyleB(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                SubjectText(
-                    modifier = Modifier.weight(1f),
-                    subject = subject,
-                    subjectCode = subjectCode
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    SubjectText(
+                        subject = subject,
+                        subjectCode = subjectCode
+                    )
+                    
+                    // Show next class if timetable exists
+                    if (subjectId != 0) {
+                        NextClassBadge(subjectId = subjectId)
+                    }
+                }
 
                 if (isLongClicked) {
                     UtilityRow(

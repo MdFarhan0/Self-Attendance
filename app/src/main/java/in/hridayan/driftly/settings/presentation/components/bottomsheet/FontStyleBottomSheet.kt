@@ -244,10 +244,7 @@ fun FontStyleBottomSheet(
             ) {
                 OutlinedButton(
                     modifier = Modifier
-                        .weight(1f)
-                        .animateWidth(interactionSources[0]),
-                    shapes = ButtonDefaults.shapes(),
-                    interactionSource = interactionSources[0],
+                        .weight(1f),
                     onClick = {
                         weakHaptic()
                         onDismiss()
@@ -257,14 +254,11 @@ fun FontStyleBottomSheet(
 
                 Button(
                     modifier = Modifier
-                        .weight(1f)
-                        .animateWidth(interactionSources[1]),
-                    shapes = ButtonDefaults.shapes(),
+                        .weight(1f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     ),
-                    interactionSource = interactionSources[1],
                     onClick = {
                         weakHaptic()
                         settingsViewModel.setInt(

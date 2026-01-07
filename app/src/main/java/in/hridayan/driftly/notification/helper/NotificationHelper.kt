@@ -55,6 +55,77 @@ object NotificationHelper {
         NotificationManagerCompat.from(context).notify(notificationId, notification)
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showNotificationWithActions(
+        context: Context,
+        channelId: String,
+        channelName: String,
+        channelDescription: String,
+        notificationId: Int,
+        title: String,
+        message: String,
+        @DrawableRes smallIconResId: Int,
+        subjectId: Int,
+        scheduleId: Int,
+        priority: Int = NotificationCompat.PRIORITY_HIGH
+    ) {
+        createNotificationChannel(context, channelId, channelName, channelDescription)
+
+        val notificationSmallIcon =
+            if (smallIconResId == 0) R.drawable.ic_check_circle else smallIconResId
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notificationId,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Create action intents for Attended and Missed
+        val attendedIntent = Intent(context, `in`.hridayan.driftly.notification.AttendanceActionReceiver::class.java).apply {
+            putExtra("subjectId", subjectId)
+            putExtra("notificationId", scheduleId)
+            putExtra("action", "ATTENDED")
+        }
+        val attendedPendingIntent = PendingIntent.getBroadcast(
+            context,
+            scheduleId * 10 + 1,
+            attendedIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val missedIntent = Intent(context, `in`.hridayan.driftly.notification.AttendanceActionReceiver::class.java).apply {
+            putExtra("subjectId", subjectId)
+            putExtra("notificationId", scheduleId)
+            putExtra("action", "MISSED")
+        }
+        val missedPendingIntent = PendingIntent.getBroadcast(
+            context,
+            scheduleId * 10 + 2,
+            missedIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(notificationSmallIcon)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(priority)
+            .setCategory(NotificationCompat.CATEGORY_EVENT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .addAction(android.R.drawable.ic_input_add, "Attended", attendedPendingIntent)
+            .addAction(android.R.drawable.ic_delete, "Missed", missedPendingIntent)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(notificationId, notification)
+    }
+
     private fun createNotificationChannel(
         context: Context,
         channelId: String,

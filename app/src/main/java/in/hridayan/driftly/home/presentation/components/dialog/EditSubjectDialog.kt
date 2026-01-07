@@ -4,36 +4,29 @@ package `in`.hridayan.driftly.home.presentation.components.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroup
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
+import `in`.hridayan.driftly.core.domain.model.ClassSchedule
 import `in`.hridayan.driftly.core.domain.model.SubjectError
 import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableText
 import `in`.hridayan.driftly.core.presentation.theme.Shape
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditSubjectDialog(
@@ -44,110 +37,178 @@ fun EditSubjectDialog(
     viewModel: HomeViewModel = hiltViewModel(),
     onDismiss: () -> Unit
 ) {
-    LaunchedEffect(Unit) {
+    val coroutineScope = rememberCoroutineScope()
+    var showTimetableDialog by remember { mutableStateOf(false) }
+    var timetableSchedules by remember { mutableStateOf<List<ClassSchedule>>(emptyList()) }
+    
+    // Load existing timetable
+    LaunchedEffect(subjectId) {
         viewModel.setSubjectNamePlaceholder(subject)
         subjectCode?.let { viewModel.onSubjectCodeChange(it) }
+        
+        // Load existing histogram label
+        val subjectEntity = viewModel.getSubjectById(subjectId).first()
+        subjectEntity?.histogramLabel?.let { viewModel.onHistogramLabelChange(it) }
+        
+        // Load existing schedules
+        timetableSchedules = viewModel.getSchedulesForSubject(subjectId).first()
     }
 
     val weakHaptic = LocalWeakHaptic.current
     val currentSubject by viewModel.subject.collectAsState()
     val currentSubjectCode by viewModel.subjectCode.collectAsState()
+    val histogramLabel by viewModel.histogramLabel.collectAsState()
     val subjectError by viewModel.subjectError.collectAsState()
-
-    val interactionSources = remember { List(2) { MutableInteractionSource() } }
 
     Dialog(
         onDismissRequest = {
             viewModel.resetInputFields()
             onDismiss()
-        },
-        content = {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clip(Shape.cardCornerLarge)
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
-                    .padding(25.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        }
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(Shape.cardCornerLarge)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .padding(25.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val label = when (subjectError) {
+                SubjectError.Empty -> stringResource(R.string.field_blank_error)
+                SubjectError.AlreadyExists -> stringResource(R.string.subject_already_exists)
+                is SubjectError.Unknown -> stringResource(R.string.unknown_error)
+                else -> stringResource(R.string.enter_new_name)
+            }
 
-                val label = when (subjectError) {
-                    SubjectError.Empty -> stringResource(R.string.field_blank_error)
-                    SubjectError.AlreadyExists -> stringResource(R.string.subject_already_exists)
-                    is SubjectError.Unknown -> stringResource(R.string.unknown_error)
-                    else -> stringResource(R.string.enter_new_name)
+            AutoResizeableText(
+                text = stringResource(R.string.update_subject),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            OutlinedTextField(
+                value = currentSubject,
+                onValueChange = { viewModel.onSubjectChange(it) },
+                isError = subjectError != SubjectError.None,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = label) }
+            )
+
+            OutlinedTextField(
+                value = currentSubjectCode,
+                onValueChange = { viewModel.onSubjectCodeChange(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text(text = stringResource(R.string.enter_subject_code_optional)) }
+            )
+
+            OutlinedTextField(
+                value = histogramLabel,
+                onValueChange = { viewModel.onHistogramLabelChange(it) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Short name for chart (max 5 chars)") },
+                supportingText = { Text("${histogramLabel.length}/5") }
+            )
+
+            // Timetable Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Timetable",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                        if (timetableSchedules.isNotEmpty()) {
+                            Text(
+                                text = "${timetableSchedules.size} classes",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    val timetableButtonInteraction = remember { MutableInteractionSource() }
+                    FilledTonalButton(
+                        onClick = { showTimetableDialog = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),  // Make it thicker
+                        ) {
+                        Icon(
+                            Icons.Default.Schedule,
+                            contentDescription = null
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(if (timetableSchedules.isEmpty()) "Add Timetable" else "Edit Timetable")
+                    }
+                }
+            }
+
+            // Buttons with Animation
+            val buttonInteractionSources = remember { List(2) { MutableInteractionSource() } }
+            
+            @Suppress("DEPRECATION")
+            ButtonGroup(modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    onClick = {
+                        weakHaptic()
+                        viewModel.resetInputFields()
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .weight(1f),
+                    ) {
+                    AutoResizeableText(text = stringResource(R.string.cancel))
                 }
 
-                AutoResizeableText(
-                    text = stringResource(R.string.update_subject),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
-                OutlinedTextField(
-                    value = currentSubject,
-                    onValueChange = {
-                        viewModel.onSubjectChange(it)
-                    },
-                    isError = subjectError != SubjectError.None,
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = label) }
-                )
-
-                OutlinedTextField(
-                    value = currentSubjectCode,
-                    onValueChange = {
-                        viewModel.onSubjectCodeChange(it)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = stringResource(R.string.enter_subject_code_optional)) },
-                )
-
-                @Suppress("DEPRECATION")
-                ButtonGroup(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(
-                        onClick = {
-                            weakHaptic()
-                            viewModel.resetInputFields()
-                            onDismiss()
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                        modifier = Modifier
-                            .weight(1f)
-                            .animateWidth(interactionSources[0]),
-                        interactionSource = interactionSources[0],
-                        content = {
-                            AutoResizeableText(
-                                text = stringResource(R.string.cancel),
-                            )
-                        }
-                    )
-
-                    Button(
-                        onClick = {
-                            weakHaptic()
-                            viewModel.updateSubject(
-                                subjectId = subjectId,
-                                onSuccess = {
-                                    viewModel.resetInputFields()
-                                    onDismiss()
+                Button(
+                    onClick = {
+                        weakHaptic()
+                        viewModel.updateSubject(
+                            subjectId = subjectId,
+                            onSuccess = {
+                                // Save timetable changes
+                                coroutineScope.launch {
+                                    viewModel.saveSchedulesForSubject(subjectId, timetableSchedules)
                                 }
-                            )
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                        modifier = Modifier
-                            .weight(1f)
-                            .animateWidth(interactionSources[1]),
-                        interactionSource = interactionSources[1],
-                        content = {
-                            AutoResizeableText(
-                                text = stringResource(R.string.update),
-                            )
-                        }
-                    )
+                                viewModel.resetInputFields()
+                                onDismiss()
+                            }
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f),
+                    ) {
+                    AutoResizeableText(text = stringResource(R.string.update))
                 }
             }
         }
-    )
+    }
+
+    if (showTimetableDialog) {
+        TimetableEntryDialog(
+            subjectId = subjectId,
+            initialSchedules = timetableSchedules,
+            onDismiss = { showTimetableDialog = false },
+            onSave = {
+                timetableSchedules = it
+                showTimetableDialog = false
+            }
+        )
+    }
 }

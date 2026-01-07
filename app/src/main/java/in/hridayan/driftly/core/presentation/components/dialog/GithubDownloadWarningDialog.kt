@@ -96,12 +96,9 @@ fun GithubDownloadWarningDialog(
                             onDismiss()
                             weakHaptic()
                         },
-                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier
-                            .weight(1f)
-                            .animateWidth(interactionSources[0]),
-                        interactionSource = interactionSources[0],
-                    ) {
+                            .weight(1f),
+                            ) {
                         AutoResizeableText(
                             text = stringResource(R.string.cancel),
                             style = MaterialTheme.typography.labelLarge
@@ -118,10 +115,7 @@ fun GithubDownloadWarningDialog(
                             weakHaptic()
                         },
                         modifier = Modifier
-                            .weight(1f)
-                            .animateWidth(interactionSources[1]),
-                        interactionSource = interactionSources[1],
-                        shapes = ButtonDefaults.shapes(),
+                            .weight(1f),
                     ) {
                         AutoResizeableText(
                             text = stringResource(R.string.download),

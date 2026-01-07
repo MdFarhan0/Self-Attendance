@@ -98,15 +98,6 @@ object SettingsProvider {
                 iconVector = Icons.Rounded.Colorize,
                 isLayoutVisible = !isSdkLowerThan12
             )
-        ),
-        categorizedItems(
-            categoryNameResId = R.string.additional_settings,
-            nullPreferenceItem(
-                key = SettingsKeys.DARK_THEME,
-                titleResId = R.string.dark_theme,
-                descriptionResId = R.string.system,
-                iconVector = Icons.Outlined.DarkMode,
-            )
         )
     )
 
@@ -195,6 +186,22 @@ object SettingsProvider {
                 titleResId = R.string.notify_missed_attendance,
                 descriptionResId = R.string.des_notify_missed_attendance,
                 iconResId = R.drawable.ic_notifications_important
+            )
+        ),
+        categorizedItems(
+            categoryNameResId = R.string.timetable,
+            boolPreferenceItem(
+                key = SettingsKeys.ENABLE_TIMETABLE_NOTIFICATIONS,
+                titleResId = R.string.timetable_notifications,
+                descriptionResId = R.string.des_timetable_notifications,
+                iconResId = R.drawable.ic_notifications
+            ),
+            boolPreferenceItem(
+                key = SettingsKeys.PERSISTENT_NOTIFICATIONS,
+                titleResId = R.string.persistent_notifications,
+                descriptionResId = R.string.des_persistent_notifications,
+                iconResId = R.drawable.ic_notifications_important,
+                type = SettingsType.Switch
             )
         )
     )

@@ -150,6 +150,7 @@ fun HomeScreen(
             listState.firstVisibleItemScrollOffset < 100
         }
     }
+    // Interaction source removed
     val notificationsEnabled by rememberSaveable {
         mutableStateOf(
             isNotificationPermissionGranted(
@@ -265,7 +266,8 @@ fun HomeScreen(
                                 onClick = {
                                     scope.launch { drawerState.open() }
                                     weakHaptic()
-                                })
+                                }
+                            )
                     )
                 }
             }
@@ -391,7 +393,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 25.dp)
                     .height(56.dp),
-                shape = RoundedCornerShape(40.dp),
+                    shape = RoundedCornerShape(40.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary

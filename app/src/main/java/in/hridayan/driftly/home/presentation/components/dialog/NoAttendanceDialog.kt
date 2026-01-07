@@ -61,7 +61,6 @@ fun NoAttendanceDialog(
 
                 TextButton(
                     modifier = Modifier.align(Alignment.End),
-                    shapes = ButtonDefaults.shapes(),
                     onClick = {
                         weakHaptic()
                         onDismiss()

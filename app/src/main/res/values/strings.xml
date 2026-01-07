@@ -26,6 +26,7 @@
     <string name="calendar">Calendar</string>
     <string name="cancel">Cancel</string>
     <string name="changelogs">Changelogs</string>
+    <string name="changelogs_v2_0_0">Added Class Timetable Notifications Feature! \nGet notified exactly when your class is scheduled to start.\nReliable alarms even when app is closed.\nMark attendance directly from notification (Attended/Missed).\nFixed various bugs and improved performance.</string>
     <string name="changelogs_v1_1_0">Fixed some color values in color palette selection\nFixed some UI margins\nAdded prerelease build update checker</string>
     <string name="changelogs_v1_2_0">Improved color scheme in high contrast dark theme\nAdded what\'s new bottomsheet to show changelogs after an update\nCode optimisations</string>
     <string name="changelogs_v1_3_0">Added behavior settings to modify certain app behavior\nAdded option to remember the last viewed month\nAdded option to turn off attendance streak visuals in calendar</string>
@@ -176,6 +177,14 @@
     <string name="sans_serif">Sans Serif</string>
     <string name="font_display_text">The quick brown fox jumps over the lazy dog</string>
     <string name="preview">Preview</string>
+
+    <!-- Timetable Notifications -->
+    <string name="timetable">Timetable</string>
+    <string name="timetable_notifications">Timetable Notifications</string>
+    <string name="des_timetable_notifications">Get notified when classes are about to start</string>
+    <string name="persistent_notifications">Persistent Notifications</string>
+    <string name="des_persistent_notifications">Keep notifications visible until you take action</string>
+
     <string-array name="month_names">
         <item>April</item>
         <item>August</item>

@@ -205,12 +205,9 @@ fun MonthYearPickerDialog(
                         weakHaptic()
                         onDismiss()
                     },
-                    shapes = ButtonDefaults.shapes(),
                     modifier = Modifier
                         .weight(1f)
-                        .animateWidth(interactionSources[0]),
-                    interactionSource = interactionSources[0],
-                ) {
+                        ) {
                     AutoResizeableText(text = stringResource(R.string.cancel))
                 }
 
@@ -220,12 +217,9 @@ fun MonthYearPickerDialog(
                         onConfirm(selectedMonth + 1, selectedYear)
                         onDismiss()
                     },
-                    shapes = ButtonDefaults.shapes(),
                     modifier = Modifier
                         .weight(1f)
-                        .animateWidth(interactionSources[1]),
-                    interactionSource = interactionSources[1],
-                ) {
+                        ) {
                     AutoResizeableText(text = stringResource(R.string.select))
                 }
             }

@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -144,14 +142,15 @@ fun CalendarCanvas(
 
         val expandedDateState = remember { mutableStateOf<String?>(null) }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            userScrollEnabled = false
-        ) {
-            items((0 until totalCells).toList()) { index ->
+        val rows = totalCells / 7
+        
+        Column(modifier = Modifier.fillMaxWidth()) {
+            for (row in 0 until rows) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    for (col in 0 until 7) {
+                        val index = row * 7 + col
+                        
+                        Box(modifier = Modifier.weight(1f)) {
                 val day = index - firstDayOfWeek + 1
                 val date = if (day in 1..daysInMonth) yearMonth.atDay(day) else null
                 val dateString = date?.format(DateTimeFormatter.ISO_DATE)
@@ -248,6 +247,9 @@ fun CalendarCanvas(
                             .aspectRatio(1f)
                             .padding(4.dp)
                     )
+                }
+                        }
+                    }
                 }
             }
         }

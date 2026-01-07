@@ -1,245 +1,120 @@
-# Self Attendance - Calendar-Based Attendance Tracker
+# Self Attendance (Driftly)
 
-<p align="center">
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142301.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142311.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142317.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142322.jpg" width="200" />
-</p>
+**Self Attendance** is a comprehensive, privacy-focused academic tracking tool designed for effortless attendance management. Built with modern Android technologies, it revolutionizes how students manage their class attendance by moving beyond simple counters to a **calendar-first approach**.
 
-## Overview
-
-**Self Attendance** is a **first-of-its-kind** calendar-based attendance tracking application that revolutionizes how students manage their class attendance. Unlike traditional attendance apps that only show percentages and counts, Self Attendance provides an **intuitive visual calendar interface** where you can mark attendance for specific dates, view attendance patterns at a glance, and get **smart AI-powered insights** about your bunk allowance.
-
-### Why Self Attendance is Unique
-
-**No other app in the market** combines these features:
-- ✅ **Calendar-First Approach** - Mark attendance by date, not just incrementing counters
-- ✅ **Visual Attendance Patterns** - See your attendance streaks and gaps on a calendar
-- ✅ **Smart Attendance Insights** - AI tells you exactly how many classes you can bunk or need to attend
-- ✅ **Date-Specific Tracking** - Every attendance record is tied to a specific date
-- ✅ **Historical Data** - Complete attendance history with date-wise records
-
-Most attendance apps only offer basic counters. **Self Attendance is the first to combine calendar visualization with intelligent attendance analysis.**
+Unlike traditional apps that only show percentages, Self Attendance provides an intuitive visual calendar interface where you can mark attendance for specific dates, view patterns at a glance, and get smart **AI-powered insights** about your bunk allowance.
 
 ---
 
-## Features
+## 🚀 New in v2.0.0: Timetable Notification System
 
-### 📅 Calendar-Based Attendance
-- **Mark attendance on specific dates** - Click any date on the calendar to mark present/absent
-- **Visual attendance overview** - See your entire month's attendance at a glance
-- **Color-coded calendar** - Green for present, red for absent, gray for no class
-- **Attendance streaks** - Track your longest present/absent streaks
+The latest update introduces a highly requested, fully automated notification engine.
 
-### 🎯 Smart Attendance Insights
-**Self Attendance's AI-powered system tells you exactly:**
-- **"You can bunk X more classes and still stay above 75%"** - Know your bunk allowance
-- **"You're just safe at 75%. Don't miss the next class"** - Critical attendance warnings
-- **"Attend the next X classes to reach 75%"** - Recovery plan when below target
-- **Real-time calculations** - Insights update instantly as you mark attendance
-
-### 📊 Attendance Control Sidebar
-<p align="center">
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142409.jpg" width="200" />
-</p>
-
-- **Quick overview of all subjects** - One sidebar shows insights for every subject
-- **Infinite rotating gear icon** - Smooth animation when opening
-- **Smart messages for each subject** - See all your bunk allowances at once
-- **Direct Settings access** - Quick navigation to app settings
-
-### 📈 Subject Management
-- **Unlimited subjects** - Track attendance for all your courses
-- **Custom target percentages** - Set different attendance goals (75%, 80%, etc.)
-- **Subject-wise statistics** - Present, absent, and total counts per subject
-- **Attendance histogram** - Visual representation of attendance distribution
-
-### 🎨 Material You Design
-<p align="center">
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142529.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142538.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142544.jpg" width="200" />
-</p>
-
-- **Material 3 expressive design** - Modern, fluid animations
-- **Dynamic theming** - Adapts to your device theme
-- **Custom color schemes** - Choose from multiple color palettes
-- **One UI Sans font** - Clean, readable typography
-- **Smooth transitions** - Polished navigation between screens
-
-### 💾 Backup & Restore
-- **Complete data backup** - Export all attendance records
-- **Settings backup** - Save your preferences
-- **Easy restore** - Recover data on new devices
-- **Database export** - Full SQLite database backup
-
-### 🔔 Smart Notifications
-- **Attendance reminders** - Never forget to mark your attendance
-- **Missed attendance alerts** - Get notified when you forget to log attendance
-- **Customizable notifications** - Choose what alerts you want
-
----
-
-## Screenshots
-
-<p align="center">
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142551.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142557.jpg" width="200" />
-  <img src="image that have to add in readme.md file for my github showcase/Screenshot_20251217_142603.jpg" width="200" />
-</p>
-
----
-
-## Technical Stack
-
-### Built With
-- **Kotlin** - Primary programming language
-- **Jetpack Compose** - Modern declarative UI framework
-- **Material 3** - Latest Material Design components
-- **Room Database** - Local data persistence
-- **Hilt** - Dependency injection
-- **Kotlin Coroutines & Flow** - Asynchronous programming
-- **MVVM Architecture** - Clean, maintainable code structure
-
-### Key Libraries
-- `androidx.compose` - Modern UI toolkit
-- `androidx.room` - SQLite database abstraction
-- `androidx.hilt` - Dependency injection
-- `kotlinx.coroutines` - Concurrency framework
-- `androidx.navigation` - Screen navigation
-- `androidx.lifecycle` - ViewModel and lifecycle management
+*   **Exact-Time Alerts**: Notifications trigger precisely at the start of your class using Android's `AlarmManager` API, bypassing standard battery optimization delays.
+*   **Interactive Actions**: Mark your attendance directly from the notification shade. Options for **"Attended"** and **"Missed"** allow for instant database updates without unlocking the phone or opening the app.
+*   **Reliable Persistence**: The system automatically reschedules all alarms upon device reboot or app updates, ensuring no class is ever forgotten.
+*   **Conflict Handling**: Intelligently manages overlapping schedules and delivers distinct alerts for simultaneous events.
 
 ---
 
 ## Why Self Attendance Stands Out
 
-### The Problem with Existing Apps
-Most attendance trackers are just **simple counters**:
-- ❌ No date association - Can't see when you attended
-- ❌ No visual patterns - Just numbers
-- ❌ Manual calculations - You have to figure out bunk allowance yourself
-- ❌ No historical context - Can't view past months
+Most attendance trackers are just simple counters with no context. Self Attendance solves this:
 
-### Self Attendance's Innovation
-Self Attendance solves these by being **calendar-first**:
-- ✅ **Date-specific records** - Every attendance tied to a calendar date
-- ✅ **Visual calendar view** - See patterns and streaks instantly
-- ✅ **AI-powered insights** - Smart calculations for bunk allowance
-- ✅ **Monthly navigation** - Browse attendance history by month
-- ✅ **Streak tracking** - Monitor continuous present/absent days
-
-**No other app combines calendar visualization with intelligent attendance analysis like Self Attendance.**
+| Traditional Apps ❌ | Self Attendance ✅ |
+| :--- | :--- |
+| **No Date Association**: Can't see *when* you attended. | **Date-Specific Records**: Every attendance is tied to a calendar date. |
+| **Just Numbers**: No visual history. | **Visual Calendar**: See streaks, gaps, and monthly patterns instantly. |
+| **Manual Math**: You figure out bunking logic. | **AI Insights**: Smart calculations tell you *exactly* how many classes you can bunk. |
+| **Limited History**: Can't view past months. | **Monthly Navigation**: Browse complete attendance history. |
 
 ---
 
-## Download
+## Key Features
 
-### Latest Release
-- **Version:** v1.9.0
-- **Build:** 14
-- **Min Android:** 8.0 (API 26)
-- **Target Android:** 14.0 (API 36)
+### 📅 Calendar-Based Attendance
+*   **Visual Overview**: See your entire month's attendance at a glance.
+*   **Color-Coded**: Dates are marked Green (Present) or Red (Absent) for instant feedback.
+*   **Streak Tracking**: Monitor your longest present or absent streaks.
 
-### Available APKs
-Split APKs for optimal size:
-- `app-arm64-v8a-release.apk` - Modern 64-bit ARM devices (6.05 MB)
-- `app-armeabi-v7a-release.apk` - Older 32-bit ARM devices (6.05 MB)
-- `app-x86_64-release.apk` - Intel 64-bit devices (6.05 MB)
-- `app-x86-release.apk` - Intel 32-bit devices (6.05 MB)
+### 🎯 Smart Attendance Insights
+The app doesn't just show a percentage. It tells you what to do:
+*   *"You can bunk **3** more classes and still stay above 75%."*
+*   *"You are safe at 75%. Don't miss the next class!"*
+*   *"Attend the next **2** classes to reach your target."*
 
-Download the APK for your device architecture from the [Releases](../../releases) page.
+### 🔔 Intelligent Timetable Notifications (New!)
+*   **Exact Alarms**: Alerts fire precisely at class time using `AlarmManager`.
+*   **Interactive**: Mark status directly from the notification.
+*   **Resilient**: Alarms auto-restore after device reboots.
+
+### 🎨 Modern Material You Design
+*   **Dynamic Theming**: Adapts to your device wallpaper.
+*   **Expressive UI**: Fluid animations and clean typography (One UI Sans).
+*   **Dark Mode**: Fully optimized OLED-friendly dark theme.
+
+### 💾 Backup & Restore
+*   **Full Data Export**: Save your database and settings locally.
+*   **Easy Restore**: Seamlessly migrate data to a new device.
+
+---
+
+## App Screenshots
+
+| Dashboard & Insights | Calendar View |
+|:---:|:---:|
+| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM.jpeg" width="300" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM%20(1).jpeg" width="300" /> |
+| **Timetable Overview** | **Attendance History** |
+| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM.jpeg" width="300" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(1).jpeg" width="300" /> |
+| **Subject Details** | **Add Subject** |
+| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(2).jpeg" width="300" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM.jpeg" width="300" /> |
+| **Updates** | **Settings** |
+| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM%20(1).jpeg" width="300" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM%20(2).jpeg" width="300" /> |
+| **Notifications** | **Menu** |
+| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM.jpeg" width="300" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM%20(1).jpeg" width="300" /> |
+
+---
+
+## 🛠️ Usage
+
+### Quick Start
+1.  **Add a Subject**: Tap the "+" button and enter subject details.
+2.  **Set Target**: Choose your desired attendance percentage (default: 75%).
+3.  **Mark Attendance**: Click any date on the calendar to toggle Present/Absent/Holiday.
+4.  **View Insights**: Read the smart messages cards to know your bunk status.
+
+### Pro Tips
+*   **Sidebar**: Use the sidebar (rotating gear icon) for a quick summary of all subjects.
+*   **Notifications**: Enable "Timetable Notifications" in settings to get class alerts.
+*   **Backup**: Regular backups ensure you never lose your academic history.
+
+---
+
+## 🔧 Technical Specifications
+
+*   **Language**: Kotlin
+*   **UI Framework**: Jetpack Compose (Material 3)
+*   **Architecture**: MVVM + Clean Architecture + Dependency Injection (Hilt)
+*   **Database**: Room Database (Offline-first)
+*   **Background Tasks**: WorkManager & AlarmManager
 
 ---
 
 ## Installation
 
-1. Download the appropriate APK for your device
-2. Enable "Install from Unknown Sources" in your Android settings
-3. Open the downloaded APK and install
-4. Grant necessary permissions (notifications, storage for backup)
-5. Start tracking your attendance!
+You can download the latest APK from the [Releases](https://github.com/mhdfarhanhere/Driftly/releases) section.
+
+1.  Download `app-arm64-v8a-release.apk` (Recommended).
+2.  Install on your Android device.
+3.  Grant Notification & Alarm permissions when prompted.
 
 ---
 
-## Usage
-
-### Quick Start
-1. **Add a Subject** - Tap the "Add Subject" button and enter subject details
-2. **Set Target** - Choose your desired attendance percentage (default: 75%)
-3. **Mark Attendance** - Click on the calendar date and mark present/absent
-4. **View Insights** - See smart messages about your bunk allowance
-5. **Check Sidebar** - Tap the rotating gear icon to see all subjects at once
-
-### Pro Tips
-- Use the **Attendance Control Sidebar** to quickly check all subjects
-- Set **different targets** for different subjects based on importance
-- Enable **notifications** to never forget marking attendance
-- **Backup regularly** to avoid losing data
-- Use the **calendar view** to spot attendance patterns
-
----
-
-## Roadmap
-
-### Planned Features
-- 🔄 Timetable integration
-- 📊 Advanced analytics and graphs
-- 🌐 Cloud sync across devices
-- 📱 Widget support
-- 🎓 Semester-wise segregation
-- 📧 Email reports
-
----
-
-## Developer
-
-**Developed by:** Md Farhan  
-**Contact:** [GitHub Profile](https://github.com/DP-Hridayan)
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- Material Design team for the beautiful components
-- Jetpack Compose team for the modern UI toolkit
-- The Android developer community for continuous support
-
----
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-## Support
+## Contributing & Support
 
 If you find this app useful, please:
-- ⭐ **Star this repository**
-- 🐛 **Report bugs** in the Issues section
-- 💡 **Suggest features** you'd like to see
-- 🔄 **Share** with friends who need attendance tracking
+*   ⭐ **Star this repository** on GitHub.
+*   🐛 **Report bugs** in the Issues section.
+*   💡 **Suggest features** you'd like to see.
 
-### 💖 Want to Sponsor This Project?
-
-If you'd like to support the development of Self Attendance, please contact me:
-
-- 📧 **Email:** farhanfp20@gmail.com
-- 💬 **Telegram:** [@hourslow](https://t.me/hourslow)
-
-Your support helps me continue improving this app and adding new features!
-
----
-
-<p align="center">
-  <b>Self Attendance - The Smart Way to Track Attendance</b>
-  <br>
-  <i>Because your attendance deserves more than just a counter</i>
-</p>
+**Built with ❤️ by Md Farhan**

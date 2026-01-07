@@ -11,9 +11,14 @@ import `in`.hridayan.driftly.core.domain.model.AttendanceStatus
 import `in`.hridayan.driftly.core.domain.model.SubjectAttendance
 import `in`.hridayan.driftly.core.domain.model.SubjectError
 import `in`.hridayan.driftly.core.domain.model.TotalAttendance
+import `in`.hridayan.driftly.core.domain.model.ClassSchedule
+import `in`.hridayan.driftly.core.domain.model.toDomain
 import `in`.hridayan.driftly.core.domain.repository.AttendanceRepository
+import `in`.hridayan.driftly.core.domain.repository.ClassScheduleRepository
 import `in`.hridayan.driftly.core.domain.repository.SubjectRepository
 import `in`.hridayan.driftly.notification.createAppNotificationSettingsIntent
+import `in`.hridayan.driftly.notification.ClassNotificationScheduler
+import `in`.hridayan.driftly.notification.TimetableAlarmScheduler
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,8 +37,10 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val subjectRepository: SubjectRepository,
-    private val attendanceRepository: AttendanceRepository
+    private val attendanceRepository: AttendanceRepository,
+    private val classScheduleRepository: ClassScheduleRepository
 ) : ViewModel() {
+
     private val _uiEvent = MutableSharedFlow<SettingsUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
 
@@ -124,10 +132,12 @@ class HomeViewModel @Inject constructor(
                 subjectRepository.updateSubject(
                     subjectId = subjectId,
                     newName = _subject.value.trim(),
-                    newCode = _subjectCode.value.trim().takeIf { it.isNotBlank() }
+                    newCode = _subjectCode.value.trim().takeIf { it.isNotBlank() },
+                    histogramLabel = _histogramLabel.value.trim().takeIf { it.isNotBlank() }
                 )
                 _subject.value = ""
                 _subjectCode.value = ""
+                _histogramLabel.value = ""
                 onSuccess()
             }
         }
@@ -135,12 +145,18 @@ class HomeViewModel @Inject constructor(
 
     fun deleteSubject(subjectId: Int, onSuccess: () -> Unit) {
         viewModelScope.launch {
+            // Cancel notifications first
+            ClassNotificationScheduler.cancelNotifications(context, subjectId)
             subjectRepository.deleteSubject(subjectId)
             onSuccess()
         }
     }
 
     val subjectCount: Flow<Int> = subjectRepository.getSubjectCount()
+
+    fun getSubjectById(subjectId: Int): Flow<SubjectEntity> {
+        return subjectRepository.getSubjectById(subjectId)
+    }
 
     fun deleteAllAttendanceForSubject(subjectId: Int) {
         viewModelScope.launch {
@@ -194,6 +210,84 @@ class HomeViewModel @Inject constructor(
             subjectRepository.updateTargetPercentage(subjectId, targetPercentage)
         }
     }
-}
 
+    // Timetable Management
+    fun getSchedulesForSubject(subjectId: Int): Flow<List<ClassSchedule>> {
+        return classScheduleRepository.getSchedulesForSubject(subjectId)
+            .map { schedules -> schedules.map { it.toDomain() } }
+    }
+
+    fun saveSchedulesForSubject(subjectId: Int, schedules: List<ClassSchedule>) {
+        viewModelScope.launch {
+            // Get current schedules from DB to identify deletions
+            val currentSchedules = classScheduleRepository.getSchedulesForSubject(subjectId).first().map { it.toDomain() }
+            
+            // Identify schedules to delete (present in DB but not in new list)
+            val newScheduleIds = schedules.map { it.id }.toSet()
+            val schedulesToDelete = currentSchedules.filter { it.id != 0 && it.id !in newScheduleIds }
+
+            // Delete removed schedules and cancel their alarms
+            if (schedulesToDelete.isNotEmpty()) {
+                val entitiesToDelete = schedulesToDelete.map { it.toEntity() }
+                entitiesToDelete.forEach { entity ->
+                    classScheduleRepository.deleteSchedule(entity)
+                }
+                
+                schedulesToDelete.forEach { schedule ->
+                    ClassNotificationScheduler.cancelScheduleNotification(context, schedule.id)
+                }
+            }
+
+            // Upsert new/updated schedules
+            if (schedules.isNotEmpty()) {
+                val entitiesToUpsert = schedules.map { it.copy(subjectId = subjectId).toEntity() }
+                classScheduleRepository.insertSchedules(entitiesToUpsert)
+                
+                // Check Exact Alarm Permission
+                if (!TimetableAlarmScheduler.canScheduleExactAlarms(context)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val intent = android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        _uiEvent.emit(SettingsUiEvent.LaunchIntent(intent))
+                    }
+                }
+                
+                // Fetch the updated list from DB (to get generated IDs for new items)
+                // Actually, insertSchedules might not return IDs immediately if it's void.
+                // But for Alarm scheduling, we ideally need the ID. 
+                // However, 'schedules' has 0 for new ones. 
+                // If we schedule with ID 0, it won't be unique?
+                // PROBLEM: We need the new IDs.
+                // Assuming inserts happens fast, we can re-fetch.
+                val updatedSchedules = classScheduleRepository.getSchedulesForSubject(subjectId).first().map { it.toDomain() }
+                
+                // Schedule exact alarms using AlarmManager for precise timing
+                updatedSchedules.forEach { schedule ->
+                    TimetableAlarmScheduler.scheduleClassAlarms(
+                        context = context,
+                        scheduleId = schedule.id,
+                        subjectId = subjectId,
+                        subjectName = getSubjectById(subjectId).first().subject,
+                        dayOfWeek = schedule.dayOfWeek,
+                        startTime = schedule.startTime,
+                        endTime = schedule.endTime,
+                        location = schedule.location
+                    )
+                }
+            }
+        }
+    }
+
+
+
+    fun deleteSchedulesForSubject(subjectId: Int) {
+        viewModelScope.launch {
+            val schedules = classScheduleRepository.getSchedulesForSubject(subjectId).first()
+            TimetableAlarmScheduler.cancelAllAlarmsForSubject(
+                context,
+                schedules.map { it.id }
+            )
+            classScheduleRepository.deleteSchedulesForSubject(subjectId)
+        }
+    }
+}
 

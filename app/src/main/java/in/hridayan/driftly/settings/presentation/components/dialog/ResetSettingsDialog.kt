@@ -74,12 +74,9 @@ fun ResetSettingsDialog(
                             weakHaptic()
                             onDismiss()
                         },
-                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier
                             .weight(1f)
-                            .animateWidth(interactionSources[0]),
-                        interactionSource = interactionSources[0],
-                    ) {
+                            ) {
                         AutoResizeableText(
                             text = stringResource(R.string.cancel),
                             style = MaterialTheme.typography.labelLarge
@@ -98,9 +95,6 @@ fun ResetSettingsDialog(
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .animateWidth(interactionSources[1]),
-                        interactionSource = interactionSources[1],
-                        shapes = ButtonDefaults.shapes(),
                     ) {
                         AutoResizeableText(
                             text = stringResource(R.string.reset),

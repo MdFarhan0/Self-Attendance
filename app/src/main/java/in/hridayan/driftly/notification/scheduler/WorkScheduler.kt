@@ -10,8 +10,12 @@ import `in`.hridayan.driftly.core.domain.model.NotificationTags
 import `in`.hridayan.driftly.notification.worker.AttendanceReminderWorker
 import `in`.hridayan.driftly.notification.worker.MissedAttendanceAlertWorker
 import `in`.hridayan.driftly.notification.worker.UpdateCheckWorker
+import `in`.hridayan.driftly.notification.worker.TimetableNotificationWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
 import java.time.Duration
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 object WorkScheduler {
 
@@ -91,6 +95,36 @@ object WorkScheduler {
         )
     }
 
+    fun scheduleTimetableNotifications(context: Context) {
+        // This will be called after timetable is saved
+        // It schedules a worker to check timetable and show notifications
+        // Uses the same proven WorkManager pattern as general notifications
+        
+        val request = PeriodicWorkRequestBuilder<TimetableNotificationWorker>(
+            15, TimeUnit.MINUTES // Check every 15 minutes
+        )
+            .addTag(NotificationTags.TIMETABLE_NOTIFICATIONS)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            NotificationTags.TIMETABLE_NOTIFICATIONS,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            request
+        )
+    }
+
+    // Run a one-time check immediately (e.g., after schedule changes)
+    fun runTimetableCheckNow(context: Context) {
+        val request = OneTimeWorkRequestBuilder<TimetableNotificationWorker>()
+            .addTag(NotificationTags.TIMETABLE_NOTIFICATIONS)
+            .build()
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "timetable_check_now",
+            ExistingWorkPolicy.REPLACE,
+            request
+        )
+    }
+
     fun cancelNotificationWork(context: Context, uniqueTag: String) {
         WorkManager.getInstance(context).cancelAllWorkByTag(uniqueTag)
     }
@@ -102,5 +136,7 @@ object WorkScheduler {
             .cancelAllWorkByTag(NotificationTags.NOTIFY_WHEN_MISSED_ATTENDANCE)
         WorkManager.getInstance(context)
             .cancelAllWorkByTag(NotificationTags.NOTIFY_WHEN_UPDATE_AVAILABLE)
+        WorkManager.getInstance(context)
+            .cancelAllWorkByTag(NotificationTags.TIMETABLE_NOTIFICATIONS)
     }
 }

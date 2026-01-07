@@ -40,11 +40,9 @@ fun MonthNavigationButtons(
                 onNavigatePrev()
             },
             shapes = IconButtonDefaults.shapes(),
-            interactionSource = interactionSources[0],
             modifier = Modifier
                 .size(extraSmallContainerSize())
-                .animateWidth(interactionSources[0]),
-        ) {
+                ) {
             Icon(
                 modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                 imageVector = Icons.Rounded.ChevronLeft,
@@ -58,11 +56,9 @@ fun MonthNavigationButtons(
                 onReset()
             },
             shapes = IconButtonDefaults.shapes(),
-            interactionSource = interactionSources[1],
             modifier = Modifier
                 .size(extraSmallContainerSize())
-                .animateWidth(interactionSources[1]),
-        ) {
+                ) {
             Icon(
                 modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                 imageVector = Icons.Rounded.Replay,
@@ -76,11 +72,9 @@ fun MonthNavigationButtons(
                 onNavigateNext()
             },
             shapes = IconButtonDefaults.shapes(),
-            interactionSource = interactionSources[2],
             modifier = Modifier
                 .size(extraSmallContainerSize())
-                .animateWidth(interactionSources[2]),
-        ) {
+                ) {
             Icon(
                 modifier = Modifier.size(IconButtonDefaults.extraSmallIconSize),
                 imageVector = Icons.Rounded.ChevronRight,

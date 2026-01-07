@@ -35,7 +35,7 @@ import `in`.hridayan.driftly.settings.presentation.components.bottomsheet.FontSt
 import `in`.hridayan.driftly.settings.presentation.components.item.PreferenceItemView
 import `in`.hridayan.driftly.settings.presentation.components.scaffold.SettingsScaffold
 import `in`.hridayan.driftly.settings.presentation.components.shape.CardCornerShape.getRoundedShape
-import `in`.hridayan.driftly.settings.presentation.components.tab.ColorTabs
+
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
 
@@ -96,9 +96,7 @@ fun LookAndFeelScreen(
                     )
                 }
 
-                item {
-                    ColorTabs(modifier = Modifier.padding(20.dp))
-                }
+
 
                 itemsIndexed(settings) { index, group ->
                     when (group) {

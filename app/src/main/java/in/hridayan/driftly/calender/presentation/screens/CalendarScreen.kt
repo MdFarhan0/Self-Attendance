@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.School
@@ -38,6 +42,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -50,8 +55,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -60,6 +67,7 @@ import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.AttendanceTargetBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.SubjectAttendanceDataBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.canvas.CalendarCanvas
+import `in`.hridayan.driftly.calender.presentation.components.GroupedTimetableCards
 import `in`.hridayan.driftly.calender.presentation.viewmodel.CalendarViewModel
 import `in`.hridayan.driftly.core.common.LocalSettings
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
@@ -165,6 +173,13 @@ fun CalendarScreen(
     val attendanceCounts by homeViewModel.getSubjectAttendanceCounts(subjectId)
         .collectAsState(initial = SubjectAttendance())
 
+    // Fetch monthly attendance
+    val monthlyAttendanceCounts by androidx.compose.runtime.remember(subjectId, year, month) {
+        viewModel.getMonthlyAttendanceCounts(subjectId, year, month)
+    }.collectAsState(initial = SubjectAttendance())
+
+    var isMonthlyMode by rememberSaveable { mutableStateOf(false) }
+
     // Get subject's target percentage and setup status
     val targetPercentage = subjectEntity.value?.targetPercentage ?: 75.0f
     val isTargetSet = subjectEntity.value?.isTargetSet ?: false
@@ -241,10 +256,16 @@ fun CalendarScreen(
                 }
             )
         }) {
+        // Collect schedules BEFORE LazyColumn
+        val schedules by homeViewModel.getSchedulesForSubject(subjectId)
+            .collectAsState(initial = emptyList())
 
-        Column(
-            modifier = Modifier.padding(it), verticalArrangement = Arrangement.spacedBy(20.dp)
+        LazyColumn(
+            modifier = Modifier.padding(it),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            flingBehavior = ScrollableDefaults.flingBehavior()
         ) {
+            item {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -274,41 +295,87 @@ fun CalendarScreen(
                     }
                 )
             }
+            }
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
-                onClick = {
-                    weakHaptic()
-                    showSubjectAttendanceDataBottomSheet = true
-                },
-                shape = RoundedCornerShape(40.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    AutoResizeableText(
-                        text = stringResource(R.string.attendance_overview),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                        contentDescription = null
-                    )
+                    // Overall Attendance Button
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp),
+                        onClick = {
+                            weakHaptic()
+                            isMonthlyMode = false
+                            showSubjectAttendanceDataBottomSheet = true
+                        },
+                        shape = RoundedCornerShape(40.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AutoResizeableText(
+                                text = stringResource(R.string.attendance_overview),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+
+                    // Monthly Attendance Button
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 15.dp),
+                        onClick = {
+                            weakHaptic()
+                            isMonthlyMode = true
+                            showSubjectAttendanceDataBottomSheet = true
+                        },
+                        shape = RoundedCornerShape(40.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AutoResizeableText(
+                                text = "Monthly Attendance",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             }
 
-            // Smart Attendance Insight Card
+            item {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -352,25 +419,177 @@ fun CalendarScreen(
                     }
                 }
             }
-
-            if (showSubjectAttendanceDataBottomSheet) {
-                SubjectAttendanceDataBottomSheet(
-                    onDismiss = {
-                        showSubjectAttendanceDataBottomSheet = false
-                    },
-                    subjectId = subjectId
-                )
             }
 
-            if (showTargetBottomSheet) {
-                AttendanceTargetBottomSheet(
-                    subjectId = subjectId,
-                    currentTarget = targetPercentage,
-                    onDismiss = {
-                        showTargetBottomSheet = false
+            if (schedules.isNotEmpty()) {
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        Text(
+                            text = "Weekly Schedule",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(horizontal = 25.dp)
+                        )
+
+                        val groupedByDay = schedules.groupBy { it.dayOfWeek }.toSortedMap()
+                        groupedByDay.forEach { (day, daySchedules) ->
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                // Day Header Chip
+                                Surface(
+                                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier
+                                        .padding(horizontal = 25.dp)
+                                        .padding(bottom = 6.dp)
+                                ) {
+                                    Text(
+                                        text = getDayName(day),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                                    )
+                                }
+
+                                val sorted = daySchedules.sortedBy { it.startTime }
+                                sorted.forEachIndexed { index, schedule ->
+                                    val isFirst = index == 0
+                                    val isLast = index == sorted.size - 1
+                                    val isOnly = sorted.size == 1
+
+                                    val shape = when {
+                                        isOnly -> RoundedCornerShape(25.dp)
+                                        isFirst -> RoundedCornerShape(
+                                            topStart = 25.dp, topEnd = 25.dp,
+                                            bottomStart = 2.dp, bottomEnd = 2.dp
+                                        )
+                                        isLast -> RoundedCornerShape(
+                                            topStart = 2.dp, topEnd = 2.dp,
+                                            bottomStart = 25.dp, bottomEnd = 25.dp
+                                        )
+                                        else -> RoundedCornerShape(2.dp)
+                                    }
+
+                                    TimetableCardItem(
+                                        schedule = schedule,
+                                        shape = shape,
+                                        modifier = Modifier.padding(horizontal = 25.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        // Bottom padding to ensure last item is visible above navigation bar/FAB
+                        Spacer(Modifier.height(100.dp))
                     }
+                }
+            }
+        }
+        
+        // Bottom Sheets OUTSIDE LazyColumn
+        if (showSubjectAttendanceDataBottomSheet) {
+            val data = if (isMonthlyMode) monthlyAttendanceCounts else attendanceCounts
+            val monthName = java.time.Month.of(month).getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())
+            val title = if (isMonthlyMode) "Attendance ($monthName)" else "Attendance Overview"
+            
+            SubjectAttendanceDataBottomSheet(
+                onDismiss = {
+                    showSubjectAttendanceDataBottomSheet = false
+                },
+                data = data,
+                title = title
+            )
+        }
+
+        if (showTargetBottomSheet) {
+            AttendanceTargetBottomSheet(
+                subjectId = subjectId,
+                currentTarget = targetPercentage,
+                onDismiss = {
+                    showTargetBottomSheet = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun TimetableCardItem(
+    schedule: `in`.hridayan.driftly.core.domain.model.ClassSchedule,
+    shape: RoundedCornerShape,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = shape,
+        color = Color.White,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Schedule,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                
+                Column {
+                    Text(
+                        text = "${`in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(schedule.startTime)} - ${`in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(schedule.endTime)}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    
+                    if (schedule.location != null) {
+                        Text(
+                            text = "📍 ${schedule.location}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = `in`.hridayan.driftly.core.utils.TimeUtils.formatDuration(
+                        `in`.hridayan.driftly.core.utils.TimeUtils.calculateDuration(schedule.startTime, schedule.endTime)
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
         }
     }
 }
+
+private fun getDayName(day: Int) = when (day) {
+    1 -> "Monday"
+    2 -> "Tuesday"
+    3 -> "Wednesday"
+    4 -> "Thursday"
+    5 -> "Friday"
+    6 -> "Saturday"
+    7 -> "Sunday"
+    else -> ""
+}
+
