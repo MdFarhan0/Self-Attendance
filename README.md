@@ -63,9 +63,9 @@ The app doesn't just show a percentage. It tells you what to do:
 
 | | | |
 |:---:|:---:|:---:|
-| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM.jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM%20(1).jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM.jpeg" width="250" /> |
-| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(1).jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(2).jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM.jpeg" width="250" /> |
-| <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM%20(2).jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM.jpeg" width="250" /> | <img src="./image%20that%20have%20to%20add%20in%20readme.md%20file%20for%20my%20github%20showcase/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM%20(1).jpeg" width="250" /> |
+| <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM.jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.10%20PM%20(1).jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM.jpeg" width="250" /> |
+| <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(1).jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.11%20PM%20(2).jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM.jpeg" width="250" /> |
+| <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.12%20PM%20(2).jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM.jpeg" width="250" /> | <img src="./src/WhatsApp%20Image%202026-01-07%20at%201.33.13%20PM%20(1).jpeg" width="250" /> |
 
 ---
 
