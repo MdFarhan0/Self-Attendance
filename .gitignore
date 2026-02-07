@@ -14,3 +14,13 @@ local.properties
 *.jks
 *.keystore
 password.md
+
+# Ads source code
+app/src/main/java/in/hridayan/driftly/ads/
+
+# All markdown files except README.md
+*.md
+!README.md
+
+# All text files
+*.txt
