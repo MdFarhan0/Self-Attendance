@@ -34,14 +34,15 @@ Unlike traditional apps that only show percentages, Self Attendance provides an 
 
 ---
 
-## 🚀 New in v2.2.0: Timetable Notification System
+## 🚀 New in v3.0.0: Multiple Attendance + Today's Classes
 
-The latest update introduces a highly requested, fully automated notification engine.
+The latest version introduces significant functional upgrades and more immersive visual effects.
 
-*   **Exact-Time Alerts**: Notifications trigger precisely at the start of your class using Android's `AlarmManager` API, bypassing standard battery optimization delays.
-*   **Interactive Actions**: Mark your attendance directly from the notification shade. Options for **"Attended"** and **"Missed"** allow for instant database updates without unlocking the phone or opening the app.
-*   **Reliable Persistence**: The system automatically reschedules all alarms upon device reboot or app updates, ensuring no class is ever forgotten.
-*   **Conflict Handling**: Intelligently manages overlapping schedules and delivers distinct alerts for simultaneous events.
+*   **Multiple Attendance Entries**: Add and manage multiple attendance records for any subject with ease.
+*   **Today's Classes View**: See your full schedule at a glance by simply clicking the "Self Attendance" title on the Home Screen.
+*   **Internationalization**: Added support for multiple languages and country-specific regions.
+*   **Premium Glassmorphism**: High-end backdrop blur effects implemented across drawers, dialogs, and bottom sheets.
+*   **Stability**: Removed bugs and optimized performance for a smoother experience.
 
 ---
 
