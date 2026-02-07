@@ -1,7 +1,3 @@
-> **❓ Do you have a Google Play Console Account?**
->
-> I am active looking for a **Google Play Console account** to publish this app. If you have an account and are willing to help me release this build to the Play Store, please contact me!
-
 # Self Attendance
 
 <p align="center">
