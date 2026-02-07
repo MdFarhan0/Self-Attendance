@@ -36,6 +36,10 @@ Unlike traditional apps that only show percentages, Self Attendance provides an 
 
 ## 🚀 New in v3.0.0: Multiple Attendance + Today's Classes
 
+<p align="center">
+  <img src="./env.jpeg" width="100%" style="border-radius:12px;"/>
+</p>
+
 The latest version introduces significant functional upgrades and more immersive visual effects.
 
 *   **Multiple Attendance Entries**: Add and manage multiple attendance records for any subject with ease.
