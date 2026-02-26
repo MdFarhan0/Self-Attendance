@@ -14,6 +14,7 @@ interface AttendanceRepository {
     suspend fun getAllAttendancesOnce(): List<AttendanceEntity>
     suspend fun hasUnmarkedAttendanceForDate(date: String): Boolean
     fun getAttendanceForSubject(subjectId: Int): Flow<List<AttendanceEntity>>
+    fun getAttendanceForSubjectAndDate(subjectId: Int, date: String): Flow<List<AttendanceEntity>>
     fun getTotalCountByStatus(status: AttendanceStatus): Flow<Int>
     fun getCountBySubjectAndStatus(subjectId: Int, status: AttendanceStatus): Flow<Int>
     fun getPresentCountForMonth(subjectId: Int, year: Int, month: Int): Flow<Int>

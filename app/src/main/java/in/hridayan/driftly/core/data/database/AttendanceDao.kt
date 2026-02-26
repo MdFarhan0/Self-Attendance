@@ -46,6 +46,9 @@ interface AttendanceDao {
     @Query("SELECT COUNT(*) FROM attendance WHERE subjectId = :subjectId AND status = :status")
     fun getCountBySubjectAndStatus(subjectId: Int, status: AttendanceStatus): Flow<Int>
 
+    @Query("SELECT * FROM attendance WHERE subjectId = :subjectId AND date = :date")
+    fun getAttendanceForSubjectAndDateFlow(subjectId: Int, date: String): Flow<List<AttendanceEntity>>
+
     @Query(
         """
         SELECT COUNT(*) FROM attendance 

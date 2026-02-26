@@ -10,6 +10,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import `in`.hridayan.driftly.core.utils.TimeUtils
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.data.local.provider.settingsDataStore
@@ -27,8 +30,8 @@ class ClassAlarmReceiver : BroadcastReceiver() {
         
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == "android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
             android.util.Log.d("ClassAlarmReceiver", "Handling boot/permission change, scheduling worker")
-            val request = androidx.work.OneTimeWorkRequestBuilder<RescheduleAlarmsWorker>().build()
-            androidx.work.WorkManager.getInstance(context).enqueue(request)
+            val request = OneTimeWorkRequestBuilder<RescheduleAlarmsWorker>().build()
+            WorkManager.getInstance(context).enqueue(request)
             return
         }
 
@@ -38,26 +41,44 @@ class ClassAlarmReceiver : BroadcastReceiver() {
         val location = intent.getStringExtra("location")
         val subjectId = intent.getIntExtra("subjectId", -1)
         val scheduleId = intent.getIntExtra("scheduleId", -1)
+        val dayOfWeek = intent.getIntExtra("dayOfWeek", 1)
 
         if (subjectId == -1 || scheduleId == -1) return
 
-        // Check verification in a Coroutine
+        // Use goAsync() or WorkManager to ensure the task finishes even if the receiver process is killed
+        val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
-            val settings = context.settingsDataStore.data.first()
-            val isEnabled = settings[booleanPreferencesKey(SettingsKeys.ENABLE_TIMETABLE_NOTIFICATIONS.name)] ?: true
-            
-            android.util.Log.d("ClassAlarmReceiver", "Timetable notifications enabled: $isEnabled")
-            
-            if (isEnabled) {
-                android.util.Log.d("ClassAlarmReceiver", "Showing notification for $subjectName")
-                showNotification(context, subjectId, scheduleId, subjectName, startTime, endTime, location)
-            } else {
-                android.util.Log.w("ClassAlarmReceiver", "Notifications disabled in settings, skipping")
+            try {
+                val settings = context.settingsDataStore.data.first()
+                val isEnabled = settings[booleanPreferencesKey(SettingsKeys.ENABLE_TIMETABLE_NOTIFICATIONS.name)] ?: true
+
+                android.util.Log.d("ClassAlarmReceiver", "Timetable notifications enabled: $isEnabled")
+
+                if (isEnabled) {
+                    android.util.Log.d("ClassAlarmReceiver", "Showing notification for $subjectName")
+                    showNotification(context, subjectId, scheduleId, subjectName, startTime, endTime, location)
+                } else {
+                    android.util.Log.w("ClassAlarmReceiver", "Notifications disabled in settings, skipping")
+                }
+
+                // Re-schedule for next week via WorkManager
+                android.util.Log.d("ClassAlarmReceiver", "Rescheduling for next week")
+                val workData = workDataOf(
+                    "subjectId" to subjectId,
+                    "scheduleId" to scheduleId,
+                    "subjectName" to subjectName,
+                    "startTime" to startTime,
+                    "endTime" to endTime,
+                    "location" to location,
+                    "dayOfWeek" to dayOfWeek
+                )
+                val rescheduleWork = OneTimeWorkRequestBuilder<RescheduleSingleAlarmWorker>()
+                    .setInputData(workData)
+                    .build()
+                WorkManager.getInstance(context).enqueue(rescheduleWork)
+            } finally {
+                pendingResult.finish()
             }
-            
-            // Re-schedule for next week
-            android.util.Log.d("ClassAlarmReceiver", "Rescheduling for next week")
-            ClassNotificationScheduler.scheduleNextWeek(context, subjectId, scheduleId, subjectName, startTime, endTime, location, intent.getIntExtra("dayOfWeek", 1))
         }
     }
 

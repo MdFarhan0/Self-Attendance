@@ -115,7 +115,7 @@
     <string name="next_month">Next month</string>
     <string name="no_attendance_yet">No attendance yet. Add some to view progress</string>
     <string name="no_changelog_found">No changelog found for this version</string>
-    <string name="no_subject_yet">Click on the + button to add a subject</string>"
+    <string name="no_subject_yet">Click on the + button to add a subject</string>
     <string name="notifications">Notifications</string>
     <string name="notify_missed_attendance">Notify missed attendance</string>
     <string name="notify_update_available">Notify when update available</string>

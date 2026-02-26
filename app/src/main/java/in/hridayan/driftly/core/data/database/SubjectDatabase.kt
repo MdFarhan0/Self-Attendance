@@ -35,7 +35,7 @@ abstract class SubjectDatabase : RoomDatabase() {
                     SubjectDatabase::class.java,
                     "subject_database"
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration(true)
                     .build()
                 INSTANCE = instance
                 instance

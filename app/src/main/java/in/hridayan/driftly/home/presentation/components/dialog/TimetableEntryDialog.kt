@@ -329,15 +329,20 @@ fun TimetableEntryDialog(
                 TimetableInputBottomSheet(
                     onDismiss = { showAddSheet = false },
                     onSave = { day, start, end, loc ->
-                        schedules.add(
-                            ClassSchedule(
-                                subjectId = subjectId,
-                                dayOfWeek = day,
-                                startTime = start,
-                                endTime = end,
-                                location = loc
+                        val isDuplicate = schedules.any {
+                            it.dayOfWeek == day && it.startTime == start && it.endTime == end
+                        }
+                        if (!isDuplicate) {
+                            schedules.add(
+                                ClassSchedule(
+                                    subjectId = subjectId,
+                                    dayOfWeek = day,
+                                    startTime = start,
+                                    endTime = end,
+                                    location = loc
+                                )
                             )
-                        )
+                        }
                         showAddSheet = false
                     }
                 )
@@ -349,14 +354,19 @@ fun TimetableEntryDialog(
                     initialSchedule = schedule,
                     onDismiss = { editingSchedule = null },
                     onSave = { day, start, end, loc ->
-                        val index = schedules.indexOf(schedule)
-                        if (index != -1) {
-                            schedules[index] = schedule.copy(
-                                dayOfWeek = day,
-                                startTime = start,
-                                endTime = end,
-                                location = loc
-                            )
+                        val isDuplicate = schedules.any {
+                            it != schedule && it.dayOfWeek == day && it.startTime == start && it.endTime == end
+                        }
+                        if (!isDuplicate) {
+                            val index = schedules.indexOf(schedule)
+                            if (index != -1) {
+                                schedules[index] = schedule.copy(
+                                    dayOfWeek = day,
+                                    startTime = start,
+                                    endTime = end,
+                                    location = loc
+                                )
+                            }
                         }
                         editingSchedule = null
                     }

@@ -178,13 +178,15 @@ object ClassNotificationScheduler {
         val now = LocalDateTime.now()
         val classTime = LocalTime.parse(startTime)
         
-        var nextDate = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(dayOfWeek))) // Finds next or today
+        var nextDate = if (lookAheadFromToday) {
+            now.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(dayOfWeek)))
+        } else {
+            now.with(TemporalAdjusters.next(DayOfWeek.of(dayOfWeek)))
+        }
         
-        // If today matches, check time
-        if (nextDate.toLocalDate() == now.toLocalDate()) {
+        // If today matches (only possible if lookAheadFromToday is true), check time
+        if (lookAheadFromToday && nextDate.toLocalDate() == now.toLocalDate()) {
             if (now.toLocalTime().isAfter(classTime)) {
-                // Keep today only if lookAheadFromToday is false (meaning specific calculation)
-                // usually if passed, we want next week
                 nextDate = nextDate.plusWeeks(1)
             }
         }

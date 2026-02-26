@@ -203,10 +203,20 @@ fun TimetableInputBottomSheet(
                                 else 
                                     MaterialTheme.colorScheme.surfaceVariant
                             )
+                            .run {
+                                if (selectedDayIndex != index) {
+                                    this.clickable(
+                                        onClick = {
+                                            weakHaptic()
+                                            selectedDayIndex = index
+                                        },
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    )
+                                } else this
+                            }
                             .padding(horizontal = 20.dp, vertical = 12.dp)
-                            .then(
-                                Modifier.wrapContentWidth()
-                            ),
+                            .wrapContentWidth(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -216,22 +226,7 @@ fun TimetableInputBottomSheet(
                             color = if (selectedDayIndex == index)
                                 MaterialTheme.colorScheme.onPrimary
                             else
-                                MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .run {
-                                    if (selectedDayIndex != index) {
-                                        this.then(
-                                            Modifier.clickable(
-                                                onClick = {
-                                                    weakHaptic()
-                                                    selectedDayIndex = index
-                                                },
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            )
-                                        )
-                                    } else this
-                                }
+                                MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -400,8 +395,8 @@ fun TimetableInputBottomSheet(
             }
             val endTotalMinutes = endHour24 * 60 + endMin
             
-            // VALIDATION: End time must be after start time
-            val isValid = endTotalMinutes > startTotalMinutes
+            // VALIDATION: End time must be different from start time
+            val isValid = endTotalMinutes != startTotalMinutes
 
             // Add to Timetable Button
             val addToTimetableInteraction = remember { MutableInteractionSource() }
