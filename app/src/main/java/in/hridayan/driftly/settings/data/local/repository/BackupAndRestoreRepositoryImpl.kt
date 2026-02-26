@@ -2,7 +2,9 @@ package `in`.hridayan.driftly.settings.data.local.repository
 
 import android.content.Context
 import android.net.Uri
+import androidx.room.withTransaction
 import dagger.hilt.android.qualifiers.ApplicationContext
+import `in`.hridayan.driftly.core.data.database.SubjectDatabase
 import `in`.hridayan.driftly.core.domain.repository.AttendanceRepository
 import `in`.hridayan.driftly.core.domain.repository.SubjectRepository
 import `in`.hridayan.driftly.core.domain.repository.ClassScheduleRepository
@@ -24,6 +26,7 @@ class BackupAndRestoreRepositoryImpl @Inject constructor(
     private val subjectRepository: SubjectRepository,
     private val classScheduleRepository: ClassScheduleRepository,
     private val settingsRepository: SettingsRepository,
+    private val database: SubjectDatabase,
     @param:ApplicationContext private val context: Context
 ) : BackupAndRestoreRepository {
 
@@ -109,17 +112,19 @@ class BackupAndRestoreRepositoryImpl @Inject constructor(
     }
 
     private suspend fun saveRestoredData(data: BackupData) {
-        data.attendance?.let {
-            attendanceRepository.deleteAllAttendances()
-            attendanceRepository.insertAllAttendances(it)
-        }
-        data.subjects?.let {
-            subjectRepository.deleteAllSubjects()
-            subjectRepository.insertAllSubjects(it)
-        }
-        data.classSchedules?.let {
-            classScheduleRepository.deleteAllSchedules()
-            classScheduleRepository.insertAllSchedules(it)
+        database.withTransaction {
+            data.attendance?.let {
+                attendanceRepository.deleteAllAttendances()
+                attendanceRepository.insertAllAttendances(it)
+            }
+            data.subjects?.let {
+                subjectRepository.deleteAllSubjects()
+                subjectRepository.insertAllSubjects(it)
+            }
+            data.classSchedules?.let {
+                classScheduleRepository.deleteAllSchedules()
+                classScheduleRepository.insertAllSchedules(it)
+            }
         }
         data.settings?.let { restoreSettings(it) }
     }

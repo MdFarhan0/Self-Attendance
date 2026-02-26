@@ -36,15 +36,13 @@ class RescheduleAlarmsWorker(
             subjects.forEach { subject ->
                 val schedules = classScheduleRepository.getSchedulesForSubject(subject.id).first().map { it.toDomain() }
                 
-                if (schedules.isNotEmpty()) {
-                    // This method handles canceling old and scheduling new for the subject
-                    ClassNotificationScheduler.scheduleAllClassNotifications(
-                        context = applicationContext,
-                        subjectId = subject.id,
-                        subjectName = subject.subject,
-                        schedules = schedules
-                    )
-                }
+                // This method handles canceling old and scheduling new (if any) for the subject
+                ClassNotificationScheduler.scheduleAllClassNotifications(
+                    context = applicationContext,
+                    subjectId = subject.id,
+                    subjectName = subject.subject,
+                    schedules = schedules
+                )
             }
             return Result.success()
         } catch (e: Exception) {

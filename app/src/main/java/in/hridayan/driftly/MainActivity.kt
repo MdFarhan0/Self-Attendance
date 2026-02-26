@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
                 DriftlyTheme {
                     Surface(
-                        modifier = Modifier.Companion.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.surface
                     ) {
                         AppEntry()

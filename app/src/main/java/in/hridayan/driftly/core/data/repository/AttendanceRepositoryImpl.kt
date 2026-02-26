@@ -46,6 +46,9 @@ class AttendanceRepositoryImpl @Inject constructor(
     override fun getAttendanceForSubject(subjectId: Int): Flow<List<AttendanceEntity>> =
         dao.getAttendanceForSubjectFlow(subjectId)
 
+    override fun getAttendanceForSubjectAndDate(subjectId: Int, date: String): Flow<List<AttendanceEntity>> =
+        dao.getAttendanceForSubjectAndDateFlow(subjectId, date)
+
     override fun getTotalCountByStatus(status: AttendanceStatus): Flow<Int> =
         dao.getTotalCountByStatus(status)
 

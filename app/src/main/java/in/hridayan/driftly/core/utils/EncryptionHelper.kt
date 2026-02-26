@@ -9,7 +9,7 @@ object EncryptionHelper {
     private const val ALGORITHM = "AES/CBC/PKCS5Padding"
 
     private const val SECRET_KEY =
-        "your_32_byte_secret_key_string_here!" // security is not the main goal here
+        "driftly_app_secure_backup_key_32" // fixed hardcoded placeholder
 
     private val keySpec get() = normalizeKey(SECRET_KEY)
 

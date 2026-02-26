@@ -79,9 +79,16 @@ object TimeUtils {
     fun calculateDuration(startTime: String, endTime: String): Int {
         return try {
             val start = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm"))
-            val end = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm"))
-            val duration = java.time.Duration.between(start, end)
-            duration.toMinutes().toInt()
+            var end = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm"))
+
+            // If end is before start, assume it crosses midnight
+            if (end.isBefore(start)) {
+                val duration = java.time.Duration.between(start, end).plusDays(1)
+                duration.toMinutes().toInt()
+            } else {
+                val duration = java.time.Duration.between(start, end)
+                duration.toMinutes().toInt()
+            }
         } catch (e: Exception) {
             0
         }
@@ -111,7 +118,8 @@ object TimeUtils {
         return try {
             val start = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm"))
             val end = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm"))
-            end.isAfter(start)
+            // Allow any range that is not identical (enables midnight spanning)
+            startTime != endTime
         } catch (e: Exception) {
             false
         }
