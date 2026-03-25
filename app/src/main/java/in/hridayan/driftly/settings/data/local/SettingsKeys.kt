@@ -1,14 +1,12 @@
 package `in`.hridayan.driftly.settings.data.local
 
 import androidx.appcompat.app.AppCompatDelegate
-import `in`.hridayan.driftly.core.domain.model.GithubReleaseType
 import `in`.hridayan.driftly.core.domain.model.SubjectCardStyle
 import `in`.hridayan.driftly.core.domain.provider.SeedColorProvider
 import `in`.hridayan.driftly.settings.domain.model.CustomFontFamily
 
 enum class SettingsKeys(val default: Any?) {
     LOOK_AND_FEEL(null),
-    AUTO_UPDATE(false),
     ABOUT(null),
     BEHAVIOR(null),
     STREAK_MODIFIER(true),
@@ -30,11 +28,9 @@ enum class SettingsKeys(val default: Any?) {
     CUSTOMISATION(null),
     SUBJECT_CARD_CORNER_RADIUS(8f),
     SUBJECT_CARD_STYLE(SubjectCardStyle.CARD_STYLE_A),
-    GITHUB_RELEASE_TYPE(GithubReleaseType.STABLE),
     SAVED_VERSION_CODE(0),
     REMEMBER_CALENDAR_MONTH_YEAR(false),
     START_WEEK_ON_MONDAY(false),
-    ENABLE_DIRECT_DOWNLOAD(true),
     BACKUP_AND_RESTORE(null),
     BACKUP_APP_SETTINGS(null),
     BACKUP_APP_DATABASE(null),
@@ -46,7 +42,6 @@ enum class SettingsKeys(val default: Any?) {
     REMINDER_MARK_ATTENDANCE(true),
     NOTIFY_MISSED_ATTENDANCE(true),
     ENABLE_NOTIFICATIONS(true),
-    UPDATE_AVAILABLE_NOTIFICATION(true),
     NOTIFICATION_PERMISSION_DIALOG_SHOWN(false),
     SHOW_GITHUB_WARNING_DIALOG(true),
     FONT_FAMILY(CustomFontFamily.ONE_UI_SANS),

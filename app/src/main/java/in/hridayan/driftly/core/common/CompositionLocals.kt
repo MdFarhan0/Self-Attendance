@@ -46,8 +46,6 @@ fun CompositionLocals(
 
     val context = LocalContext.current
 
-    val autoUpdate by settingsViewModel.booleanState(SettingsKeys.AUTO_UPDATE)
-
     val themeMode by settingsViewModel.intState(SettingsKeys.THEME_MODE)
 
     val primarySeed by settingsViewModel.intState(SettingsKeys.PRIMARY_SEED)
@@ -68,8 +66,6 @@ fun CompositionLocals(
 
     val subjectCardStyle by settingsViewModel.intState(SettingsKeys.SUBJECT_CARD_STYLE)
 
-    val githubReleaseType by settingsViewModel.intState(SettingsKeys.GITHUB_RELEASE_TYPE)
-
     val savedVersionCode by settingsViewModel.intState(SettingsKeys.SAVED_VERSION_CODE)
 
     val showAttendanceStreaks by settingsViewModel.booleanState(SettingsKeys.STREAK_MODIFIER)
@@ -78,19 +74,14 @@ fun CompositionLocals(
 
     val startWeekOnMonday by settingsViewModel.booleanState(SettingsKeys.START_WEEK_ON_MONDAY)
 
-    val enableDirectDownload by settingsViewModel.booleanState(SettingsKeys.ENABLE_DIRECT_DOWNLOAD)
-
     val notificationPreference by settingsViewModel.booleanState(SettingsKeys.ENABLE_NOTIFICATIONS)
 
     val notificationPermissionDialogShown by settingsViewModel.booleanState(SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN)
-
-    val showGithubWarningDialog by settingsViewModel.booleanState(SettingsKeys.SHOW_GITHUB_WARNING_DIALOG)
 
     val fontStyle by settingsViewModel.intState(SettingsKeys.FONT_FAMILY)
 
     val state =
         remember(
-            autoUpdate,
             themeMode,
             seedColor,
             isDynamicColor,
@@ -98,19 +89,15 @@ fun CompositionLocals(
             isHapticEnabled,
             subjectCardCornerRadius,
             subjectCardStyle,
-            githubReleaseType,
             savedVersionCode,
             showAttendanceStreaks,
             rememberCalendarMonthYear,
             startWeekOnMonday,
-            enableDirectDownload,
             notificationPreference,
             notificationPermissionDialogShown,
-            showGithubWarningDialog,
             fontStyle
         ) {
             SettingsState(
-                isAutoUpdate = autoUpdate,
                 themeMode = themeMode,
                 isHighContrastDarkMode = isHighContrastDarkMode,
                 seedColor = seedColor,
@@ -118,15 +105,12 @@ fun CompositionLocals(
                 isHapticEnabled = isHapticEnabled,
                 subjectCardCornerRadius = subjectCardCornerRadius,
                 subjectCardStyle = subjectCardStyle,
-                githubReleaseType = githubReleaseType,
                 savedVersionCode = savedVersionCode,
                 showAttendanceStreaks = showAttendanceStreaks,
                 rememberCalendarMonthYear = rememberCalendarMonthYear,
                 startWeekOnMonday = startWeekOnMonday,
-                enableDirectDownload = enableDirectDownload,
                 notificationPreference = notificationPreference,
                 notificationPermissionDialogShown = notificationPermissionDialogShown,
-                showGithubWarningDialog = showGithubWarningDialog,
                 fontFamily = fontStyle
             )
         }

@@ -84,7 +84,7 @@ class TimetableAlarmReceiver : BroadcastReceiver() {
     ) {
         val formattedStart = `in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(startTime)
         val formattedEnd = `in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(endTime)
-        val duration = `in`.hridayan.driftly.core.utils.TimeUtils.formatDuration(
+        val duration = `in`.hridayan.driftly.core.utils.TimeUtils.formatDurationCompact(
             `in`.hridayan.driftly.core.utils.TimeUtils.calculateDuration(startTime, endTime)
         )
 

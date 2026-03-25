@@ -39,10 +39,6 @@ class SettingsRepositoryImpl(
         return SettingsProvider.aboutPageList
     }
 
-    override suspend fun getAutoUpdatePageList(): List<PreferenceGroup> {
-        return SettingsProvider.autoUpdatePageList
-    }
-
     override suspend fun getBehaviorPageList(): List<PreferenceGroup> {
         return SettingsProvider.behaviorPageList
     }

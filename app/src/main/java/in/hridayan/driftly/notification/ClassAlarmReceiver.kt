@@ -96,7 +96,7 @@ class ClassAlarmReceiver : BroadcastReceiver() {
 
         val formattedStart = TimeUtils.format24To12Hour(startTime)
         val formattedEnd = TimeUtils.format24To12Hour(endTime)
-        val duration = TimeUtils.formatDuration(
+        val duration = TimeUtils.formatDurationCompact(
             TimeUtils.calculateDuration(startTime, endTime)
         )
 

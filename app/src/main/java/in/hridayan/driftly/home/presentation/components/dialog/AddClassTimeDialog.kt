@@ -65,7 +65,7 @@ fun AddClassTimeDialog(
             if (TimeUtils.isValidTimeRange(startTime, endTime)) {
                 val duration = TimeUtils.calculateDuration(startTime, endTime)
                 Text(
-                    text = "Duration: ${TimeUtils.formatDuration(duration)}",
+                    text = "Duration: ${TimeUtils.formatDurationCompact(duration)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

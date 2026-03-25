@@ -153,7 +153,7 @@ private fun DayScheduleGroup(
                     
                     // Duration
                     Text(
-                        text = TimeUtils.formatDuration(
+                        text = TimeUtils.formatDurationCompact(
                             TimeUtils.calculateDuration(schedule.startTime, schedule.endTime)
                         ),
                         style = MaterialTheme.typography.labelLarge,

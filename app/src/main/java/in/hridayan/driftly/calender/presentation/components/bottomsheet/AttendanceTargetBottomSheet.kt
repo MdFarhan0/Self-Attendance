@@ -52,13 +52,16 @@ fun AttendanceTargetBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
+        dragHandle = null
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 25.dp)
-                .padding(bottom = 25.dp),
+                .padding(bottom = 25.dp, top = 25.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             Text(
@@ -99,23 +102,7 @@ fun AttendanceTargetBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "0%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = "100%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
 
-            Spacer(modifier = Modifier.height(5.dp))
 
             // Save button
             Button(

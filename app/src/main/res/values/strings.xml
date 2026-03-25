@@ -170,7 +170,7 @@
     <string name="warning_github_download">You\'re about to download updates directly from GitHub. Unlike updates from app stores, these are not reviewed for security. Do you want to continue?</string>
     <string name="whats_new">What\'s new!</string>
     <string name="year">Year</string>
-    <string name="attendance_overview">Attendance overview</string>
+    <string name="attendance_overview">Overview</string>
     <string name="font_family">Font family</string>
     <string name="system_font">System font</string>
     <string name="des_font_family">Choose a font family for the app</string>
@@ -179,6 +179,9 @@
     <string name="sans_serif">Sans Serif</string>
     <string name="font_display_text">The quick brown fox jumps over the lazy dog</string>
     <string name="preview">Preview</string>
+    
+    <string name="language">Language</string>
+    <string name="des_language">Change app language</string>
 
     <!-- Timetable Notifications -->
     <string name="timetable">Timetable</string>

@@ -12,35 +12,16 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import `in`.hridayan.driftly.BuildConfig
 import `in`.hridayan.driftly.core.common.LocalSettings
 import `in`.hridayan.driftly.core.presentation.components.bottomsheet.ChangelogBottomSheet
-import `in`.hridayan.driftly.core.presentation.components.bottomsheet.UpdateBottomSheet
 import `in`.hridayan.driftly.navigation.Navigation
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
-import `in`.hridayan.driftly.settings.domain.model.UpdateResult
-import `in`.hridayan.driftly.settings.presentation.page.autoupdate.viewmodel.AutoUpdateViewModel
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AppEntry(
-    autoUpdateViewModel: AutoUpdateViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    var showUpdateSheet by rememberSaveable { mutableStateOf(false) }
     var showChangelogSheet by rememberSaveable { mutableStateOf(false) }
-    var tagName by rememberSaveable { mutableStateOf(BuildConfig.VERSION_NAME) }
-    var apkUrl by rememberSaveable { mutableStateOf("") }
     val savedVersionCode = LocalSettings.current.savedVersionCode
-
-    LaunchedEffect(Unit) {
-        autoUpdateViewModel.updateEvents.collectLatest { result ->
-            if (result is UpdateResult.Success && result.isUpdateAvailable) {
-                tagName = result.release.tagName
-                apkUrl = result.release.apkUrl.toString()
-                Log.d("AppEntry", result.release.apkUrl.toString())
-                showUpdateSheet = true
-            }
-        }
-    }
 
     LaunchedEffect(savedVersionCode) {
         showChangelogSheet = savedVersionCode < BuildConfig.VERSION_CODE
@@ -48,14 +29,6 @@ fun AppEntry(
 
     Surface {
         Navigation()
-
-        if (showUpdateSheet) {
-            UpdateBottomSheet(
-                onDismiss = { showUpdateSheet = false },
-                latestVersion = tagName,
-                apkUrl = apkUrl,
-            )
-        }
 
         if (showChangelogSheet) {
             ChangelogBottomSheet(

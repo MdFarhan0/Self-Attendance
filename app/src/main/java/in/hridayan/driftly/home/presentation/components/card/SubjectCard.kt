@@ -115,7 +115,6 @@ fun SubjectCard(
                 CardStyleA(
                     subject = subject,
                     subjectCode = subjectCode,
-                    subjectId = subjectId,
                     isLongClicked = isLongClicked,
                     isTotalCountZero = isTotalCountZero,
                     progress = progress,
@@ -128,7 +127,6 @@ fun SubjectCard(
                 CardStyleB(
                     subject = subject,
                     subjectCode = subjectCode,
-                    subjectId = subjectId,
                     isLongClicked = isLongClicked,
                     isTotalCountZero = isTotalCountZero,
                     progress = progress,

@@ -6,9 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface AttendanceRepository {
     suspend fun insertAttendance(attendance: AttendanceEntity)
+    suspend fun insertAttendanceGetId(attendance: AttendanceEntity): Long
     suspend fun insertAllAttendances(attendances: List<AttendanceEntity>)
     suspend fun updateAttendance(attendance: AttendanceEntity)
     suspend fun deleteAttendance(subjectId: Int, date: String)
+    suspend fun deleteAttendanceById(id: Int)
     suspend fun deleteAllAttendances()
     suspend fun deleteAllAttendanceForSubject(subjectId: Int)
     suspend fun getAllAttendancesOnce(): List<AttendanceEntity>

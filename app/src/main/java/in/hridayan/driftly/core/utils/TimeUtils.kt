@@ -99,16 +99,22 @@ object TimeUtils {
      * @param durationMinutes Duration in minutes
      * @return Formatted string (e.g., "2 hours", "1 hour 30 min")
      */
-    fun formatDuration(durationMinutes: Int): String {
+    fun formatDurationCompact(durationMinutes: Int): String {
         val hours = durationMinutes / 60
         val minutes = durationMinutes % 60
         
         return when {
-            hours == 0 -> "$minutes min"
-            minutes == 0 -> if (hours == 1) "1 hour" else "$hours hours"
-            else -> if (hours == 1) "1 hour $minutes min" else "$hours hours $minutes min"
+            hours == 0 -> "${minutes}m"
+            minutes == 0 -> "${hours}h"
+            else -> "${hours}h ${minutes}m"
         }
     }
+
+    /**
+     * Formats duration in human-readable format
+     * @param durationMinutes Duration in minutes
+     * @return Formatted string (e.g., "2 hours", "1 hour 30 min")
+     */
 
     /**
      * Checks if end time is after start time

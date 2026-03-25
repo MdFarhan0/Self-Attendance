@@ -45,17 +45,18 @@ fun SubjectAttendanceDataBottomSheet(
     )
 
     ModalBottomSheet(
-        modifier = modifier,
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
+        modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(20.dp),
+        dragHandle = null
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 25.dp)
-                .padding(bottom = 30.dp, top = 10.dp)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 25.dp, top = 25.dp)
         ) {
             // Title
             Text(

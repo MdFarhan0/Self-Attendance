@@ -9,7 +9,6 @@ import androidx.work.WorkManager
 import `in`.hridayan.driftly.core.domain.model.NotificationTags
 import `in`.hridayan.driftly.notification.worker.AttendanceReminderWorker
 import `in`.hridayan.driftly.notification.worker.MissedAttendanceAlertWorker
-import `in`.hridayan.driftly.notification.worker.UpdateCheckWorker
 import `in`.hridayan.driftly.notification.worker.TimetableNotificationWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.ExistingWorkPolicy
@@ -47,19 +46,6 @@ object WorkScheduler {
         )
     }
 
-    fun scheduleDailyUpdateCheck(
-        context: Context,
-        hour: Int = 18,
-        minute: Int = 0
-    ) {
-        scheduleWork(
-            workerClass = UpdateCheckWorker::class.java,
-            tag = NotificationTags.NOTIFY_WHEN_UPDATE_AVAILABLE,
-            context = context,
-            hour = hour,
-            minute = minute
-        )
-    }
 
     private inline fun <reified T : ListenableWorker> scheduleWork(
         workerClass: Class<T>,

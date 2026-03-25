@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -32,15 +30,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.calender.presentation.components.button.MonthNavigationButtons
 import `in`.hridayan.driftly.calender.presentation.components.color.getAttendanceColors
 import `in`.hridayan.driftly.calender.presentation.components.dialog.MonthYearPickerDialog
-import `in`.hridayan.driftly.calender.presentation.components.menu.AttendanceDropDownMenu
 import `in`.hridayan.driftly.calender.presentation.components.modifiers.streakModifier
 import `in`.hridayan.driftly.calender.presentation.components.text.MonthYearHeader
+import `in`.hridayan.driftly.calender.presentation.viewmodel.DayAttendanceStatus
 import `in`.hridayan.driftly.core.common.LocalSettings
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.domain.model.AttendanceStatus
@@ -56,8 +55,10 @@ fun CalendarCanvas(
     year: Int,
     month: Int,
     markedDates: Map<LocalDate, AttendanceStatus>,
+    dayStatusMap: Map<LocalDate, DayAttendanceStatus> = emptyMap(),
     streakMap: Map<LocalDate, StreakType>,
     onStatusChange: (date: String, status: AttendanceStatus?) -> Unit,
+    onDateClick: (dateString: String) -> Unit = {},
     onNavigate: (Int, Int) -> Unit,
     onResetMonth: () -> Unit,
 ) {
@@ -140,8 +141,6 @@ fun CalendarCanvas(
 
         val totalCells = ((firstDayOfWeek + daysInMonth + 6) / 7) * 7
 
-        val expandedDateState = remember { mutableStateOf<String?>(null) }
-
         val rows = totalCells / 7
         
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -195,31 +194,21 @@ fun CalendarCanvas(
                                 isToday = isToday
                             )
                             .clickable {
-                                expandedDateState.value = dateString
                                 weakHaptic()
+                                onDateClick(dateString)
                             },
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (expandedDateState.value == dateString) {
+                        // Mixed indicator: small orange dot at bottom
+                        val dayAggStatus = dayStatusMap[date]
+                        if (dayAggStatus == DayAttendanceStatus.MIXED) {
                             Box(
                                 modifier = Modifier
-                                    .align(Alignment.TopCenter)
-                                    .size(4.dp)
-                                    .then(
-                                        if (streakType == StreakType.MIDDLE) {
-                                            Modifier
-                                                .offset(y = 4.dp)
-                                                .clip(CircleShape)
-                                                .background(
-                                                    color = backgroundColor, shape = CircleShape
-                                                )
-                                        } else Modifier
-                                            .offset(y = 3.dp)
-                                            .clip(CircleShape)
-                                            .background(
-                                                color = foregroundColor, shape = CircleShape
-                                            )
-                                    )
+                                    .align(Alignment.BottomCenter)
+                                    .offset(y = (-3).dp)
+                                    .size(5.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFFF9800)) // M3 orange/amber
                             )
                         }
 
@@ -228,18 +217,6 @@ fun CalendarCanvas(
                             color = if (streakType == StreakType.MIDDLE && showStreakModifier) backgroundColor else foregroundColor,
                             style = MaterialTheme.typography.titleMedium
                         )
-
-                        if (expandedDateState.value == dateString) {
-                            AttendanceDropDownMenu(
-                                onStatusChange = { date, status ->
-                                    onStatusChange(date, status)
-                                    expandedDateState.value = null
-                                },
-                                dateString = dateString,
-                                modifier = Modifier,
-                                expandedDateState = expandedDateState,
-                            )
-                        }
                     }
                 } else {
                     Box(

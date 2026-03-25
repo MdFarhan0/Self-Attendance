@@ -17,6 +17,9 @@ interface AttendanceDao {
     suspend fun insertAttendance(attendance: AttendanceEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAttendanceGetId(attendance: AttendanceEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllAttendances(attendances: List<AttendanceEntity>)
 
     @Update
@@ -24,6 +27,9 @@ interface AttendanceDao {
 
     @Delete
     suspend fun deleteAttendance(attendance: AttendanceEntity)
+
+    @Query("DELETE FROM attendance WHERE id = :id")
+    suspend fun deleteAttendanceById(id: Int)
 
     @Query("DELETE FROM attendance")
     suspend fun deleteAllAttendances()

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -35,7 +36,9 @@ fun SubjectText(
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                 lineHeight = 28.sp
             ),
-            color = subjectTextColor
+            color = subjectTextColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         if (!subjectCode.isNullOrBlank()) {
@@ -45,7 +48,9 @@ fun SubjectText(
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 ),
-                color = subjectTextColor.copy(alpha = 0.6f)
+                color = subjectTextColor.copy(alpha = 0.6f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

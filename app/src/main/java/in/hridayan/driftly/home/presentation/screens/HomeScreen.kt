@@ -29,9 +29,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
+import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -78,6 +84,10 @@ import `in`.hridayan.driftly.notification.isNotificationPermissionGranted
 import `in`.hridayan.driftly.home.presentation.components.card.SubjectCard
 import `in`.hridayan.driftly.home.presentation.components.dialog.AddSubjectDialog
 import `in`.hridayan.driftly.home.presentation.components.drawer.SmartAttendanceDrawer
+import `in`.hridayan.driftly.home.presentation.components.bottomsheet.BunkDetailsBottomSheet
+import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TodaysClassesBottomSheet
+import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TomorrowsClassesBottomSheet
+import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TodayClass
 import `in`.hridayan.driftly.home.presentation.components.histogram.AttendanceHistogramCard
 import `in`.hridayan.driftly.home.presentation.components.histogram.SubjectHistogramData
 import `in`.hridayan.driftly.home.presentation.components.image.UndrawRelaxedReading
@@ -90,8 +100,12 @@ import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import androidx.compose.material3.ExperimentalMaterial3Api
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("DefaultLocale")
 @Composable
 fun HomeScreen(
@@ -102,7 +116,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val weakHaptic = LocalWeakHaptic.current
     val navController = LocalNavController.current
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    // val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Drawer removed
     val scope = rememberCoroutineScope()
     
     val subjects by viewModel.subjectList.collectAsState(initial = emptyList())
@@ -127,6 +141,58 @@ fun HomeScreen(
     val subjectCardCornerRadius = LocalSettings.current.subjectCardCornerRadius
     var selectedCardsCount by rememberSaveable { mutableIntStateOf(0) }
     var showNotificationPermissionDialog by rememberSaveable { mutableStateOf(false) }
+    var showBunkBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showTodayBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showTomorrowBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var isFabMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    var showTimetableInputSheet by rememberSaveable { mutableStateOf(false) }
+
+    // Build today's class list from all subjects' timetables
+    val todayDayOfWeek = LocalDate.now().dayOfWeek.value // 1=Mon … 7=Sun
+    val todaysClasses = subjects.flatMap { subject ->
+        viewModel.getSchedulesForSubject(subject.id)
+            .collectAsState(initial = emptyList()).value
+            .filter { it.dayOfWeek == todayDayOfWeek }
+            .map { schedule ->
+                val start = runCatching {
+                    LocalTime.parse(schedule.startTime, DateTimeFormatter.ofPattern("HH:mm"))
+                }.getOrElse { LocalTime.MIDNIGHT }
+                val end = runCatching {
+                    LocalTime.parse(schedule.endTime, DateTimeFormatter.ofPattern("HH:mm"))
+                }.getOrElse { LocalTime.MIDNIGHT }
+                val durationMin = java.time.Duration.between(start, end).toMinutes()
+                TodayClass(
+                    subject = subject,
+                    startTime = start,
+                    endTime = end,
+                    duration = durationMin
+                )
+            }
+    }.sortedBy { it.startTime }
+
+    // Build tomorrow's class list
+    val tomorrowLocalDate = LocalDate.now().plusDays(1)
+    val tomorrowDayOfWeek = tomorrowLocalDate.dayOfWeek.value
+    val tomorrowsClasses = subjects.flatMap { subject ->
+        viewModel.getSchedulesForSubject(subject.id)
+            .collectAsState(initial = emptyList()).value
+            .filter { it.dayOfWeek == tomorrowDayOfWeek }
+            .map { schedule ->
+                val start = runCatching {
+                    LocalTime.parse(schedule.startTime, DateTimeFormatter.ofPattern("HH:mm"))
+                }.getOrElse { LocalTime.MIDNIGHT }
+                val end = runCatching {
+                    LocalTime.parse(schedule.endTime, DateTimeFormatter.ofPattern("HH:mm"))
+                }.getOrElse { LocalTime.MIDNIGHT }
+                val durationMin = java.time.Duration.between(start, end).toMinutes()
+                TodayClass(
+                    subject = subject,
+                    startTime = start,
+                    endTime = end,
+                    duration = durationMin
+                )
+            }
+    }.sortedBy { it.startTime }
     
     // Track scroll state for FAB visibility
     val listState = rememberLazyListState()
@@ -193,21 +259,12 @@ fun HomeScreen(
         }
     }
 
-    BackHandler(enabled = selectedCardsCount > 0) { selectedCardsCount = 0 }
+    BackHandler(enabled = selectedCardsCount > 0 || isFabMenuExpanded) {
+        if (selectedCardsCount > 0) selectedCardsCount = 0
+        if (isFabMenuExpanded) isFabMenuExpanded = false
+    }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            SmartAttendanceDrawer(
-                onSettingsClick = {
-                    scope.launch { drawerState.close() }
-                    navController.navigate(SettingsScreen)
-                    weakHaptic()
-                }
-            )
-        }
-    ) {
-        Scaffold(
+    Scaffold(
         modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
 
@@ -242,7 +299,7 @@ fun HomeScreen(
 
                     Surface(
                         onClick = {
-                            scope.launch { drawerState.open() }
+                            navController.navigate(SettingsScreen)
                             weakHaptic()
                         },
                         shape = CircleShape,
@@ -252,12 +309,13 @@ fun HomeScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = "Open Settings",
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = "Settings",
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     }
+
                 }
             }
 
@@ -378,66 +436,147 @@ fun HomeScreen(
                 )
             }
 
-            item {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(25.dp)
-                )
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                    )
+                }
             }
-        }
 
-        // Wide pill-shaped button at bottom
-        AnimatedVisibility(
-            visible = selectedCardsCount == 0 && fabVisible,
-            enter = fadeIn(animationSpec = tween(250)) + 
-                    slideInVertically(
-                        initialOffsetY = { it / 2 },
-                        animationSpec = tween(250)
-                    ),
-            exit = fadeOut(animationSpec = tween(250)) + 
-                   slideOutVertically(
-                       targetOffsetY = { it / 2 },
-                       animationSpec = tween(250)
-                   ),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 25.dp)
-        ) {
-            Button(
-                onClick = {
-                    isDialogOpen = true
-                    weakHaptic()
-                },
+            // M3 Expressive FAB Menu
+            AnimatedVisibility(
+                visible = selectedCardsCount == 0,
+                enter = fadeIn(animationSpec = tween(250)) +
+                        slideInVertically(
+                            initialOffsetY = { it / 2 },
+                            animationSpec = tween(250)
+                        ),
+                exit = fadeOut(animationSpec = tween(250)) +
+                        slideOutVertically(
+                            targetOffsetY = { it / 2 },
+                            animationSpec = tween(250)
+                        ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 25.dp)
-                    .height(56.dp),
-                    shape = RoundedCornerShape(40.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 25.dp, end = 25.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.add_subject),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
+                FloatingActionButtonMenu(
+                    expanded = isFabMenuExpanded,
+                    button = {
+                        ToggleFloatingActionButton(
+                            modifier = Modifier
+                                .animateFloatingActionButton(
+                                    visible = fabVisible || isFabMenuExpanded,
+                                    alignment = Alignment.BottomEnd
+                                ),
+                            checked = isFabMenuExpanded,
+                            onCheckedChange = {
+                                isFabMenuExpanded = !isFabMenuExpanded
+                                weakHaptic()
+                            }
+                        ) {
+                            val imageVector by remember {
+                                derivedStateOf {
+                                    if (checkedProgress > 0.5f) Icons.Rounded.Close else Icons.Rounded.Add
+                                }
+                            }
+                            Icon(
+                                imageVector = imageVector,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                ) {
+                    // Add Subject Action
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            isFabMenuExpanded = false
+                            isDialogOpen = true
+                            weakHaptic()
+                        },
+                        icon = {
+                            Icon(Icons.Rounded.Add, contentDescription = null)
+                        },
+                        text = {
+                            Text(text = "Add Subject")
+                        }
+                    )
+                    
+                    // Today's Class Action
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            isFabMenuExpanded = false
+                            showTodayBottomSheet = true
+                            weakHaptic()
+                        },
+                        icon = {
+                            Icon(Icons.Rounded.AccessTime, contentDescription = null)
+                        },
+                        text = {
+                            Text(text = "Today's Class")
+                        }
+                    )
+                    
+                    // Tomorrow's Class Action
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            isFabMenuExpanded = false
+                            showTomorrowBottomSheet = true
+                            weakHaptic()
+                        },
+                        icon = {
+                            Icon(Icons.Rounded.CalendarMonth, contentDescription = null)
+                        },
+                        text = {
+                            Text(text = "Tomorrow's Class")
+                        }
+                    )
+                    
+                    // Bunk Details Action
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            isFabMenuExpanded = false
+                            showBunkBottomSheet = true
+                            weakHaptic()
+                        },
+                        icon = {
+                            Icon(Icons.Rounded.Analytics, contentDescription = null)
+                        },
+                        text = {
+                            Text(text = "Bunk Details")
+                        }
+                    )
+                }
             }
         }
-    }
 
     if (isDialogOpen) {
         AddSubjectDialog(
             onDismiss = {
                 isDialogOpen = false
             })
+    }
+
+    if (showBunkBottomSheet) {
+        BunkDetailsBottomSheet(
+            onDismiss = { showBunkBottomSheet = false }
+        )
+    }
+
+    if (showTodayBottomSheet) {
+        TodaysClassesBottomSheet(
+            todaysClasses = todaysClasses,
+            onDismiss = { showTodayBottomSheet = false }
+        )
+    }
+
+    if (showTomorrowBottomSheet) {
+        TomorrowsClassesBottomSheet(
+            tomorrowsClasses = tomorrowsClasses,
+            onDismiss = { showTomorrowBottomSheet = false }
+        )
     }
 
     if (showNotificationPermissionDialog) {
@@ -459,5 +598,4 @@ fun HomeScreen(
             })
     }
     }
-}
 }

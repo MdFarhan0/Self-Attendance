@@ -23,21 +23,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.School
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,7 +55,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,9 +64,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.toRoute
 import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.AttendanceTargetBottomSheet
+import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.DailyAttendanceBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.SubjectAttendanceDataBottomSheet
+import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.TimetableBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.canvas.CalendarCanvas
-import `in`.hridayan.driftly.calender.presentation.components.GroupedTimetableCards
 import `in`.hridayan.driftly.calender.presentation.viewmodel.CalendarViewModel
 import `in`.hridayan.driftly.core.common.LocalSettings
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
@@ -86,67 +85,6 @@ data class AttendanceInsight(
     val icon: ImageVector
 )
 
-fun calculateAttendanceInsight(
-    presentCount: Int,
-    totalCount: Int,
-    targetPercentage: Float = 75f
-): AttendanceInsight {
-    // STEP 0: Get per-subject configuration
-    val A = presentCount
-    val C = totalCount
-    val T = targetPercentage
-    
-    // STEP 1: Convert target percentage to fraction
-    val P = T / 100.0
-    
-    // STEP 2: Calculate current attendance percentage (DISPLAY ONLY)
-    val currentPercentage = if (C > 0) {
-        (A.toDouble() / C.toDouble()) * 100
-    } else {
-        0.0
-    }
-    
-    // STEP 3: Calculate BUNK COUNT (MOST IMPORTANT)
-    val rawBunk = if (P > 0) (A / P) - C else 0.0
-    val bunkCount = kotlin.math.floor(rawBunk).toInt().coerceAtLeast(0)
-    
-    // STEP 4: Calculate REQUIRED ATTEND COUNT (only if below target)
-    val rawNeed = if (P < 1.0) ((P * C) - A) / (1 - P) else 0.0
-    val requiredAttend = kotlin.math.ceil(rawNeed).toInt().coerceAtLeast(0)
-    
-    // STEP 5: Decide attendance state (STRICT FLOW)
-    return when {
-        C == 0 -> {
-            // NO_DATA
-            AttendanceInsight(
-                message = "Attend your first class to get started",
-                icon = Icons.Rounded.Info
-            )
-        }
-        currentPercentage < T -> {
-            // BELOW_TARGET
-            AttendanceInsight(
-                message = "Attend the next $requiredAttend ${if (requiredAttend == 1) "class" else "classes"} to reach ${T.toInt()}%",
-                icon = Icons.Rounded.School
-            )
-        }
-        bunkCount >= 1 -> {
-            // CAN_BUNK
-            AttendanceInsight(
-                message = "You can bunk $bunkCount more ${if (bunkCount == 1) "class" else "classes"} and still stay above ${T.toInt()}%",
-                icon = Icons.Rounded.CheckCircle
-            )
-        }
-        else -> {
-            // JUST_SAFE (bunkCount == 0)
-            AttendanceInsight(
-                message = "You're just safe at ${T.toInt()}%. Don't miss the next class",
-                icon = Icons.Rounded.Warning
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
@@ -159,6 +97,7 @@ fun CalendarScreen(
     val subjectId = args?.subjectId ?: 0
     val subject = args?.subject ?: ""
     val markedDates by viewModel.markedDatesFlow.collectAsState()
+    val dayStatusMap by viewModel.dayStatusMapFlow.collectAsState()
     val streakMap by viewModel.streakMapFlow.collectAsState(initial = emptyMap())
     val subjectEntity = viewModel.getSubjectEntityById(subjectId).collectAsState(initial = null)
     val savedYear = subjectEntity.value?.savedYear
@@ -167,21 +106,21 @@ fun CalendarScreen(
     val year = monthYear.year
     val month = monthYear.monthValue
     val shouldRememberMonthYear = LocalSettings.current.rememberCalendarMonthYear
+
     var showSubjectAttendanceDataBottomSheet by rememberSaveable { mutableStateOf(false) }
     var showTargetBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showTimetableBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var selectedDateForBottomSheet by rememberSaveable { mutableStateOf<String?>(null) }
 
-    // Get attendance counts for insights
     val attendanceCounts by homeViewModel.getSubjectAttendanceCounts(subjectId)
         .collectAsState(initial = SubjectAttendance())
 
-    // Fetch monthly attendance
     val monthlyAttendanceCounts by androidx.compose.runtime.remember(subjectId, year, month) {
         viewModel.getMonthlyAttendanceCounts(subjectId, year, month)
     }.collectAsState(initial = SubjectAttendance())
 
     var isMonthlyMode by rememberSaveable { mutableStateOf(false) }
 
-    // Get subject's target percentage and setup status
     val targetPercentage = subjectEntity.value?.targetPercentage ?: 75.0f
     val isTargetSet = subjectEntity.value?.isTargetSet ?: false
 
@@ -191,10 +130,7 @@ fun CalendarScreen(
         targetPercentage = targetPercentage
     )
 
-    // Show target setup ONLY if target has never been set (isTargetSet == false)
-    // Wait for subject to load from database first
     LaunchedEffect(subjectId) {
-        // Small delay to ensure database has loaded
         kotlinx.coroutines.delay(100)
         val entity = subjectEntity.value
         if (entity != null && !entity.isTargetSet) {
@@ -229,43 +165,17 @@ fun CalendarScreen(
                         maxLines = 1
                     )
                 },
-                navigationIcon = { BackButton() },
-                actions = {
-                    val infiniteTransition = rememberInfiniteTransition(label = "gear_rotation")
-                    val rotation by infiniteTransition.animateFloat(
-                        initialValue = 0f,
-                        targetValue = 360f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(durationMillis = 3000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Restart
-                        ),
-                        label = "rotation"
-                    )
-                    
-                    IconButton(
-                        onClick = {
-                            weakHaptic()
-                            showTargetBottomSheet = true
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Settings,
-                            contentDescription = "Attendance Target Settings",
-                            modifier = Modifier.rotate(rotation)
-                        )
-                    }
-                }
+                navigationIcon = { BackButton() }
             )
-        }) {
-        // Collect schedules BEFORE LazyColumn
+        }) { paddingValue ->
         val schedules by homeViewModel.getSchedulesForSubject(subjectId)
             .collectAsState(initial = emptyList())
 
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValue)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             CalendarCanvas(
                 modifier = Modifier
@@ -274,8 +184,12 @@ fun CalendarScreen(
                 year = year,
                 month = month,
                 markedDates = markedDates,
+                dayStatusMap = dayStatusMap,
                 streakMap = streakMap,
                 onStatusChange = onStatusChange,
+                onDateClick = { dateString ->
+                    selectedDateForBottomSheet = dateString
+                },
                 onNavigate = { newYear, newMonth ->
                     viewModel.updateMonthYear(newYear, newMonth)
                     viewModel.saveMonthYearForSubject(subjectId)
@@ -286,20 +200,30 @@ fun CalendarScreen(
                 }
             )
 
-            // Add spacing between calendar and buttons
-            Spacer(modifier = Modifier.height(10.dp))
 
+
+            // -----------------------------------------------
+            // Button Grid: 2 rows × 2 cols with custom widths
+            // Row 1: Overview (55%) | Target (45%)
+            // Row 2: Monthly (45%) | Timetable (55%)
+            // -----------------------------------------------
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                // Overall Attendance Button
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp),
-                    onClick = {
-                        weakHaptic()
-                        isMonthlyMode = false
+                // ── Row 1 ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    // Overview button (55%)
+                    Button(
+                        modifier = Modifier.weight(0.55f),
+                        onClick = {
+                            weakHaptic()
+                            isMonthlyMode = false
                             showSubjectAttendanceDataBottomSheet = true
                         },
                         shape = RoundedCornerShape(40.dp),
@@ -309,31 +233,67 @@ fun CalendarScreen(
                         )
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.padding(vertical = 11.dp)
                         ) {
                             AutoResizeableText(
                                 text = stringResource(R.string.attendance_overview),
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                    // Monthly Attendance Button
+                    // Target button (45%)
                     Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 15.dp),
+                        modifier = Modifier.weight(0.45f),
+                        onClick = {
+                            weakHaptic()
+                            showTargetBottomSheet = true
+                        },
+                        shape = RoundedCornerShape(40.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(vertical = 11.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.TrackChanges,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            AutoResizeableText(
+                                text = "Target",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                        }
+                    }
+                }
+
+                // ── Row 2 ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    // Monthly Attendance button (45%)
+                    Button(
+                        modifier = Modifier.weight(0.45f),
                         onClick = {
                             weakHaptic()
                             isMonthlyMode = true
@@ -346,24 +306,59 @@ fun CalendarScreen(
                         )
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.padding(vertical = 11.dp)
                         ) {
-                            AutoResizeableText(
-                                text = "Monthly Attendance",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                                contentDescription = null
+                                imageVector = Icons.Rounded.CalendarMonth,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            AutoResizeableText(
+                                text = "Monthly",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                        }
+                    }
+
+                    // Timetable button (55%)
+                    Button(
+                        modifier = Modifier.weight(0.55f),
+                        onClick = {
+                            weakHaptic()
+                            showTimetableBottomSheet = true
+                        },
+                        shape = RoundedCornerShape(40.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(vertical = 11.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.School,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            AutoResizeableText(
+                                text = "Timetable",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             )
                         }
                     }
                 }
+            }
 
             // Insight Card
             Card(
@@ -409,16 +404,27 @@ fun CalendarScreen(
                     }
                 }
             }
-
-
         }
-        
-        // Bottom Sheets OUTSIDE LazyColumn
+
+        // ── Bottom Sheets ──
+
+        // Daily multi-attendance bottom sheet (shown when a date is clicked)
+        selectedDateForBottomSheet?.let { dateStr ->
+            DailyAttendanceBottomSheet(
+                subjectId = subjectId,
+                dateString = dateStr,
+                onDismiss = {
+                    selectedDateForBottomSheet = null
+                },
+                viewModel = viewModel
+            )
+        }
+
         if (showSubjectAttendanceDataBottomSheet) {
             val data = if (isMonthlyMode) monthlyAttendanceCounts else attendanceCounts
             val monthName = java.time.Month.of(month).getDisplayName(java.time.format.TextStyle.FULL, java.util.Locale.getDefault())
             val title = if (isMonthlyMode) "Attendance ($monthName)" else "Attendance Overview"
-            
+
             SubjectAttendanceDataBottomSheet(
                 onDismiss = {
                     showSubjectAttendanceDataBottomSheet = false
@@ -437,85 +443,66 @@ fun CalendarScreen(
                 }
             )
         }
-    }
-}
 
-@Composable
-private fun TimetableCardItem(
-    schedule: `in`.hridayan.driftly.core.domain.model.ClassSchedule,
-    shape: RoundedCornerShape,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = shape,
-        color = Color.White,
-        tonalElevation = 0.dp,
-        shadowElevation = 0.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    Icons.Default.Schedule,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                
-                Column {
-                    Text(
-                        text = "${`in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(schedule.startTime)} - ${`in`.hridayan.driftly.core.utils.TimeUtils.format24To12Hour(schedule.endTime)}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    
-                    if (schedule.location != null) {
-                        Text(
-                            text = "📍 ${schedule.location}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+        if (showTimetableBottomSheet) {
+            TimetableBottomSheet(
+                subjectName = subject,
+                schedules = schedules,
+                onDismiss = {
+                    showTimetableBottomSheet = false
                 }
-            }
-            
-            Surface(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text(
-                    text = `in`.hridayan.driftly.core.utils.TimeUtils.formatDuration(
-                        `in`.hridayan.driftly.core.utils.TimeUtils.calculateDuration(schedule.startTime, schedule.endTime)
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                )
-            }
+            )
         }
     }
 }
 
-private fun getDayName(day: Int) = when (day) {
-    1 -> "Monday"
-    2 -> "Tuesday"
-    3 -> "Wednesday"
-    4 -> "Thursday"
-    5 -> "Friday"
-    6 -> "Saturday"
-    7 -> "Sunday"
-    else -> ""
-}
+fun calculateAttendanceInsight(
+    presentCount: Int,
+    totalCount: Int,
+    targetPercentage: Float = 75f
+): AttendanceInsight {
+    val A = presentCount
+    val C = totalCount
+    val T = targetPercentage
 
+    val P = T / 100.0
+
+    val currentPercentage = if (C > 0) {
+        (A.toDouble() / C.toDouble()) * 100
+    } else {
+        0.0
+    }
+
+    val rawBunk = if (P > 0) (A / P) - C else 0.0
+    val bunkCount = kotlin.math.floor(rawBunk).toInt().coerceAtLeast(0)
+
+    val rawNeed = if (P < 1.0) ((P * C) - A) / (1 - P) else 0.0
+    val requiredAttend = kotlin.math.ceil(rawNeed).toInt().coerceAtLeast(0)
+
+    return when {
+        C == 0 -> {
+            AttendanceInsight(
+                message = "Attend your first class to get started",
+                icon = Icons.Rounded.Info
+            )
+        }
+        currentPercentage < T -> {
+            AttendanceInsight(
+                message = "Attend the next $requiredAttend ${if (requiredAttend == 1) "class" else "classes"} to reach ${T.toInt()}%",
+                icon = Icons.Rounded.School
+            )
+        }
+        bunkCount >= 1 -> {
+            AttendanceInsight(
+                message = "You can bunk $bunkCount more ${if (bunkCount == 1) "class" else "classes"} and still stay above ${T.toInt()}%",
+                icon = Icons.Rounded.CheckCircle
+            )
+        }
+        else -> {
+            AttendanceInsight(
+                message = "You're just safe at ${T.toInt()}%. Don't miss the next class",
+                icon = Icons.Rounded.Warning
+            )
+        }
+    }
+}

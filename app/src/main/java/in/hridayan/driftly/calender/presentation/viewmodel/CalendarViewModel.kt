@@ -24,6 +24,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
 
+// Represents the aggregate status of all attendance entries for a single calendar day
+enum class DayAttendanceStatus { ALL_PRESENT, ALL_ABSENT, MIXED, UNMARKED }
+
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val attendanceRepository: AttendanceRepository,
@@ -37,8 +40,13 @@ class CalendarViewModel @Inject constructor(
     private val _selectedMonthYear = mutableStateOf(YearMonth.now())
     val selectedMonthYear: State<YearMonth> = _selectedMonthYear
 
+    // Legacy single-status map for backward compat with streak & color logic
     private val _markedDates = MutableStateFlow<Map<LocalDate, AttendanceStatus>>(emptyMap())
     val markedDatesFlow: StateFlow<Map<LocalDate, AttendanceStatus>> = _markedDates
+
+    // NEW: aggregate day status map (for multi-attendance display)
+    private val _dayStatusMap = MutableStateFlow<Map<LocalDate, DayAttendanceStatus>>(emptyMap())
+    val dayStatusMapFlow: StateFlow<Map<LocalDate, DayAttendanceStatus>> = _dayStatusMap
 
     private val _streakMap = MutableStateFlow<Map<LocalDate, StreakType>>(emptyMap())
     val streakMapFlow: StateFlow<Map<LocalDate, StreakType>> = _streakMap
@@ -96,17 +104,69 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             attendanceRepository.getAttendanceForSubject(subjectId)
                 .collect { list ->
-                    val newMap = list
-                        .mapNotNull { e ->
-                            if (e.status == AttendanceStatus.UNMARKED) null
-                            else LocalDate.parse(e.date) to e.status
+                    // Group by date
+                    val grouped = list.groupBy { it.date }
+
+                    // Build legacy single-status map (for streak calculation)
+                    // Priority: if any PRESENT exists, mark PRESENT; if only ABSENT, ABSENT
+                    val newMap = grouped.mapNotNull { (dateStr, entries) ->
+                        val nonUnmarked = entries.filter { it.status != AttendanceStatus.UNMARKED }
+                        if (nonUnmarked.isEmpty()) null
+                        else {
+                            val representativeStatus = when {
+                                nonUnmarked.all { it.status == AttendanceStatus.PRESENT } -> AttendanceStatus.PRESENT
+                                nonUnmarked.all { it.status == AttendanceStatus.ABSENT } -> AttendanceStatus.ABSENT
+                                else -> AttendanceStatus.PRESENT // mixed -> show as present for streak
+                            }
+                            LocalDate.parse(dateStr) to representativeStatus
                         }
-                        .toMap()
+                    }.toMap()
                     _markedDates.value = newMap
+
+                    // Build aggregate day-status map
+                    val dayStatus = grouped.mapNotNull { (dateStr, entries) ->
+                        val nonUnmarked = entries.filter { it.status != AttendanceStatus.UNMARKED }
+                        if (nonUnmarked.isEmpty()) null
+                        else {
+                            val aggStatus = when {
+                                nonUnmarked.all { it.status == AttendanceStatus.PRESENT } -> DayAttendanceStatus.ALL_PRESENT
+                                nonUnmarked.all { it.status == AttendanceStatus.ABSENT } -> DayAttendanceStatus.ALL_ABSENT
+                                else -> DayAttendanceStatus.MIXED
+                            }
+                            LocalDate.parse(dateStr) to aggStatus
+                        }
+                    }.toMap()
+                    _dayStatusMap.value = dayStatus
 
                     _streakMap.value = calculateStreaks(newMap)
                 }
         }
+    }
+
+    // Add a NEW class entry for a date (returns new entry id)
+    fun addClassEntry(subjectId: Int, date: String, status: AttendanceStatus) {
+        viewModelScope.launch {
+            attendanceRepository.insertAttendance(
+                AttendanceEntity(subjectId = subjectId, date = date, status = status)
+            )
+        }
+    }
+
+    // Delete a single class entry by its DB id
+    fun deleteClassEntry(id: Int) {
+        viewModelScope.launch { attendanceRepository.deleteAttendanceById(id) }
+    }
+
+    // Update a single class entry's status
+    fun updateClassEntry(entity: AttendanceEntity, newStatus: AttendanceStatus) {
+        viewModelScope.launch {
+            attendanceRepository.insertAttendance(entity.copy(status = newStatus))
+        }
+    }
+
+    // Get all attendance entries for a specific date (for the daily bottom sheet)
+    fun getEntriesForDate(subjectId: Int, date: String): Flow<List<AttendanceEntity>> {
+        return attendanceRepository.getAttendanceForSubjectAndDate(subjectId, date)
     }
 
     fun onStatusChange(subjectId: Int, date: String, newStatus: AttendanceStatus?) {

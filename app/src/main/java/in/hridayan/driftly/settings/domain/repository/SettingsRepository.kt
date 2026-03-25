@@ -22,7 +22,6 @@ interface SettingsRepository {
     suspend fun getSettingsPageList(): List<PreferenceGroup>
     suspend fun getLookAndFeelPageList(): List<PreferenceGroup>
     suspend fun getAboutPageList(): List<PreferenceGroup>
-    suspend fun getAutoUpdatePageList(): List<PreferenceGroup>
     suspend fun getDarkThemePageList(): List<PreferenceGroup>
     suspend fun getBehaviorPageList(): List<PreferenceGroup>
     suspend fun getBackupPageList(): List<PreferenceGroup>

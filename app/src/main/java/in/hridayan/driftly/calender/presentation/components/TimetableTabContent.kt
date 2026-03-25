@@ -218,7 +218,7 @@ private fun TimetableScheduleCard(
                 
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = TimeUtils.formatDuration(
+                    text = TimeUtils.formatDurationCompact(
                         TimeUtils.calculateDuration(schedule.startTime, schedule.endTime)
                     ),
                     style = MaterialTheme.typography.labelSmall,

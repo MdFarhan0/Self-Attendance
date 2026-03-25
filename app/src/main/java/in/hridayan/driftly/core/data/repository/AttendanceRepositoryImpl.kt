@@ -17,6 +17,10 @@ class AttendanceRepositoryImpl @Inject constructor(
         dao.insertAttendance(attendance)
     }
 
+    override suspend fun insertAttendanceGetId(attendance: AttendanceEntity): Long {
+        return dao.insertAttendanceGetId(attendance)
+    }
+
     override suspend fun insertAllAttendances(attendances: List<AttendanceEntity>) {
         dao.insertAllAttendances(attendances)
     }
@@ -27,6 +31,10 @@ class AttendanceRepositoryImpl @Inject constructor(
 
     override suspend fun deleteAttendance(subjectId: Int, date: String) {
         dao.deleteBySubjectAndDate(subjectId, date)
+    }
+
+    override suspend fun deleteAttendanceById(id: Int) {
+        dao.deleteAttendanceById(id)
     }
 
     override suspend fun deleteAllAttendances() {

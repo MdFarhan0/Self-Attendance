@@ -34,23 +34,16 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-data class TodayClass(
-    val subject: SubjectEntity,
-    val startTime: LocalTime,
-    val endTime: LocalTime,
-    val duration: Long // minutes
-)
-
 @Composable
-fun TodaysClassesBottomSheet(
-    todaysClasses: List<TodayClass>,
+fun TomorrowsClassesBottomSheet(
+    tomorrowsClasses: List<TodayClass>,
     onDismiss: () -> Unit,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 ) {
-    val today = LocalDate.now()
-    val dayOfWeek = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-    val dayAndDate = today.format(DateTimeFormatter.ofPattern("MMMM d", Locale.getDefault()))
-    val classCount = todaysClasses.size
+    val tomorrow = LocalDate.now().plusDays(1)
+    val dayOfWeek = tomorrow.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    val dayAndDate = tomorrow.format(DateTimeFormatter.ofPattern("MMMM d", Locale.getDefault()))
+    val classCount = tomorrowsClasses.size
     val scrollState = rememberScrollState()
 
     ModalBottomSheet(
@@ -71,7 +64,7 @@ fun TodaysClassesBottomSheet(
         ) {
             // Header
             Text(
-                text = "Today's Classes",
+                text = "Tomorrow's Classes",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -85,7 +78,7 @@ fun TodaysClassesBottomSheet(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            if (todaysClasses.isEmpty()) {
+            if (tomorrowsClasses.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -93,7 +86,7 @@ fun TodaysClassesBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No classes scheduled for today 🎉",
+                        text = "No classes scheduled for tomorrow 🎉",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -101,7 +94,7 @@ fun TodaysClassesBottomSheet(
                 }
             } else {
                 // Sorted by start time
-                val sorted = todaysClasses.sortedBy { it.startTime }
+                val sorted = tomorrowsClasses.sortedBy { it.startTime }
 
                 Column(
                     modifier = Modifier
@@ -127,7 +120,7 @@ fun TodaysClassesBottomSheet(
                             else -> RoundedCornerShape(10.dp)
                         }
 
-                        TodayClassCard(classItem = classItem, shape = shape)
+                        TomorrowClassCard(classItem = classItem, shape = shape)
                     }
                 }
             }
@@ -136,7 +129,7 @@ fun TodaysClassesBottomSheet(
 }
 
 @Composable
-private fun TodayClassCard(
+private fun TomorrowClassCard(
     classItem: TodayClass,
     shape: RoundedCornerShape
 ) {
@@ -150,7 +143,7 @@ private fun TodayClassCard(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
-        color = MaterialTheme.colorScheme.errorContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp
     ) {
@@ -162,32 +155,32 @@ private fun TodayClassCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                // Subject name — bold, primary
+                // Subject name
                 Text(
                     text = classItem.subject.subject,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 // Time range below
                 Text(
                     text = "${classItem.startTime.format(timeFmt)} - ${classItem.endTime.format(timeFmt)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                 )
             }
 
             // Duration chip on right
             Surface(
-                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.12f),
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.12f),
                 shape = RoundedCornerShape(50.dp)
             ) {
                 Text(
                     text = durationText,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                 )
             }

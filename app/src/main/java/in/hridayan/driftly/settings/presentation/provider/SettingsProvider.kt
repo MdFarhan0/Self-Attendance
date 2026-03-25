@@ -9,13 +9,11 @@ import androidx.compose.material.icons.rounded.ChangeHistory
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DateRange
-import androidx.compose.material.icons.rounded.Downloading
 import androidx.compose.material.icons.rounded.EventAvailable
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.SentimentNeutral
 import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.Vibration
 import `in`.hridayan.driftly.BuildConfig
 import `in`.hridayan.driftly.R
@@ -103,11 +101,15 @@ object SettingsProvider {
                 descriptionResId = R.string.des_dynamic_colors,
                 iconVector = Icons.Rounded.Colorize,
                 isLayoutVisible = !isSdkLowerThan12
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.LANGUAGE,
+                titleResId = R.string.language,
+                descriptionResId = R.string.des_language,
+                iconVector = Icons.Rounded.Language
             )
         )
     )
-
-    val autoUpdatePageList: List<PreferenceGroup> = emptyList()
 
     val aboutPageList: List<PreferenceGroup> = emptyList()
 
