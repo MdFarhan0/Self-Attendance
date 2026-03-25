@@ -40,9 +40,7 @@ fun AttendanceTargetBottomSheet(
     onDismiss: () -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val weakHaptic = LocalWeakHaptic.current
     

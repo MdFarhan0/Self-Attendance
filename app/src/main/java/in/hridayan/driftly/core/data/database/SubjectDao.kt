@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubjectDao {
-    @Query("SELECT * FROM subjects order by subject ASC")
+    @Query("SELECT * FROM subjects ORDER BY orderIndex ASC, id ASC")
     fun getAllSubjects(): Flow<List<SubjectEntity>>
 
     @Query("SELECT * FROM subjects WHERE id = :id")
@@ -22,8 +22,8 @@ interface SubjectDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllSubjects(subjects: List<SubjectEntity>)
 
-    @Query("UPDATE subjects SET subject = :newName, subjectCode = :newCode, histogramLabel = :histogramLabel WHERE id = :subjectId")
-    suspend fun updateSubject(subjectId: Int, newName: String, newCode: String?, histogramLabel: String?)
+    @Query("UPDATE subjects SET subject = :newName, subjectCode = :newCode, histogramLabel = :histogramLabel, attendedCount = :attendedCount, missedCount = :missedCount WHERE id = :subjectId")
+    suspend fun updateSubject(subjectId: Int, newName: String, newCode: String? = null, histogramLabel: String? = null, attendedCount: Int, missedCount: Int)
 
     @Query("DELETE FROM subjects WHERE id = :subjectId")
     suspend fun deleteSubject(subjectId: Int)
@@ -34,7 +34,7 @@ interface SubjectDao {
     @Query("SELECT COUNT(*) FROM subjects")
     fun getSubjectCount(): Flow<Int>
 
-    @Query("SELECT * FROM subjects ORDER BY subject ASC")
+    @Query("SELECT * FROM subjects ORDER BY orderIndex ASC, id ASC")
     suspend fun getAllSubjectsOnce(): List<SubjectEntity>
 
     @Query("SELECT EXISTS(SELECT * FROM subjects WHERE subject = :subject)")
@@ -45,5 +45,8 @@ interface SubjectDao {
 
     @Query("UPDATE subjects SET targetPercentage = :targetPercentage, isTargetSet = 1 WHERE id = :subjectId")
     suspend fun updateTargetPercentage(subjectId: Int, targetPercentage: Float)
+
+    @Query("UPDATE subjects SET orderIndex = :newIndex WHERE id = :subjectId")
+    suspend fun updateSubjectOrder(subjectId: Int, newIndex: Int)
 
 }

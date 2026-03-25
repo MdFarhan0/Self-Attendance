@@ -58,6 +58,8 @@ fun AddSubjectDialog(
     val subject by viewModel.subject.collectAsState()
     val subjectCode by viewModel.subjectCode.collectAsState()
     val histogramLabel by viewModel.histogramLabel.collectAsState()
+    val attendedCount by viewModel.attendedCount.collectAsState()
+    val missedCount by viewModel.missedCount.collectAsState()
     val subjectError by viewModel.subjectError.collectAsState()
     val weakHaptic = LocalWeakHaptic.current
 
@@ -123,6 +125,31 @@ fun AddSubjectDialog(
                     label = { Text(text = "Short name for chart (max 5 chars)") },
                     supportingText = { Text("${histogramLabel.length}/5") }
                 )
+
+                // Previous History Section (Attended and Missed)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = attendedCount,
+                        onValueChange = { viewModel.onAttendedCountChange(it) },
+                        modifier = Modifier.weight(1f),
+                        label = { Text(text = "Attended") },
+                        placeholder = { Text("0") },
+                        singleLine = true,
+                        prefix = { Text("✓ ") }
+                    )
+                    OutlinedTextField(
+                        value = missedCount,
+                        onValueChange = { viewModel.onMissedCountChange(it) },
+                        modifier = Modifier.weight(1f),
+                        label = { Text(text = "Missed") },
+                        placeholder = { Text("0") },
+                        singleLine = true,
+                        prefix = { Text("✗ ") }
+                    )
+                }
 
                 // Timetable Section
                 Card(

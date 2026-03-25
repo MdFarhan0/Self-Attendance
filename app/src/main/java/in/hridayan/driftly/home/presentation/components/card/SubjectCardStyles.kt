@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -25,6 +26,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,7 +62,12 @@ fun CardStyleA(
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
     onErrorIconClicked: () -> Unit,
+    onMoveUp: () -> Unit = {},
+    onMoveDown: () -> Unit = {},
+    onMoveTop: () -> Unit = {},
+    onMoveBottom: () -> Unit = {},
 ) {
+    var expanded by remember { mutableStateOf(false) }
     val subjectTextColor =
         if (isLongClicked) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -65,9 +77,9 @@ fun CardStyleA(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(90.dp)  // Fixed height for consistent card size
+            .heightIn(min = 85.dp)
             .background(backgroundColor)
-            .padding(top = 8.dp, bottom = 12.dp, start = 20.dp, end = 20.dp)
+            .padding(vertical = 16.dp, horizontal = 20.dp)
             .animateContentSize(
                 animationSpec = tween(
                     durationMillis = 500, easing = FastOutSlowInEasing
@@ -96,10 +108,25 @@ fun CardStyleA(
             )
         } else {
             if (isTotalCountZero) ErrorIcon(onClick = onErrorIconClicked)
-            else CircularProgressWithText(
-                progress = progress,
-                modifier = Modifier.size(48.dp)  // Increased from default ~40dp
-            )
+            else {
+                Box {
+                        IconButton(onClick = { expanded = true }, modifier = Modifier.size(24.dp)) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreVert,
+                                contentDescription = "Options",
+                                tint = subjectTextColor.copy(alpha = 0.6f)
+                            )
+                        }
+                    SubjectOptionsMenu(
+                        expanded = expanded,
+                        onDismiss = { expanded = false },
+                        onMoveUp = onMoveUp,
+                        onMoveDown = onMoveDown,
+                        onMoveTop = onMoveTop,
+                        onMoveBottom = onMoveBottom
+                    )
+                }
+            }
         }
     }
 }
@@ -117,8 +144,13 @@ fun CardStyleB(
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
     onErrorIconClicked: () -> Unit,
+    onMoveUp: () -> Unit = {},
+    onMoveDown: () -> Unit = {},
+    onMoveTop: () -> Unit = {},
+    onMoveBottom: () -> Unit = {},
 ) {
-    val progressText = "${String.format("%.0f", progress * 100)}%"
+    val progressText = "${String.format("%.2f", progress * 100)}%"
+    var expanded by remember { mutableStateOf(false) }
 
     var contentHeightPx by remember { mutableIntStateOf(0) }
 
@@ -144,8 +176,8 @@ fun CardStyleB(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
-                    .padding(top = 8.dp, bottom = 12.dp, start = 20.dp, end = 20.dp)
+                    .heightIn(min = 85.dp)
+                    .padding(vertical = 16.dp, horizontal = 20.dp)
                     .animateContentSize(
                         animationSpec = tween(
                             durationMillis = 500, easing = FastOutSlowInEasing
@@ -173,11 +205,25 @@ fun CardStyleB(
                     )
                 } else {
                     if (isTotalCountZero) ErrorIcon(onClick = onErrorIconClicked)
-                    else Text(
-                        text = progressText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
+                    else {
+                        Box {
+                            IconButton(onClick = { expanded = true }, modifier = Modifier.size(24.dp)) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MoreVert,
+                                    contentDescription = "Options",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                )
+                            }
+                            SubjectOptionsMenu(
+                                expanded = expanded,
+                                onDismiss = { expanded = false },
+                                onMoveUp = onMoveUp,
+                                onMoveDown = onMoveDown,
+                                onMoveTop = onMoveTop,
+                                onMoveBottom = onMoveBottom
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -211,7 +257,7 @@ fun BaseCard(
         }
     }
     
-    val cardShape = customShape ?: RoundedCornerShape(cornerRadius)
+    val cardShape = customShape ?: RoundedCornerShape(20.dp)
     
     Card(
         modifier = modifier
@@ -230,6 +276,52 @@ fun BaseCard(
         shape = cardShape,
     ) {
         content()
+    }
+}
+
+@Composable
+fun SubjectOptionsMenu(
+    modifier: Modifier = Modifier,
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onMoveTop: () -> Unit,
+    onMoveBottom: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        modifier = modifier
+    ) {
+        DropdownMenuItem(
+            text = { Text("Move Up") },
+            onClick = {
+                onMoveUp()
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Move Down") },
+            onClick = {
+                onMoveDown()
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Move to Top") },
+            onClick = {
+                onMoveTop()
+                onDismiss()
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Move to Bottom") },
+            onClick = {
+                onMoveBottom()
+                onDismiss()
+            }
+        )
     }
 }
 

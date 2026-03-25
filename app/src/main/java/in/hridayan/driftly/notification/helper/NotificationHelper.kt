@@ -119,8 +119,8 @@ object NotificationHelper {
             .setCategory(NotificationCompat.CATEGORY_EVENT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .addAction(android.R.drawable.ic_input_add, "Attended", attendedPendingIntent)
-            .addAction(android.R.drawable.ic_delete, "Missed", missedPendingIntent)
+            .addAction(android.R.drawable.ic_input_add, context.getString(R.string.present), attendedPendingIntent)
+            .addAction(android.R.drawable.ic_delete, context.getString(R.string.absent), missedPendingIntent)
             .build()
 
         NotificationManagerCompat.from(context).notify(notificationId, notification)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Driftly</string>
+    <string name="app_name">Self Attendance</string>
     <string name="field_blank_error">Field cannot be blank</string>
     <string name="subject_already_exists">Subject already exists</string>
     <string name="unknown_error">Unknown error occurred</string>

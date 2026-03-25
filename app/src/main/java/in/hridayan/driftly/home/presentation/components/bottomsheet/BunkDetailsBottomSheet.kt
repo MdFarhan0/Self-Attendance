@@ -41,7 +41,7 @@ fun BunkDetailsBottomSheet(
     onDismiss: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val subjects by viewModel.subjectList.collectAsState(initial = emptyList())
     val scrollState = rememberScrollState()
 
@@ -59,7 +59,7 @@ fun BunkDetailsBottomSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 28.dp, top = 25.dp)
+                .padding(bottom = 28.dp, top = 30.dp)
         ) {
             // Header
             Text(
@@ -81,8 +81,9 @@ fun BunkDetailsBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 3.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 subjects.forEachIndexed { index, subject ->
                     val counts by viewModel.getSubjectAttendanceCounts(subject.id)
@@ -94,33 +95,17 @@ fun BunkDetailsBottomSheet(
                         targetPercentage = subject.targetPercentage
                     )
 
-                    val isFirst = index == 0
-                    val isLast = index == subjects.size - 1
-                    val isOnly = subjects.size == 1
-
+                    val totalSubjects = subjects.size
                     val shape = when {
-                        isOnly -> RoundedCornerShape(25.dp)
-                        isFirst -> RoundedCornerShape(
-                            topStart = 25.dp, topEnd = 25.dp,
-                            bottomStart = 10.dp, bottomEnd = 10.dp
-                        )
-                        isLast -> RoundedCornerShape(
-                            topStart = 10.dp, topEnd = 10.dp,
-                            bottomStart = 25.dp, bottomEnd = 25.dp
-                        )
-                        else -> RoundedCornerShape(10.dp)
+                        totalSubjects == 1 -> RoundedCornerShape(13.dp)
+                        index == 0 -> RoundedCornerShape(topStart = 13.dp, topEnd = 13.dp, bottomStart = 2.dp, bottomEnd = 2.dp)
+                        index == totalSubjects - 1 -> RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp, bottomStart = 13.dp, bottomEnd = 13.dp)
+                        else -> RoundedCornerShape(2.dp)
                     }
 
-                    // Determine card tone: can bunk → primaryContainer, must attend → errorContainer
-                    val canBunk = insight.icon == Icons.Rounded.CheckCircle
-                    val containerColor = if (canBunk)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.errorContainer
-                    val contentColor = if (canBunk)
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    else
-                        MaterialTheme.colorScheme.onErrorContainer
+                    // Card colors: standardized with the others
+                    val containerColor = MaterialTheme.colorScheme.primaryContainer
+                    val contentColor = MaterialTheme.colorScheme.onPrimaryContainer
 
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
@@ -129,38 +114,41 @@ fun BunkDetailsBottomSheet(
                         tonalElevation = 0.dp,
                         shadowElevation = 0.dp
                     ) {
-                        Column(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 18.dp, vertical = 14.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                .padding(horizontal = 14.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Subject name
-                            Text(
-                                text = subject.subject,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = contentColor
-                            )
-
-                            // Insight message with icon
-                            Row(
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (canBunk) Icons.Rounded.CheckCircle else Icons.Rounded.School,
-                                    contentDescription = null,
-                                    tint = contentColor,
-                                    modifier = Modifier.size(16.dp).padding(top = 1.dp)
-                                )
+                            Column(modifier = Modifier.weight(1f)) {
+                                // Subject name
                                 Text(
-                                    text = insight.message,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = contentColor,
-                                    modifier = Modifier.weight(1f)
+                                    text = subject.subject,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = contentColor
+                                )
+                                // Short, concise indicator
+                                val statusText = when {
+                                    counts.totalCount == 0 -> "No classes yet"
+                                    insight.bunkCount >= 1 -> "Can Bunk: ${insight.bunkCount}"
+                                    insight.requiredCount >= 1 -> "Must Attend: ${insight.requiredCount}"
+                                    else -> "Safe (Borderline)"
+                                }
+                                Text(
+                                    text = statusText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = contentColor.copy(alpha = 0.8f)
                                 )
                             }
+
+                            Icon(
+                                imageVector = insight.icon,
+                                contentDescription = null,
+                                tint = contentColor.copy(alpha = 0.9f),
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
                 }

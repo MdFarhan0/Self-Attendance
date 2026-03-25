@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Self Attendance</string>
+    <string name="about">Acerca de</string>
+    <string name="absent">Ausente</string>
+    <string name="add">Añadir</string>
+    <string name="add_subject">Añadir Asignatura</string>
+    <string name="additional_settings">Ajustes adicionales</string>
+    <string name="adjust_card_corner_radius">Ajustar radio de esquina de tarjeta</string>
+    <string name="all_months_data">Datos de todos los meses</string>
+    <string name="already_latest_version">Ya tienes la última versión</string>
+    <string name="app">App</string>
+    <string name="attendance">Asistencia</string>
+    <string name="auto_update">Actualización automática</string>
+    <string name="back_button">Botón Atrás</string>
+    <string name="backup">Copia de seguridad</string>
+    <string name="backup_all_data">Copia de seguridad completa</string>
+    <string name="backup_and_restore">Copia y restauración</string>
+    <string name="backup_app_database">Copia de base de datos</string>
+    <string name="backup_date">Fecha de copia</string>
+    <string name="backup_failed">Copia fallida</string>
+    <string name="backup_found">Copia encontrada</string>
+    <string name="backup_settings">Copia de ajustes</string>
+    <string name="backup_successful">Copia exitosa</string>
+    <string name="backup_time">Hora de copia</string>
+    <string name="behavior">Comportamiento</string>
+    <string name="calendar">Calendario</string>
+    <string name="cancel">Cancelar</string>
+    <string name="changelogs">Cambios</string>
+    <string name="check_updates">Buscar actualizaciones</string>
+    <string name="clear">Limpiar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="current_version">Versión actual</string>
+    <string name="customisation">Personalización</string>
+    <string name="daily_reminder_to_mark_attendance">Recordatorio diario de asistencia</string>
+    <string name="dark_theme">Tema oscuro</string>
+    <string name="des_dark_theme">Elegir entre tema claro, oscuro o del sistema</string>
+    <string name="default_language">Idioma por defecto</string>
+    <string name="delete_confirmation">¿Estás seguro de que quieres eliminar esto?</string>
+    <string name="delete_subject">Eliminar Asignatura</string>
+    <string name="des_about">Colaboradores y soporte</string>
+    <string name="des_attendance_missed">¡Es posible que hayas olvidado marcar tu asistencia hoy!</string>
+    <string name="des_auto_update">Buscar actualizaciones automáticamente</string>
+    <string name="des_backup_all_data">Hacer una copia de seguridad de todos los datos de la app</string>
+    <string name="des_backup_and_restore">Copia y restaura ajustes y otros datos</string>
+    <string name="des_backup_app_database">Copia de la base de datos con asignaturas y registros</string>
+    <string name="des_backup_settings">Copia solo de las preferencias de ajustes</string>
+    <string name="des_behavior">Modificar ciertos comportamientos de la app</string>
+    <string name="des_changelogs">Historial de todos los cambios realizados</string>
+    <string name="des_customisation">Personaliza elementos de la interfaz a tu gusto</string>
+    <string name="des_default_language">Cambia el idioma por defecto de la app</string>
+    <string name="des_dynamic_colors">Tema automático basado en el fondo de pantalla</string>
+    <string name="des_enable_direct_download">Las actualizaciones se descargarán directamente desde Github</string>
+    <string name="des_feature_request">Dinos si tienes alguna idea o sugerencia</string>
+    <string name="des_github">Visita el repositorio de Github</string>
+    <string name="des_grant_notification_permission">¿Quieres alertas cuando olvides marcar asistencia?\n\n¡Otorga acceso a notificaciones!</string>
+    <string name="des_haptics_and_vibration">Respuesta háptica al tocar</string>
+    <string name="des_high_contrast_dark_mode">Tema negro puro para pantallas OLED</string>
+    <string name="des_hridayan">Solo un chico al que le encantan las apps y el diseño</string>
+    <string name="des_license">Aprende sobre la licencia de esta app</string>
+    <string name="des_look_and_feel">Color dinámico, Tema oscuro, Idioma</string>
+    <string name="des_mark_your_attendance">¡No olvides marcar tu asistencia hoy!</string>
+    <string name="des_notifications">Personaliza los ajustes de notificación</string>
+    <string name="des_notify_missed_attendance">Recibe notificaciones cuando olvides marcar</string>
+    <string name="des_notify_update_available">Recibe notificaciones de nuevas versiones de Driftly</string>
+    <string name="des_remember_month_year">Recordar el último mes visto para cada asignatura</string>
+    <string name="des_reminder_to_mark_attendance">Recordatorio diario para marcar asistencia</string>
+    <string name="des_report_issue">Informa de cualquier error o fallo</string>
+    <string name="des_reset_app_settings">Restablece los ajustes a sus valores por defecto</string>
+    <string name="des_restore_app_data">Restaura datos desde un archivo. Se sobrescribirá la base de datos actual</string>
+    <string name="des_show_attendance_streaks">Muestra rachas de asistencia en el calendario</string>
+    <string name="des_start_week_on_monday">Empieza la semana el lunes en lugar del domingo</string>
+    <string name="des_update_available">¡Hay una nueva versión de Driftly disponible!</string>
+    <string name="donot_show_again">No volver a mostrar</string>
+    <string name="download">Descargar</string>
+    <string name="download_failed">Descarga fallida</string>
+    <string name="dynamic_colors">Colores dinámicos</string>
+    <string name="enable_auto_update">Activar actualización automática</string>
+    <string name="enable_direct_download">Descarga directa de APK</string>
+    <string name="enable_notifications">Activar notificaciones</string>
+    <string name="enter_new_name">Introduce nuevo nombre</string>
+    <string name="enter_subject_name">Introduce nombre de asignatura</string>
+    <string name="enter_subject_code_optional">Introduce código (Opcional)</string>
+    <string name="error">Error</string>
+    <string name="feature_request">Sugerir función</string>
+    <string name="field_blank_error">El campo no puede estar vacío</string>
+    <string name="grant_permission">Otorgar permiso</string>
+    <string name="haptics_and_vibration">Vibración y háptica</string>
+    <string name="high_contrast_dark_mode">Modo oscuro de alto contraste</string>
+    <string name="irreversible_action_warning">¡Esta acción es irreversible!</string>
+    <string name="last_backup_date">Última copia</string>
+    <string name="last_backup_time">Hora última copia</string>
+    <string name="latest_version">Última versión</string>
+    <string name="lead_developer">Desarrollador principal</string>
+    <string name="license">Licencia</string>
+    <string name="look_and_feel">Apariencia</string>
+    <string name="mark_your_attendance">Marca tu asistencia</string>
+    <string name="month">Mes</string>
+    <string name="network_error">Error de red</string>
+    <string name="next_month">Siguiente mes</string>
+    <string name="no_attendance_yet">Sin asistencia aún. Añade para ver progreso</string>
+    <string name="no_changelog_found">No hay cambios para esta versión</string>
+    <string name="no_subject_yet">Haz clic en + para añadir asignatura</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="notify_missed_attendance">Notificar falta de asistencia</string>
+    <string name="notify_update_available">Notificar actualizaciones</string>
+    <string name="off">Off</string>
+    <string name="ok">OK</string>
+    <string name="on">On</string>
+    <string name="pick_driftly_extension">Por favor, elige un archivo .driftly</string>
+    <string name="pre_release">Pre-lanzamiento</string>
+    <string name="pre_release_warning">Las versiones pre-lanzamiento pueden ser inestables</string>
+    <string name="present">Presente</string>
+    <string name="previous_month">Mes anterior</string>
+    <string name="remember_month_year">Recordar mes y año del calendario</string>
+    <string name="reminder_to_mark_attendance">Recordatorio de asistencia</string>
+    <string name="report_issue">Informar de error</string>
+    <string name="request_permission">Solicitar permiso</string>
+    <string name="request_timeout">Tiempo de espera agotado</string>
+    <string name="reset">Restablecer</string>
+    <string name="reset_app_settings">Restablecer ajustes</string>
+    <string name="reset_settings_failed">Fallo al restablecer ajustes</string>
+    <string name="reset_settings_successful">Ajustes restablecidos con éxito</string>
+    <string name="reset_to_current_month">Volver al mes actual</string>
+    <string name="restore">Restaurar</string>
+    <string name="restore_app_data">Restaurar datos</string>
+    <string name="restore_dialog_message">Los datos del archivo sobrescribirán los actuales.</string>
+    <string name="restore_failed">Restauración fallida</string>
+    <string name="restore_successful">Restauración exitosa</string>
+    <string name="select">Seleccionar</string>
+    <string name="select_month_and_year">Seleccionar Mes y Año</string>
+    <string name="settings">Ajustes</string>
+    <string name="show_attendance_steaks">Mostrar rachas</string>
+    <string name="stable">Estable</string>
+    <string name="start_week_on_monday">Semana empieza el lunes</string>
+    <string name="subject_already_exists">La asignatura ya existe</string>
+    <string name="subject_card_style">Estilo de tarjeta</string>
+    <string name="subject_name">Nombre de asignatura</string>
+    <string name="support_bmc">¿Te gusta mi trabajo?\nInvítame a un café</string>
+    <string name="system">Sistema</string>
+    <string name="this_month_data">Datos de este mes</string>
+    <string name="total">Total</string>
+    <string name="tweak_your_experience">Mejora tu experiencia</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="update">Actualizar</string>
+    <string name="update_available">¡Actualización disponible!</string>
+    <string name="update_channel">Canal de actualización</string>
+    <string name="update_subject">Actualizar Asignatura</string>
+    <string name="updates">Actualizaciones</string>
+    <string name="version">Versión</string>
+    <string name="visit_repo_to_download">Descarga la última versión desde Github.</string>
+    <string name="warning">Aviso</string>
+    <string name="whats_new">¡Novedades!</string>
+    <string name="year">Año</string>
+    <string name="attendance_overview">Resumen</string>
+    <string name="font_family">Fuente</string>
+    <string name="system_font">Fuente del sistema</string>
+    <string name="des_font_family">Elige una fuente para la app</string>
+    <string name="language">Idioma</string>
+    <string name="des_language">Cambiar idioma de la app</string>
+    <string name="timetable">Horario</string>
+    <string name="timetable_notifications">Notificaciones de horario</string>
+    <string name="des_timetable_notifications">Alertas antes de empezar las clases</string>
+    <string name="persistent_notifications">Notificaciones persistentes</string>
+    <string name="des_persistent_notifications">Mantener hasta que se realice una acción</string>
+
+    <string-array name="month_names">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+</resources>

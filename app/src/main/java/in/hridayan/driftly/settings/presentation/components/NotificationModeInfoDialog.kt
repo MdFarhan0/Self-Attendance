@@ -57,7 +57,7 @@ fun NotificationModeInfoDialog(
                     )
                 }
 
-                Divider()
+                HorizontalDivider()
 
                 // Content
                 if (mode == NotificationMode.STANDARD) {

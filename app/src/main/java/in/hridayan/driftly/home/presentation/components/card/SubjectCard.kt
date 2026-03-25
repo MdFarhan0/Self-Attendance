@@ -48,6 +48,10 @@ fun SubjectCard(
     navigate: () -> Unit = {},
     onClick: () -> Unit = {},
     onLongClicked: (Boolean) -> Unit = {},
+    onMoveUp: () -> Unit = {},
+    onMoveDown: () -> Unit = {},
+    onMoveTop: () -> Unit = {},
+    onMoveBottom: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
     isDemoCard: Boolean = false,
     cornerRadius: Dp = 25.dp,
@@ -120,7 +124,11 @@ fun SubjectCard(
                     progress = progress,
                     onEditButtonClicked = onEditButtonClicked,
                     onDeleteButtonClicked = onDeleteButtonClicked,
-                    onErrorIconClicked = onErrorIconClicked
+                    onErrorIconClicked = onErrorIconClicked,
+                    onMoveUp = onMoveUp,
+                    onMoveDown = onMoveDown,
+                    onMoveTop = onMoveTop,
+                    onMoveBottom = onMoveBottom
                 )
 
             SubjectCardStyle.CARD_STYLE_B ->
@@ -132,7 +140,11 @@ fun SubjectCard(
                     progress = progress,
                     onEditButtonClicked = onEditButtonClicked,
                     onDeleteButtonClicked = onDeleteButtonClicked,
-                    onErrorIconClicked = onErrorIconClicked
+                    onErrorIconClicked = onErrorIconClicked,
+                    onMoveUp = onMoveUp,
+                    onMoveDown = onMoveDown,
+                    onMoveTop = onMoveTop,
+                    onMoveBottom = onMoveBottom
                 )
         }
     }

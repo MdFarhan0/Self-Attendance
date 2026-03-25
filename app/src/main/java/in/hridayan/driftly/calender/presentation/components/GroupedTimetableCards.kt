@@ -67,38 +67,38 @@ private fun DayScheduleGroup(
     }
     
     Column(
-        modifier = Modifier.wrapContentHeight(),  // Also wrap content here
-        verticalArrangement = Arrangement.spacedBy(0.dp)
+        modifier = Modifier.wrapContentHeight(),
+        verticalArrangement = Arrangement.spacedBy(3.dp) // Professional 3dp gap
     ) {
-        // Render grouped cards with special corner rounding
+        // Render grouped cards with special corner rounding (20dp outer, 2dp inner)
         schedules.forEachIndexed { index, schedule ->
             val isFirst = index == 0
             val isLast = index == schedules.size - 1
             val isOnly = schedules.size == 1
             
-            // Determine corner radius based on position
+            // Determine corner radius based on position (20dp outer, 2dp inner)
             val shape = when {
-                isOnly -> RoundedCornerShape(25.dp)
+                isOnly -> RoundedCornerShape(20.dp)
                 isFirst -> RoundedCornerShape(
-                    topStart = 25.dp,
-                    topEnd = 25.dp,
+                    topStart = 20.dp,
+                    topEnd = 20.dp,
                     bottomStart = 2.dp,
                     bottomEnd = 2.dp
                 )
                 isLast -> RoundedCornerShape(
                     topStart = 2.dp,
                     topEnd = 2.dp,
-                    bottomStart = 25.dp,
-                    bottomEnd = 25.dp
+                    bottomStart = 20.dp,
+                    bottomEnd = 20.dp
                 )
                 else -> RoundedCornerShape(2.dp)
             }
             
-            // ZERO ELEVATION Card
+            // Match Today's Class Bottom Sheet Style
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = shape,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.primaryContainer, // Use primaryContainer same as Today's Class
                 tonalElevation = 0.dp,
                 shadowElevation = 0.dp
             ) {
@@ -118,7 +118,7 @@ private fun DayScheduleGroup(
                             Icons.Default.Schedule,
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         
                         Column {
@@ -128,7 +128,7 @@ private fun DayScheduleGroup(
                                     text = dayName,
                                     style = MaterialTheme.typography.labelLarge,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                             
@@ -137,7 +137,7 @@ private fun DayScheduleGroup(
                                 text = "${TimeUtils.format24To12Hour(schedule.startTime)} - ${TimeUtils.format24To12Hour(schedule.endTime)}",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             
                             // Location
@@ -145,7 +145,7 @@ private fun DayScheduleGroup(
                                 Text(
                                     text = "📍 ${schedule.location}",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                                 )
                             }
                         }
@@ -158,14 +158,9 @@ private fun DayScheduleGroup(
                         ),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f)
                     )
                 }
-            }
-            
-            // 1mm gap between cards (approximately 3dp)
-            if (!isLast) {
-                Spacer(modifier = Modifier.height(3.dp))
             }
         }
     }

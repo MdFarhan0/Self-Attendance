@@ -14,5 +14,8 @@ data class SubjectEntity(
     val histogramLabel: String? = null,
     val isTargetSet: Boolean = false,
     val savedYear: Int? = null,
-    val savedMonth: Int? = null
+    val savedMonth: Int? = null,
+    val orderIndex: Int = 0,
+    val attendedCount: Int = 0,
+    val missedCount: Int = 0
 )

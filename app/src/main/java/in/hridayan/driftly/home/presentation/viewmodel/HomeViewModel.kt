@@ -56,6 +56,12 @@ class HomeViewModel @Inject constructor(
     private val _subjectError = MutableStateFlow<SubjectError>(SubjectError.None)
     val subjectError: StateFlow<SubjectError> = _subjectError
 
+    private val _attendedCount = MutableStateFlow("")
+    val attendedCount: StateFlow<String> = _attendedCount
+
+    private val _missedCount = MutableStateFlow("")
+    val missedCount: StateFlow<String> = _missedCount
+
     fun setSubjectNamePlaceholder(value: String) {
         if (_subject.value.isBlank()) {
             _subject.value = value
@@ -75,6 +81,18 @@ class HomeViewModel @Inject constructor(
         // Limit to 5 characters
         if (newValue.length <= 5) {
             _histogramLabel.value = newValue
+        }
+    }
+
+    fun onAttendedCountChange(newValue: String) {
+        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+            _attendedCount.value = newValue
+        }
+    }
+
+    fun onMissedCountChange(newValue: String) {
+        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+            _missedCount.value = newValue
         }
     }
 
@@ -99,12 +117,12 @@ class HomeViewModel @Inject constructor(
                     SubjectEntity(
                         subject = _subject.value.trim(),
                         subjectCode = _subjectCode.value.trim().takeIf { it.isNotBlank() },
-                        histogramLabel = _histogramLabel.value.trim().takeIf { it.isNotBlank() }
+                        histogramLabel = _histogramLabel.value.trim().takeIf { it.isNotBlank() },
+                        attendedCount = _attendedCount.value.toIntOrNull() ?: 0,
+                        missedCount = _missedCount.value.toIntOrNull() ?: 0
                     )
                 )
-                _subject.value = ""
-                _subjectCode.value = ""
-                _histogramLabel.value = ""
+                resetInputFields()
                 onSuccess()
             }
         }
@@ -114,6 +132,8 @@ class HomeViewModel @Inject constructor(
         _subject.value = ""
         _subjectCode.value = ""
         _histogramLabel.value = ""
+        _attendedCount.value = ""
+        _missedCount.value = ""
         _subjectError.value = SubjectError.None
     }
 
@@ -145,11 +165,11 @@ class HomeViewModel @Inject constructor(
                     subjectId = subjectId,
                     newName = newName,
                     newCode = _subjectCode.value.trim().takeIf { it.isNotBlank() },
-                    histogramLabel = _histogramLabel.value.trim().takeIf { it.isNotBlank() }
+                    histogramLabel = _histogramLabel.value.trim().takeIf { it.isNotBlank() },
+                    attendedCount = _attendedCount.value.toIntOrNull() ?: (currentSubject?.attendedCount ?: 0),
+                    missedCount = _missedCount.value.toIntOrNull() ?: (currentSubject?.missedCount ?: 0)
                 )
-                _subject.value = ""
-                _subjectCode.value = ""
-                _histogramLabel.value = ""
+                resetInputFields()
                 onSuccess()
             }
         }
@@ -177,6 +197,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getSubjectAttendanceCounts(subjectId: Int): Flow<SubjectAttendance> {
+        val subjectFlow = subjectRepository.getSubjectById(subjectId)
         val presentFlow = attendanceRepository.getCountBySubjectAndStatus(
             subjectId,
             AttendanceStatus.PRESENT
@@ -184,24 +205,37 @@ class HomeViewModel @Inject constructor(
         val absentFlow =
             attendanceRepository.getCountBySubjectAndStatus(subjectId, AttendanceStatus.ABSENT)
 
-        return combine(presentFlow, absentFlow) { present, absent ->
+        return combine(subjectFlow, presentFlow, absentFlow) { subject, present, absent ->
+            val legacyPresent = subject?.attendedCount ?: 0
+            val legacyAbsent = subject?.missedCount ?: 0
+            
+            val totalPresent = legacyPresent + present
+            val totalAbsent = legacyAbsent + absent
+            
             SubjectAttendance(
-                presentCount = present,
-                absentCount = absent,
-                totalCount = present + absent
+                presentCount = totalPresent,
+                absentCount = totalAbsent,
+                totalCount = totalPresent + totalAbsent
             )
         }
     }
 
     fun getTotalAttendanceCounts(): Flow<TotalAttendance> {
+        val subjectsFlow = subjectRepository.getAllSubjects()
         val presentFlow = attendanceRepository.getTotalCountByStatus(AttendanceStatus.PRESENT)
         val absentFlow = attendanceRepository.getTotalCountByStatus(AttendanceStatus.ABSENT)
 
-        return combine(presentFlow, absentFlow) { present, absent ->
+        return combine(subjectsFlow, presentFlow, absentFlow) { subjects, present, absent ->
+            val totalLegacyPresent = subjects.sumOf { it.attendedCount }
+            val totalLegacyAbsent = subjects.sumOf { it.missedCount }
+            
+            val totalPresent = totalLegacyPresent + present
+            val totalAbsent = totalLegacyAbsent + absent
+            
             TotalAttendance(
-                totalPresent = present,
-                totalAbsent = absent,
-                totalCount = present + absent
+                totalPresent = totalPresent,
+                totalAbsent = totalAbsent,
+                totalCount = totalPresent + totalAbsent
             )
         }
     }
@@ -299,6 +333,16 @@ class HomeViewModel @Inject constructor(
                 schedules.map { it.id }
             )
             classScheduleRepository.deleteSchedulesForSubject(subjectId)
+        }
+    }
+
+    fun updateSubjectsOrder(subjects: List<SubjectEntity>) {
+        viewModelScope.launch {
+            subjects.forEachIndexed { index, subject ->
+                if (subject.orderIndex != index) {
+                    subjectRepository.updateSubjectOrder(subject.id, index)
+                }
+            }
         }
     }
 }

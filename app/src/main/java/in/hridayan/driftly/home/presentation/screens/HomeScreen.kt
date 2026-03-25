@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,14 +35,16 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Analytics
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
-import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
@@ -128,7 +131,7 @@ fun HomeScreen(
     val totalAbsent = totalAttendance.totalAbsent
     val totalCount = totalAttendance.totalCount
     val totalProgress = totalPresent.toFloat() / totalCount.toFloat()
-    val totalProgressText = "${String.format("%.0f", totalProgress * 100)}%"
+    val totalProgressText = "${String.format("%.2f", totalProgress * 100)}%"
 
 
 
@@ -303,15 +306,15 @@ fun HomeScreen(
                             weakHaptic()
                         },
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        color = androidx.compose.ui.graphics.Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(42.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                imageVector = Icons.Rounded.Settings,
+                                imageVector = Icons.Outlined.Settings,
                                 contentDescription = "Settings",
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(26.dp)
                             )
                         }
                     }
@@ -393,20 +396,20 @@ fun HomeScreen(
                 
                 // Determine the shape based on position
                 val cardShape = when {
-                    isOnly -> RoundedCornerShape(25.dp)
+                    isOnly -> RoundedCornerShape(20.dp)
                     isFirst -> RoundedCornerShape(
-                        topStart = 25.dp,
-                        topEnd = 25.dp,
-                        bottomStart = 10.dp,
-                        bottomEnd = 10.dp
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 5.dp,
+                        bottomEnd = 5.dp
                     )
                     isLast -> RoundedCornerShape(
-                        topStart = 10.dp,
-                        topEnd = 10.dp,
-                        bottomStart = 25.dp,
-                        bottomEnd = 25.dp
+                        topStart = 5.dp,
+                        topEnd = 5.dp,
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     )
-                    else -> RoundedCornerShape(10.dp)
+                    else -> RoundedCornerShape(5.dp)
                 }
 
                 SubjectCard(
@@ -414,7 +417,7 @@ fun HomeScreen(
                         .padding(horizontal = 15.dp)
                         .animateItem(),
                     cardStyle = LocalSettings.current.subjectCardStyle,
-                    cornerRadius = cornerRadius,
+                    cornerRadius = 20.dp,
                     customShape = cardShape,
                     subjectId = subjects[index].id,
                     subject = subjects[index].subject,
@@ -433,6 +436,40 @@ fun HomeScreen(
                     onLongClicked = { isLongClicked ->
                         if (isLongClicked) selectedCardsCount++ else selectedCardsCount--
                     },
+                    onMoveUp = {
+                        if (index > 0) {
+                            val newList = subjects.toMutableList()
+                            val temp = newList[index]
+                            newList[index] = newList[index - 1]
+                            newList[index - 1] = temp
+                            viewModel.updateSubjectsOrder(newList)
+                        }
+                    },
+                    onMoveDown = {
+                        if (index < subjects.size - 1) {
+                            val newList = subjects.toMutableList()
+                            val temp = newList[index]
+                            newList[index] = newList[index + 1]
+                            newList[index + 1] = temp
+                            viewModel.updateSubjectsOrder(newList)
+                        }
+                    },
+                    onMoveTop = {
+                        if (index > 0) {
+                            val newList = subjects.toMutableList()
+                            val item = newList.removeAt(index)
+                            newList.add(0, item)
+                            viewModel.updateSubjectsOrder(newList)
+                        }
+                    },
+                    onMoveBottom = {
+                        if (index < subjects.size - 1) {
+                            val newList = subjects.toMutableList()
+                            val item = newList.removeAt(index)
+                            newList.add(item)
+                            viewModel.updateSubjectsOrder(newList)
+                        }
+                    }
                 )
             }
 
@@ -460,32 +497,47 @@ fun HomeScreen(
                         ),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 25.dp, end = 25.dp)
+                    .padding(bottom = 15.dp, end = 5.dp) // Slightly lower and 5dp gap from right edge
             ) {
                 FloatingActionButtonMenu(
                     expanded = isFabMenuExpanded,
                     button = {
-                        ToggleFloatingActionButton(
+                        FloatingActionButton(
+                            onClick = {
+                                isFabMenuExpanded = !isFabMenuExpanded
+                                weakHaptic()
+                            },
                             modifier = Modifier
                                 .animateFloatingActionButton(
                                     visible = fabVisible || isFabMenuExpanded,
                                     alignment = Alignment.BottomEnd
-                                ),
-                            checked = isFabMenuExpanded,
-                            onCheckedChange = {
-                                isFabMenuExpanded = !isFabMenuExpanded
-                                weakHaptic()
-                            }
+                                )
+                                .widthIn(min = 160.dp)
+                                .height(60.dp),
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            shape = RoundedCornerShape(20.dp)
                         ) {
-                            val imageVector by remember {
-                                derivedStateOf {
-                                    if (checkedProgress > 0.5f) Icons.Rounded.Close else Icons.Rounded.Add
+                            val imageVector = if (isFabMenuExpanded) Icons.Rounded.Close else Icons.Rounded.Add
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            ) {
+                                Icon(
+                                    imageVector = imageVector,
+                                    contentDescription = if (isFabMenuExpanded) "Close" else "Add",
+                                    modifier = Modifier.size(28.dp)
+                                )
+                                if (!isFabMenuExpanded) {
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = "Add / More",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
-                            Icon(
-                                imageVector = imageVector,
-                                contentDescription = null
-                            )
                         }
                     }
                 ) {

@@ -46,9 +46,13 @@ fun EditSubjectDialog(
         viewModel.setSubjectNamePlaceholder(subject)
         subjectCode?.let { viewModel.onSubjectCodeChange(it) }
         
-        // Load existing histogram label
+        // Load existing histogram label and counts
         val subjectEntity = viewModel.getSubjectById(subjectId).first()
-        subjectEntity?.histogramLabel?.let { viewModel.onHistogramLabelChange(it) }
+        subjectEntity?.let { entity ->
+            entity.histogramLabel?.let { viewModel.onHistogramLabelChange(it) }
+            viewModel.onAttendedCountChange(entity.attendedCount.toString())
+            viewModel.onMissedCountChange(entity.missedCount.toString())
+        }
         
         // Load existing schedules
         timetableSchedules = viewModel.getSchedulesForSubject(subjectId).first()
@@ -58,6 +62,8 @@ fun EditSubjectDialog(
     val currentSubject by viewModel.subject.collectAsState()
     val currentSubjectCode by viewModel.subjectCode.collectAsState()
     val histogramLabel by viewModel.histogramLabel.collectAsState()
+    val attendedCount by viewModel.attendedCount.collectAsState()
+    val missedCount by viewModel.missedCount.collectAsState()
     val subjectError by viewModel.subjectError.collectAsState()
 
     Dialog(
@@ -110,6 +116,31 @@ fun EditSubjectDialog(
                 label = { Text("Short name for chart (max 5 chars)") },
                 supportingText = { Text("${histogramLabel.length}/5") }
             )
+
+            // Previous History Section (Attended and Missed)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = attendedCount,
+                    onValueChange = { viewModel.onAttendedCountChange(it) },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Attended") },
+                    placeholder = { Text("0") },
+                    singleLine = true,
+                    prefix = { Text("✓ ") }
+                )
+                OutlinedTextField(
+                    value = missedCount,
+                    onValueChange = { viewModel.onMissedCountChange(it) },
+                    modifier = Modifier.weight(1f),
+                    label = { Text(text = "Missed") },
+                    placeholder = { Text("0") },
+                    singleLine = true,
+                    prefix = { Text("✗ ") }
+                )
+            }
 
             // Timetable Section
             Card(

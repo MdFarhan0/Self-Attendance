@@ -4,22 +4,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
 object CardCornerShape {
-    val SINGLE_CARD = RoundedCornerShape(25.dp)
+    val SINGLE_CARD = RoundedCornerShape(20.dp)
 
     val FIRST_CARD = RoundedCornerShape(
-        topStart = 25.dp,
-        topEnd = 25.dp,
-        bottomStart = 10.dp,
-        bottomEnd = 10.dp
+        topStart = 20.dp,
+        topEnd = 20.dp,
+        bottomStart = 5.dp,
+        bottomEnd = 5.dp
     )
 
-    val MIDDLE_CARD = RoundedCornerShape(10.dp)
+    val MIDDLE_CARD = RoundedCornerShape(5.dp)
 
     val LAST_CARD = RoundedCornerShape(
-        topStart = 10.dp,
-        topEnd = 10.dp,
-        bottomStart = 25.dp,
-        bottomEnd = 25.dp
+        topStart = 5.dp,
+        topEnd = 5.dp,
+        bottomStart = 20.dp,
+        bottomEnd = 20.dp
     )
 
     fun getRoundedShape(

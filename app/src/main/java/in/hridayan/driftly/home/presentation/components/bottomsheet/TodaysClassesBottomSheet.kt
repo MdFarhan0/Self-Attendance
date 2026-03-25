@@ -45,7 +45,7 @@ data class TodayClass(
 fun TodaysClassesBottomSheet(
     todaysClasses: List<TodayClass>,
     onDismiss: () -> Unit,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     val today = LocalDate.now()
     val dayOfWeek = today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
@@ -67,7 +67,7 @@ fun TodaysClassesBottomSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 28.dp, top = 25.dp)
+                .padding(bottom = 28.dp, top = 30.dp)
         ) {
             // Header
             Text(
@@ -106,25 +106,17 @@ fun TodaysClassesBottomSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                        .verticalScroll(scrollState)
+                        .padding(horizontal = 3.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
+                    val totalSize = sorted.size
                     sorted.forEachIndexed { index, classItem ->
-                        val isFirst = index == 0
-                        val isLast = index == sorted.size - 1
-                        val isOnly = sorted.size == 1
-
                         val shape = when {
-                            isOnly -> RoundedCornerShape(25.dp)
-                            isFirst -> RoundedCornerShape(
-                                topStart = 25.dp, topEnd = 25.dp,
-                                bottomStart = 10.dp, bottomEnd = 10.dp
-                            )
-                            isLast -> RoundedCornerShape(
-                                topStart = 10.dp, topEnd = 10.dp,
-                                bottomStart = 25.dp, bottomEnd = 25.dp
-                            )
-                            else -> RoundedCornerShape(10.dp)
+                            totalSize == 1 -> RoundedCornerShape(13.dp)
+                            index == 0 -> RoundedCornerShape(topStart = 13.dp, topEnd = 13.dp, bottomStart = 2.dp, bottomEnd = 2.dp)
+                            index == totalSize - 1 -> RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp, bottomStart = 13.dp, bottomEnd = 13.dp)
+                            else -> RoundedCornerShape(2.dp)
                         }
 
                         TodayClassCard(classItem = classItem, shape = shape)
@@ -141,54 +133,35 @@ private fun TodayClassCard(
     shape: RoundedCornerShape
 ) {
     val timeFmt = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
-    val durationText = when {
-        classItem.duration >= 60 -> "${classItem.duration / 60}h"
-            .let { if (classItem.duration % 60 > 0) "$it ${classItem.duration % 60}m" else it }
-        else -> "${classItem.duration}m"
-    }
-
+ 
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = shape,
-        color = MaterialTheme.colorScheme.errorContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 14.dp),
+                .padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                // Subject name — bold, primary
+                // Subject name — bold, core colors
                 Text(
                     text = classItem.subject.subject,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 // Time range below
                 Text(
                     text = "${classItem.startTime.format(timeFmt)} - ${classItem.endTime.format(timeFmt)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
-                )
-            }
-
-            // Duration chip on right
-            Surface(
-                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.12f),
-                shape = RoundedCornerShape(50.dp)
-            ) {
-                Text(
-                    text = durationText,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
             }
         }

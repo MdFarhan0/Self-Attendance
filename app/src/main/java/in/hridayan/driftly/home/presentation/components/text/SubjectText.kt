@@ -37,8 +37,6 @@ fun SubjectText(
                 lineHeight = 28.sp
             ),
             color = subjectTextColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
         )
 
         if (!subjectCode.isNullOrBlank()) {
@@ -49,8 +47,6 @@ fun SubjectText(
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 ),
                 color = subjectTextColor.copy(alpha = 0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
             )
         }
     }

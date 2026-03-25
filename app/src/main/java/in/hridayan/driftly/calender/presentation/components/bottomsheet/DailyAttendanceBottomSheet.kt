@@ -60,7 +60,7 @@ fun DailyAttendanceBottomSheet(
     onDismiss: () -> Unit,
     viewModel: CalendarViewModel = hiltViewModel()
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val weakHaptic = LocalWeakHaptic.current
     val scrollState = rememberScrollState()

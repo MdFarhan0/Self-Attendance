@@ -3,6 +3,7 @@ package `in`.hridayan.driftly.home.presentation.components.bottomsheet
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -163,6 +164,8 @@ fun TimetableInputBottomSheet(
         }
     }
 
+    val mainScrollState = rememberScrollState()
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -173,6 +176,7 @@ fun TimetableInputBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(mainScrollState)
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -186,49 +190,49 @@ fun TimetableInputBottomSheet(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            // Day Selector Pills
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Day Selector (4 days on top, 3 days below for quick entry)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                days.forEachIndexed { index, day ->
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                if (selectedDayIndex == index) 
-                                    MaterialTheme.colorScheme.primary
-                                else 
-                                    MaterialTheme.colorScheme.surfaceVariant
-                            )
-                            .run {
-                                if (selectedDayIndex != index) {
-                                    this.clickable(
-                                        onClick = {
-                                            weakHaptic()
-                                            selectedDayIndex = index
-                                        },
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    )
-                                } else this
-                            }
-                            .padding(horizontal = 20.dp, vertical = 12.dp)
-                            .wrapContentWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = day,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Medium,
-                            color = if (selectedDayIndex == index)
-                                MaterialTheme.colorScheme.onPrimary
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                // First Row: Mon, Tue, Wed, Thu
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    days.take(4).forEachIndexed { i, day ->
+                        DayPill(
+                            day = day,
+                            isSelected = selectedDayIndex == i,
+                            onClick = {
+                                weakHaptic()
+                                selectedDayIndex = i
+                            },
+                            modifier = Modifier.weight(1f)
                         )
                     }
+                }
+                
+                // Second Row: Fri, Sat, Sun
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Spacer on left to center the 3 items if desired, or just space them equally
+                    // Let's space them equally for maximum tap target size
+                    days.drop(4).forEachIndexed { i, day ->
+                        val index = i + 4
+                        DayPill(
+                            day = day,
+                            isSelected = selectedDayIndex == index,
+                            onClick = {
+                                weakHaptic()
+                                selectedDayIndex = index
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    // Add empty spacer if we want to nudge 3rd row (optional)
                 }
             }
 
@@ -435,6 +439,31 @@ fun TimetableInputBottomSheet(
                     fontWeight = FontWeight.SemiBold
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DayPill(
+    day: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.height(48.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+        tonalElevation = 0.dp
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = day,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

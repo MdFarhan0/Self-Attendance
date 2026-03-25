@@ -25,8 +25,8 @@ class SubjectRepositoryImpl @Inject constructor(
         subjectDao.insertAllSubjects(subjects)
     }
 
-    override suspend fun updateSubject(subjectId: Int, newName: String, newCode: String?, histogramLabel: String?) {
-        subjectDao.updateSubject(subjectId, newName, newCode, histogramLabel)
+    override suspend fun updateSubject(subjectId: Int, newName: String, newCode: String?, histogramLabel: String?, attendedCount: Int, missedCount: Int) {
+        subjectDao.updateSubject(subjectId, newName, newCode, histogramLabel, attendedCount, missedCount)
     }
 
     override suspend fun deleteSubject(subjectId: Int) {
@@ -52,5 +52,9 @@ class SubjectRepositoryImpl @Inject constructor(
 
     override suspend fun updateTargetPercentage(subjectId: Int, targetPercentage: Float) {
         subjectDao.updateTargetPercentage(subjectId, targetPercentage)
+    }
+
+    override suspend fun updateSubjectOrder(subjectId: Int, newIndex: Int) {
+        subjectDao.updateSubjectOrder(subjectId, newIndex)
     }
 }

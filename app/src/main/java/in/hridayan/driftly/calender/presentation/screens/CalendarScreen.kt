@@ -82,7 +82,9 @@ import kotlin.math.ceil
 
 data class AttendanceInsight(
     val message: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val bunkCount: Int = 0,
+    val requiredCount: Int = 0
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -489,13 +491,15 @@ fun calculateAttendanceInsight(
         currentPercentage < T -> {
             AttendanceInsight(
                 message = "Attend the next $requiredAttend ${if (requiredAttend == 1) "class" else "classes"} to reach ${T.toInt()}%",
-                icon = Icons.Rounded.School
+                icon = Icons.Rounded.School,
+                requiredCount = requiredAttend
             )
         }
         bunkCount >= 1 -> {
             AttendanceInsight(
                 message = "You can bunk $bunkCount more ${if (bunkCount == 1) "class" else "classes"} and still stay above ${T.toInt()}%",
-                icon = Icons.Rounded.CheckCircle
+                icon = Icons.Rounded.CheckCircle,
+                bunkCount = bunkCount
             )
         }
         else -> {

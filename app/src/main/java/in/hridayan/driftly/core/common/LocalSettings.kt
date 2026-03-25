@@ -9,10 +9,10 @@ import `in`.hridayan.driftly.settings.domain.model.SettingsState
 
 val LocalSettings = compositionLocalOf {
     SettingsState(
-        themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+        themeMode = AppCompatDelegate.MODE_NIGHT_NO,
         isHighContrastDarkMode = false,
         seedColor = SeedColorProvider.seed,
-        isDynamicColor = true,
+        isDynamicColor = false,
         isHapticEnabled = true,
         subjectCardCornerRadius = 8f,
         subjectCardStyle = SubjectCardStyle.CARD_STYLE_A,

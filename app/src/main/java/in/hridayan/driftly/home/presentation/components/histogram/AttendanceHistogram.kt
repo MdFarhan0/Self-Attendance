@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,7 +53,7 @@ fun AttendanceHistogramCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp),
-        shape = RoundedCornerShape(25.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
@@ -93,6 +94,7 @@ fun AttendanceHistogramCard(
                             label = data.subject.histogramLabel
                                 ?: data.subject.subject.take(5),
                             percentage = data.percentage,
+                            targetPercentage = data.subject.targetPercentage,
                             animationDelay = index * 100L // Stagger animation
                         )
                     }
@@ -106,6 +108,7 @@ fun AttendanceHistogramCard(
 private fun HistogramBar(
     label: String,
     percentage: Float,
+    targetPercentage: Float,
     animationDelay: Long = 0L
 ) {
     var isVisible by remember { mutableStateOf(false) }
@@ -125,6 +128,13 @@ private fun HistogramBar(
         label = "bar_height_animation"
     )
 
+    val isBelowTarget = animatedHeight < targetPercentage
+    val barColor = if (isBelowTarget && isVisible) 
+        MaterialTheme.colorScheme.error 
+    else 
+        MaterialTheme.colorScheme.primary
+    val textColor = barColor
+
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(animationSpec = tween(500)) + 
@@ -135,14 +145,14 @@ private fun HistogramBar(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(3.dp) // Gap between percentage & Bar: 3dp
         ) {
             // Percentage text at top
             Text(
-                text = "${String.format("%.0f", animatedHeight)}%",
+                text = "${String.format("%.2f", animatedHeight)}%",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = textColor,
                 textAlign = TextAlign.Center
             )
 
@@ -159,12 +169,12 @@ private fun HistogramBar(
                     modifier = Modifier
                         .width(60.dp)
                         .height(barHeight)
-                        .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp, bottomStart = 10.dp, bottomEnd = 10.dp))
-                        .background(
-                            MaterialTheme.colorScheme.primary
-                        )
+                        .clip(RoundedCornerShape(3.dp)) // Graph rounding: 3dp
+                        .background(barColor)
                 )
             }
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             // Subject label at bottom
             Text(

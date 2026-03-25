@@ -45,7 +45,7 @@ fun TimetableBottomSheet(
     schedules: List<ClassSchedule>,
     onDismiss: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollState = rememberScrollState()
 
     ModalBottomSheet(
@@ -117,15 +117,15 @@ fun TimetableBottomSheet(
                 val sorted = schedules.sortedWith(compareBy({ it.dayOfWeek }, { it.startTime }))
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 3.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
                     val total = sorted.size
                     sorted.forEachIndexed { index, schedule ->
                         val shape = when {
-                            total == 1 -> RoundedCornerShape(10.dp)
-                            index == 0 -> RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 2.dp, bottomEnd = 2.dp)
-                            index == total - 1 -> RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp, bottomStart = 10.dp, bottomEnd = 10.dp)
+                            total == 1 -> RoundedCornerShape(13.dp)
+                            index == 0 -> RoundedCornerShape(topStart = 13.dp, topEnd = 13.dp, bottomStart = 2.dp, bottomEnd = 2.dp)
+                            index == total - 1 -> RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp, bottomStart = 13.dp, bottomEnd = 13.dp)
                             else -> RoundedCornerShape(2.dp)
                         }
                         TimetableRowCard(schedule = schedule, shape = shape)

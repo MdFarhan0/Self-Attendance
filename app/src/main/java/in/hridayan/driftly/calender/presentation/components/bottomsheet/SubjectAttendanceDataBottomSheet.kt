@@ -40,9 +40,7 @@ fun SubjectAttendanceDataBottomSheet(
     data: SubjectAttendance,
     title: String = "Attendance Overview"
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -85,7 +83,7 @@ private fun AttendanceStats(
         0f
     }
     
-    val progressText = "${String.format("%.0f", progress * 100)}%"
+    val progressText = "${String.format("%.2f", progress * 100)}%"
     val progressColor = lerp(
         start = MaterialTheme.colorScheme.error,
         stop = MaterialTheme.colorScheme.primary,
