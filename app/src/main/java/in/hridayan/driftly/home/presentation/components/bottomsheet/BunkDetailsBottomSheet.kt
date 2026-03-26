@@ -58,7 +58,7 @@ fun BunkDetailsBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 10.dp)
                 .padding(bottom = 28.dp, top = 30.dp)
         ) {
             // Header
@@ -81,8 +81,7 @@ fun BunkDetailsBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = 3.dp),
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 subjects.forEachIndexed { index, subject ->

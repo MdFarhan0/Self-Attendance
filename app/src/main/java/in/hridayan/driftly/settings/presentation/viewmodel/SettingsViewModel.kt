@@ -73,13 +73,13 @@ class SettingsViewModel @Inject constructor(
 
     fun loadSettings() {
         viewModelScope.launch {
-            // Migration for version 16 to set new requested defaults
+            // Migration for version 17 to set new requested defaults (Light mode & No dynamic colors)
             val savedVersion = settingsRepository.getInt(SettingsKeys.SAVED_VERSION_CODE).first()
-            if (savedVersion < 16) {
-                settingsRepository.setInt(SettingsKeys.THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                settingsRepository.setBoolean(SettingsKeys.HIGH_CONTRAST_DARK_MODE, true)
-                settingsRepository.setBoolean(SettingsKeys.DYNAMIC_COLORS, true)
-                settingsRepository.setInt(SettingsKeys.SAVED_VERSION_CODE, 16)
+            if (savedVersion < 17) {
+                settingsRepository.setInt(SettingsKeys.THEME_MODE, AppCompatDelegate.MODE_NIGHT_NO)
+                settingsRepository.setBoolean(SettingsKeys.HIGH_CONTRAST_DARK_MODE, false)
+                settingsRepository.setBoolean(SettingsKeys.DYNAMIC_COLORS, false)
+                settingsRepository.setInt(SettingsKeys.SAVED_VERSION_CODE, 17)
             }
 
             val lookAndFeel = settingsRepository.getLookAndFeelPageList()

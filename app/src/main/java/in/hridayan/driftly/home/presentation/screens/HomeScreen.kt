@@ -13,6 +13,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -482,6 +484,25 @@ fun HomeScreen(
                 }
             }
 
+            // Backdrop for FAB Menu focus and dismissal
+            AnimatedVisibility(
+                visible = isFabMenuExpanded && selectedCardsCount == 0,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            isFabMenuExpanded = false
+                        }
+                )
+            }
+
             // M3 Expressive FAB Menu
             AnimatedVisibility(
                 visible = selectedCardsCount == 0,
@@ -497,8 +518,15 @@ fun HomeScreen(
                         ),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 15.dp, end = 5.dp) // Slightly lower and 5dp gap from right edge
+                    .padding(bottom = 15.dp, end = 15.dp) // Adjusted padding for larger FAB
             ) {
+                val fabSize by animateDpAsState(
+                    targetValue = if (isFabMenuExpanded) 56.dp else 80.dp,
+                    animationSpec = spring(dampingRatio = 0.75f),
+                    label = "FabSize"
+                )
+                val fabShape = if (isFabMenuExpanded) CircleShape else RoundedCornerShape(16.dp)
+
                 FloatingActionButtonMenu(
                     expanded = isFabMenuExpanded,
                     button = {
@@ -509,35 +537,21 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .animateFloatingActionButton(
-                                    visible = fabVisible || isFabMenuExpanded,
+                                    visible = fabVisible, // Removed redundant isFabMenuExpanded
                                     alignment = Alignment.BottomEnd
                                 )
-                                .widthIn(min = 160.dp)
-                                .height(60.dp),
+                                .size(fabSize),
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            shape = RoundedCornerShape(20.dp)
+                            shape = fabShape,
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(0.dp)
                         ) {
                             val imageVector = if (isFabMenuExpanded) Icons.Rounded.Close else Icons.Rounded.Add
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                                modifier = Modifier.padding(horizontal = 20.dp)
-                            ) {
-                                Icon(
-                                    imageVector = imageVector,
-                                    contentDescription = if (isFabMenuExpanded) "Close" else "Add",
-                                    modifier = Modifier.size(28.dp)
-                                )
-                                if (!isFabMenuExpanded) {
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Text(
-                                        text = "Add / More",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
+                            Icon(
+                                imageVector = imageVector,
+                                contentDescription = if (isFabMenuExpanded) "Close" else "Add",
+                                modifier = Modifier.size(if (isFabMenuExpanded) 24.dp else 32.dp)
+                            )
                         }
                     }
                 ) {

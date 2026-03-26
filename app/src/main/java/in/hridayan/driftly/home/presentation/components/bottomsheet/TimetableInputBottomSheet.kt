@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -169,24 +171,26 @@ fun TimetableInputBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-        dragHandle = { BottomSheetDefaults.DragHandle() }
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
+        dragHandle = null
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .verticalScroll(mainScrollState)
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 28.dp, top = 30.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // Large Title
             Text(
                 text = "Add Class",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -425,19 +429,32 @@ fun TimetableInputBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                    shape = RoundedCornerShape(28.dp),
+                    shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.errorContainer,
-                    contentColor = if (isValid) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onErrorContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
                 )
             ) {
-                Text(
-                    text = if (isValid) "Add to Timetable" else "End time must be after start time",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(
+                   verticalAlignment = Alignment.CenterVertically,
+                   horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = if (isValid) "Add to Timetable" else "Check Times",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (isValid) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
         }
     }

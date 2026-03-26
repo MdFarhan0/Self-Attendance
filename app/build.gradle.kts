@@ -13,11 +13,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.xtractiion.self.attendance"
+        applicationId = "com.self.attendance"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,14 +26,14 @@ android {
         baseline = file("lint-baseline.xml")
     }
 
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = false
-        }
-    }
+//    splits {
+//        abi {
+//            isEnable = true
+//            reset()
+//            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+//            isUniversalApk = false
+//        }
+//    }
 
     signingConfigs {
         create("release") {
@@ -57,13 +57,10 @@ android {
                 }
             } else {
                 // Local signing
-                val keystoreFile = rootProject.file("driftly-release-key.jks")
-                if (keystoreFile.exists()) {
-                    storeFile = keystoreFile
-                    storePassword = "mdfarhan"
-                    keyAlias = "driftly"
-                    keyPassword = "mdfarhan"
-                }
+                storeFile = file("../release_final.jks")
+                storePassword = "mdfarhan"
+                keyAlias = "mdfarhan"
+                keyPassword = "mdfarhan"
             }
         }
     }

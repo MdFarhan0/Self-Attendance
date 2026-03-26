@@ -31,7 +31,7 @@ fun GroupedTimetableCards(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()  // KEY FIX: Use wrapContent instead of unbounded height
-            .padding(horizontal = 25.dp),
+            .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
@@ -105,7 +105,7 @@ private fun DayScheduleGroup(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 14.dp, vertical = 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
