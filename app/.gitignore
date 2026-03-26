@@ -1,0 +1,3 @@
+# Build output (cannot be pushed - causes fatal git index errors on binary class files)
+app/build/
+build/
