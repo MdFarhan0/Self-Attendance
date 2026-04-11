@@ -17,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.School
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,20 +61,23 @@ fun BunkDetailsBottomSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 10.dp)
-                .padding(bottom = 28.dp, top = 30.dp)
+                .padding(bottom = 28.dp, top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header
             Text(
                 text = "Bunk Details",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Smart attendance insights for all subjects",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -129,14 +134,8 @@ fun BunkDetailsBottomSheet(
                                     color = contentColor
                                 )
                                 // Short, concise indicator
-                                val statusText = when {
-                                    counts.totalCount == 0 -> "No classes yet"
-                                    insight.bunkCount >= 1 -> "Can Bunk: ${insight.bunkCount}"
-                                    insight.requiredCount >= 1 -> "Must Attend: ${insight.requiredCount}"
-                                    else -> "Safe (Borderline)"
-                                }
                                 Text(
-                                    text = statusText,
+                                    text = insight.message,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = contentColor.copy(alpha = 0.8f)
                                 )

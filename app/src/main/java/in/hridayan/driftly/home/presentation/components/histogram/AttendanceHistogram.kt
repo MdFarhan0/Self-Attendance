@@ -92,7 +92,7 @@ fun AttendanceHistogramCard(
                     histogramData.forEachIndexed { index, data ->
                         HistogramBar(
                             label = data.subject.histogramLabel
-                                ?: data.subject.subject.take(5),
+                                ?: data.subject.subject.take(6),
                             percentage = data.percentage,
                             targetPercentage = data.subject.targetPercentage,
                             animationDelay = index * 100L // Stagger animation
@@ -178,7 +178,7 @@ private fun HistogramBar(
 
             // Subject label at bottom
             Text(
-                text = label.uppercase().take(5),
+                text = label.uppercase().take(6),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

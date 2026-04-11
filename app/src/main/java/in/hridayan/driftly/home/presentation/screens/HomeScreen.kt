@@ -7,13 +7,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateColor
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -49,15 +59,18 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.animateFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -269,60 +282,69 @@ fun HomeScreen(
         if (isFabMenuExpanded) isFabMenuExpanded = false
     }
 
-    Scaffold(
+    Surface(
         modifier = modifier.fillMaxSize(),
-    ) { innerPadding ->
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = { }
+        ) { innerPadding ->
 
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(5.dp), // Changed from 15.dp to 5.dp for grouped appearance
+                verticalArrangement = Arrangement.spacedBy(3.dp),
                 contentPadding = PaddingValues(
                     top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding() + 85.dp, // Space for button
+                    bottom = innerPadding.calculateBottomPadding() + 85.dp,
                     start = 0.dp,
                     end = 0.dp
                 ),
             ) {
                 item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 25.dp, end = 25.dp, top = 35.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.displaySmallEmphasized.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        modifier = Modifier.alpha(0.95f)
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Surface(
-                        onClick = {
-                            navController.navigate(SettingsScreen)
-                            weakHaptic()
-                        },
-                        shape = CircleShape,
-                        color = androidx.compose.ui.graphics.Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(42.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(start = 15.dp, end = 15.dp, top = 35.dp, bottom = 0.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Outlined.Settings,
-                                contentDescription = "Settings",
-                                modifier = Modifier.size(26.dp)
-                            )
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.displaySmallEmphasized.copy(
+                                fontWeight = FontWeight.ExtraBold
+                            ),
+                            modifier = Modifier.alpha(0.95f)
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Surface(
+                            onClick = {
+                                navController.navigate(SettingsScreen)
+                                weakHaptic()
+                            },
+                            shape = CircleShape,
+                            color = androidx.compose.ui.graphics.Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(42.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Settings,
+                                    contentDescription = "Settings",
+                                    modifier = Modifier.size(26.dp)
+                                )
+                            }
                         }
                     }
-
                 }
-            }
+
+                item {
+                    Spacer(modifier = Modifier.height(30.dp))
+                }
 
             if (subjectCount == 0 || totalCount == 0) {
                 item {
@@ -371,7 +393,7 @@ fun HomeScreen(
                     }
 
                     AttendanceHistogramCard(
-                        modifier = Modifier.padding(top = 35.dp, bottom = 20.dp),
+                        modifier = Modifier.padding(bottom = 20.dp),
                         histogramData = histogramData
                     )
                 }
@@ -493,7 +515,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f))
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.9f))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -518,41 +540,19 @@ fun HomeScreen(
                         ),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 15.dp, end = 15.dp) // Adjusted padding for larger FAB
+                    .padding(bottom = 37.dp, end = 16.dp)
             ) {
-                val fabSize by animateDpAsState(
-                    targetValue = if (isFabMenuExpanded) 56.dp else 80.dp,
-                    animationSpec = spring(dampingRatio = 0.75f),
-                    label = "FabSize"
-                )
-                val fabShape = if (isFabMenuExpanded) CircleShape else RoundedCornerShape(16.dp)
-
                 FloatingActionButtonMenu(
                     expanded = isFabMenuExpanded,
                     button = {
-                        FloatingActionButton(
-                            onClick = {
+                        DriftlyMorphingFab(
+                            isExpanded = isFabMenuExpanded,
+                            isVisible = true, // Force fixed visibility
+                            onToggle = {
                                 isFabMenuExpanded = !isFabMenuExpanded
                                 weakHaptic()
-                            },
-                            modifier = Modifier
-                                .animateFloatingActionButton(
-                                    visible = fabVisible, // Removed redundant isFabMenuExpanded
-                                    alignment = Alignment.BottomEnd
-                                )
-                                .size(fabSize),
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            shape = fabShape,
-                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(0.dp)
-                        ) {
-                            val imageVector = if (isFabMenuExpanded) Icons.Rounded.Close else Icons.Rounded.Add
-                            Icon(
-                                imageVector = imageVector,
-                                contentDescription = if (isFabMenuExpanded) "Close" else "Add",
-                                modifier = Modifier.size(if (isFabMenuExpanded) 24.dp else 32.dp)
-                            )
-                        }
+                            }
+                        )
                     }
                 ) {
                     // Add Subject Action
@@ -567,7 +567,8 @@ fun HomeScreen(
                         },
                         text = {
                             Text(text = "Add Subject")
-                        }
+                        },
+                        modifier = Modifier.height(60.dp)
                     )
                     
                     // Today's Class Action
@@ -582,7 +583,8 @@ fun HomeScreen(
                         },
                         text = {
                             Text(text = "Today's Class")
-                        }
+                        },
+                        modifier = Modifier.height(60.dp)
                     )
                     
                     // Tomorrow's Class Action
@@ -597,7 +599,8 @@ fun HomeScreen(
                         },
                         text = {
                             Text(text = "Tomorrow's Class")
-                        }
+                        },
+                        modifier = Modifier.height(60.dp)
                     )
                     
                     // Bunk Details Action
@@ -612,11 +615,13 @@ fun HomeScreen(
                         },
                         text = {
                             Text(text = "Bunk Details")
-                        }
+                        },
+                        modifier = Modifier.height(60.dp)
                     )
                 }
             }
         }
+    }
 
     if (isDialogOpen) {
         AddSubjectDialog(
@@ -663,5 +668,110 @@ fun HomeScreen(
                 )
             })
     }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun DriftlyMorphingFab(
+    isExpanded: Boolean,
+    isVisible: Boolean,
+    onToggle: () -> Unit
+) {
+    var renderGate by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        renderGate = true
+    }
+
+    if (!renderGate) {
+        Spacer(modifier = Modifier.size(70.dp))
+        return
+    }
+
+    val transition = updateTransition(
+        targetState = isExpanded,
+        label = "fab_transition"
+    )
+
+    val primary = MaterialTheme.colorScheme.primary
+    val primaryContainer = MaterialTheme.colorScheme.primaryContainer
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+    val onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer
+
+    val fabColor = remember(isExpanded, primary, primaryContainer) {
+        if (isExpanded) primary else primaryContainer
+    }
+
+    val contentColor = remember(isExpanded, onPrimary, onPrimaryContainer) {
+        if (isExpanded) onPrimary else onPrimaryContainer
+    }
+
+    val fabHeight by transition.animateDp(
+        label = "fab_height",
+        transitionSpec = {
+            spring(dampingRatio = 0.7f, stiffness = 500f)
+        }
+    ) { expanded ->
+        if (expanded) 70.dp else 70.dp
+    }
+
+    val fabWidth by transition.animateDp(
+        label = "fab_width",
+        transitionSpec = {
+            spring(dampingRatio = 0.7f, stiffness = 500f)
+        }
+    ) { expanded ->
+        if (expanded) 70.dp else 165.dp
+    }
+
+    val cornerRadius by transition.animateDp(
+        label = "corner_radius",
+        transitionSpec = {
+            spring(dampingRatio = 0.7f, stiffness = 500f)
+        }
+    ) { expanded ->
+        if (expanded) 35.dp else 16.dp
+    }
+
+    Surface(
+        modifier = Modifier
+            .size(width = fabWidth, height = fabHeight),
+        shape = RoundedCornerShape(cornerRadius),
+        color = fabColor,
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        onClick = onToggle
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            // Circle state (Icon)
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = null,
+                    tint = contentColor
+                )
+            }
+
+            // Extended state (Text)
+            AnimatedVisibility(
+                visible = !isExpanded,
+                enter = fadeIn() + expandHorizontally(),
+                exit = fadeOut() + shrinkHorizontally()
+            ) {
+                Text(
+                    text = "+ Add Class",
+                    color = contentColor,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }

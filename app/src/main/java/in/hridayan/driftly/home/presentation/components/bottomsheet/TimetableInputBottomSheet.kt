@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.runtime.*
@@ -24,6 +25,7 @@ import `in`.hridayan.driftly.core.presentation.components.picker.WheelPicker
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.data.local.provider.settingsDataStore
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.launch
 
@@ -183,15 +185,17 @@ fun TimetableInputBottomSheet(
                 .navigationBarsPadding()
                 .verticalScroll(mainScrollState)
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 28.dp, top = 30.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(bottom = 28.dp, top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Large Title
             Text(
                 text = "Add Class",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
             )
 
             // Day Selector (4 days on top, 3 days below for quick entry)

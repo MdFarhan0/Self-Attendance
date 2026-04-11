@@ -362,11 +362,13 @@ fun CalendarScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(5.dp)) // Extra 5dp to make total 10dp from previous element
+
             // Insight Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 25.dp),
+                    .padding(horizontal = 15.dp),
                 shape = RoundedCornerShape(25.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -387,7 +389,7 @@ fun CalendarScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
+                            .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {

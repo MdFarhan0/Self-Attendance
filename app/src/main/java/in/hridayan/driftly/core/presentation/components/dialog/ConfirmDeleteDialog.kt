@@ -31,6 +31,8 @@ import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableTex
 @Composable
 fun ConfirmDeleteDialog(
     modifier: Modifier = Modifier,
+    title: String = stringResource(R.string.delete_subject),
+    message: String = stringResource(R.string.delete_confirmation),
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -53,7 +55,7 @@ fun ConfirmDeleteDialog(
                     .widthIn(min = 280.dp)
             ) {
                 AutoResizeableText(
-                    text = stringResource(R.string.delete_subject),
+                    text = title,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -61,7 +63,7 @@ fun ConfirmDeleteDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = stringResource(R.string.delete_confirmation),
+                    text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -73,13 +73,13 @@ class SettingsViewModel @Inject constructor(
 
     fun loadSettings() {
         viewModelScope.launch {
-            // Migration for version 17 to set new requested defaults (Light mode & No dynamic colors)
-            val savedVersion = settingsRepository.getInt(SettingsKeys.SAVED_VERSION_CODE).first()
-            if (savedVersion < 17) {
-                settingsRepository.setInt(SettingsKeys.THEME_MODE, AppCompatDelegate.MODE_NIGHT_NO)
-                settingsRepository.setBoolean(SettingsKeys.HIGH_CONTRAST_DARK_MODE, false)
-                settingsRepository.setBoolean(SettingsKeys.DYNAMIC_COLORS, false)
-                settingsRepository.setInt(SettingsKeys.SAVED_VERSION_CODE, 17)
+            // Migration for version 18 to set new requested defaults (Follow System, Dynamic Colors & High Contrast)
+            val lastMigratedVersion = settingsRepository.getInt(SettingsKeys.LAST_MIGRATED_VERSION).first()
+            if (lastMigratedVersion < 18) {
+                settingsRepository.setInt(SettingsKeys.THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                settingsRepository.setBoolean(SettingsKeys.HIGH_CONTRAST_DARK_MODE, true)
+                settingsRepository.setBoolean(SettingsKeys.DYNAMIC_COLORS, true)
+                settingsRepository.setInt(SettingsKeys.LAST_MIGRATED_VERSION, 18)
             }
 
             val lookAndFeel = settingsRepository.getLookAndFeelPageList()
@@ -186,6 +186,10 @@ class SettingsViewModel @Inject constructor(
 
                 SettingsKeys.FONT_FAMILY -> _uiEvent.emit(
                     SettingsUiEvent.ShowBottomSheet(SettingsKeys.FONT_FAMILY)
+                )
+
+                SettingsKeys.CHANGELOGS -> _uiEvent.emit(
+                    SettingsUiEvent.ShowBottomSheet(SettingsKeys.CHANGELOGS)
                 )
 
                 SettingsKeys.LANGUAGE -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

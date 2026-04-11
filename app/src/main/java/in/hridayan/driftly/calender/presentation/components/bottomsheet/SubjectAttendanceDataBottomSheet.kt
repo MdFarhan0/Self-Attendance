@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,7 +55,8 @@ fun SubjectAttendanceDataBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 25.dp, top = 25.dp)
+                .padding(bottom = 25.dp, top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Title
             Text(
@@ -63,6 +65,7 @@ fun SubjectAttendanceDataBottomSheet(
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
@@ -104,16 +107,6 @@ private fun AttendanceStats(
             ),
             color = progressColor
         )
-        
-        Text(
-            text = "Attendance Score",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Medium
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
 
         // Three stat cards
         Row(

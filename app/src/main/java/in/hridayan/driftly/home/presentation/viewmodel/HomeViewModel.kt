@@ -78,8 +78,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onHistogramLabelChange(newValue: String) {
-        // Limit to 5 characters
-        if (newValue.length <= 5) {
+        // Limit to 8 characters
+        if (newValue.length <= 8) {
             _histogramLabel.value = newValue
         }
     }

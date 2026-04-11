@@ -66,7 +66,7 @@ fun CompositionLocals(
 
     val subjectCardStyle by settingsViewModel.intState(SettingsKeys.SUBJECT_CARD_STYLE)
 
-    val savedVersionCode by settingsViewModel.intState(SettingsKeys.SAVED_VERSION_CODE)
+    val savedVersionCode by settingsViewModel.getInt(SettingsKeys.SAVED_VERSION_CODE).collectAsState(initial = -1)
 
     val showAttendanceStreaks by settingsViewModel.booleanState(SettingsKeys.STREAK_MODIFIER)
 

@@ -21,10 +21,16 @@ fun AppEntry(
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     var showChangelogSheet by rememberSaveable { mutableStateOf(false) }
+    var hasTriggeredChangelog by rememberSaveable { mutableStateOf(false) }
     val savedVersionCode = LocalSettings.current.savedVersionCode
 
     LaunchedEffect(savedVersionCode) {
-        showChangelogSheet = savedVersionCode < BuildConfig.VERSION_CODE
+        if (!hasTriggeredChangelog && savedVersionCode != -1) { // Assuming -1 or 0 as initial load state
+            if (savedVersionCode < BuildConfig.VERSION_CODE) {
+                showChangelogSheet = true
+            }
+            hasTriggeredChangelog = true
+        }
     }
 
     Surface {

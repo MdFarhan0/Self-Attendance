@@ -32,7 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.domain.model.SubjectCardStyle
 import `in`.hridayan.driftly.core.presentation.components.dialog.ConfirmDeleteDialog
-import `in`.hridayan.driftly.home.presentation.components.dialog.EditSubjectDialog
+import `in`.hridayan.driftly.home.presentation.components.dialog.AddSubjectDialog
 import `in`.hridayan.driftly.home.presentation.components.dialog.NoAttendanceDialog
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
 
@@ -159,10 +159,10 @@ fun SubjectCard(
     }
 
     if (isUpdateDialogVisible) {
-        EditSubjectDialog(
+        AddSubjectDialog(
             subjectId = subjectId,
-            subject = subject,
-            subjectCode = subjectCode,
+            initialSubject = subject,
+            initialSubjectCode = subjectCode,
             onDismiss = {
                 isLongClicked = false
                 onLongClicked(false)

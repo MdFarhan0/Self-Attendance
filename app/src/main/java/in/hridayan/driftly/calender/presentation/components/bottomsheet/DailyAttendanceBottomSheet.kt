@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
@@ -48,6 +50,7 @@ import `in`.hridayan.driftly.calender.presentation.viewmodel.CalendarViewModel
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.data.model.AttendanceEntity
 import `in`.hridayan.driftly.core.domain.model.AttendanceStatus
+import `in`.hridayan.driftly.core.presentation.components.dialog.ConfirmDeleteDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -88,7 +91,8 @@ fun DailyAttendanceBottomSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp, top = 10.dp)
+                .padding(bottom = 24.dp, top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header: "Friday, Mar 27"
             Text(
@@ -96,6 +100,7 @@ fun DailyAttendanceBottomSheet(
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
@@ -127,31 +132,14 @@ fun DailyAttendanceBottomSheet(
                     )
 
                     if (showDeleteDialog) {
-                        AlertDialog(
-                            onDismissRequest = { showDeleteDialog = false },
-                            title = { Text(text = "Delete Class Entry") },
-                            text = { Text(text = "Are you sure you want to delete this class entry? This action is irreversible.") },
-                            confirmButton = {
-                                Button(
-                                    onClick = {
-                                        weakHaptic()
-                                        viewModel.deleteClassEntry(entry.id)
-                                        showDeleteDialog = false
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                                        contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                    )
-                                ) {
-                                    Text("Delete")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = { showDeleteDialog = false }) {
-                                    Text("Cancel")
-                                }
-                            },
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ConfirmDeleteDialog(
+                            title = "Delete Class Entry",
+                            message = "Are you sure you want to delete this class entry? This action is irreversible.",
+                            onDismiss = { showDeleteDialog = false },
+                            onConfirm = {
+                                viewModel.deleteClassEntry(entry.id)
+                                showDeleteDialog = false
+                            }
                         )
                     }
                 }

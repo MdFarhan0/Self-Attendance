@@ -102,6 +102,12 @@ object SettingsProvider {
                 iconVector = Icons.Rounded.Colorize,
                 isLayoutVisible = !isSdkLowerThan12
             ),
+            boolPreferenceItem(
+                key = SettingsKeys.HIGH_CONTRAST_DARK_MODE,
+                titleResId = R.string.high_contrast_dark_mode,
+                descriptionResId = R.string.des_high_contrast_dark_mode,
+                iconVector = Icons.Rounded.Contrast,
+            ),
             nullPreferenceItem(
                 key = SettingsKeys.LANGUAGE,
                 titleResId = R.string.language,
@@ -111,7 +117,23 @@ object SettingsProvider {
         )
     )
 
-    val aboutPageList: List<PreferenceGroup> = emptyList()
+    val aboutPageList: List<PreferenceGroup> = listOf(
+        categorizedItems(
+            categoryNameResId = R.string.app,
+            nullPreferenceItem(
+                key = SettingsKeys.CHANGELOGS,
+                titleResId = R.string.whats_new,
+                descriptionResId = R.string.des_changelogs,
+                iconResId = R.drawable.ic_release_alert
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.VERSION,
+                titleResId = R.string.current_version,
+                descriptionString = "v${BuildConfig.VERSION_NAME}",
+                iconResId = R.drawable.ic_info
+            )
+        )
+    )
 
     val behaviorPageList: List<PreferenceGroup> = listOf(
         categorizedItems(

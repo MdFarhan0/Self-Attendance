@@ -19,6 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import `in`.hridayan.driftly.core.presentation.components.bottomsheet.ChangelogBottomSheet
+import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,6 +55,7 @@ fun AboutScreen(
     val navController = LocalNavController.current
     val context = LocalContext.current
     val settings = settingsViewModel.aboutPageList
+    var showChangelogSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         settingsViewModel.uiEvent.collect { event ->
@@ -58,6 +66,12 @@ fun AboutScreen(
 
                 is SettingsUiEvent.OpenUrl -> {
                     openUrl(event.url, context)
+                }
+
+                is SettingsUiEvent.ShowBottomSheet -> {
+                    if (event.key == SettingsKeys.CHANGELOGS) {
+                        showChangelogSheet = true
+                    }
                 }
 
                 else -> {}
@@ -183,4 +197,10 @@ fun AboutScreen(
             }
         },
     )
+
+    if (showChangelogSheet) {
+        ChangelogBottomSheet(
+            onDismiss = { showChangelogSheet = false }
+        )
+    }
 }
