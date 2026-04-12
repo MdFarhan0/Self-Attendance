@@ -5,4 +5,5 @@ object CustomFontFamily {
     const val ONE_UI_SANS = 1
     const val SANS_SERIF = 2
     const val MONOSPACE = 3
+    const val SIRIN_STENCIL = 4
 }

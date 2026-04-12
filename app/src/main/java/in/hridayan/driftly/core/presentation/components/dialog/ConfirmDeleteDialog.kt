@@ -77,9 +77,12 @@ fun ConfirmDeleteDialog(
                             onDismiss()
                             weakHaptic()
                         },
+                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier
                             .weight(1f)
-                            ) {
+                            .animateWidth(interactionSources[0]),
+                        interactionSource = interactionSources[0],
+                    ) {
                         AutoResizeableText(
                             text = stringResource(R.string.cancel),
                             style = MaterialTheme.typography.labelLarge
@@ -95,12 +98,13 @@ fun ConfirmDeleteDialog(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = MaterialTheme.colorScheme.onErrorContainer
                         ),
+                        shapes = ButtonDefaults.shapes(),
                         modifier = Modifier
-                            .weight(1f),
+                            .weight(1f)
+                            .animateWidth(interactionSources[1]),
+                        interactionSource = interactionSources[1],
                     ) {
-                        AutoResizeableText(
-                            text = stringResource(R.string.confirm),
-                        )
+                        AutoResizeableText(text = stringResource(R.string.confirm))
                     }
                 }
             }

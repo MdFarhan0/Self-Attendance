@@ -106,6 +106,7 @@ fun FontStyleBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f)
     ) {
         Column(
             modifier = Modifier

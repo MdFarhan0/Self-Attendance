@@ -45,8 +45,10 @@ fun SubjectAttendanceDataBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         dragHandle = null

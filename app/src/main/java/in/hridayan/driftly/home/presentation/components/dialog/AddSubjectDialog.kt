@@ -9,6 +9,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -728,14 +729,19 @@ fun CustomTimeDialog(
                 }
 
                 // Action buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                val dialogBtnSources = remember { List(2) { MutableInteractionSource() } }
+                @Suppress("DEPRECATION")
+                ButtonGroup(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedButton(
                         onClick = onDismiss,
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(100.dp)
+                        shapes = ButtonDefaults.shapes(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .animateWidth(dialogBtnSources[0]),
+                        interactionSource = dialogBtnSources[0],
                     ) {
                         Text("Cancel", fontWeight = FontWeight.SemiBold)
                     }
@@ -746,8 +752,12 @@ fun CustomTimeDialog(
                             onConfirm(selectedDays.toSet(), startStr, endStr)
                         },
                         enabled = selectedDays.isNotEmpty(),
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(100.dp),
+                        shapes = ButtonDefaults.shapes(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .animateWidth(dialogBtnSources[1]),
+                        interactionSource = dialogBtnSources[1],
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
                         Text("Add", fontWeight = FontWeight.Bold)

@@ -111,6 +111,7 @@ import `in`.hridayan.driftly.home.presentation.components.histogram.SubjectHisto
 import `in`.hridayan.driftly.home.presentation.components.image.UndrawRelaxedReading
 import `in`.hridayan.driftly.home.presentation.components.label.Label
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
+import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableText
 import `in`.hridayan.driftly.navigation.CalendarScreen
 import `in`.hridayan.driftly.navigation.LocalNavController
 import `in`.hridayan.driftly.navigation.SettingsScreen
@@ -540,7 +541,7 @@ fun HomeScreen(
                         ),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 37.dp, end = 16.dp)
+                    .padding(bottom = 43.dp, end = 14.dp)
             ) {
                 FloatingActionButtonMenu(
                     expanded = isFabMenuExpanded,
@@ -568,7 +569,7 @@ fun HomeScreen(
                         text = {
                             Text(text = "Add Subject")
                         },
-                        modifier = Modifier.height(60.dp)
+                        modifier = Modifier.height(67.dp)
                     )
                     
                     // Today's Class Action
@@ -584,7 +585,7 @@ fun HomeScreen(
                         text = {
                             Text(text = "Today's Class")
                         },
-                        modifier = Modifier.height(60.dp)
+                        modifier = Modifier.height(67.dp)
                     )
                     
                     // Tomorrow's Class Action
@@ -600,7 +601,7 @@ fun HomeScreen(
                         text = {
                             Text(text = "Tomorrow's Class")
                         },
-                        modifier = Modifier.height(60.dp)
+                        modifier = Modifier.height(67.dp)
                     )
                     
                     // Bunk Details Action
@@ -616,7 +617,7 @@ fun HomeScreen(
                         text = {
                             Text(text = "Bunk Details")
                         },
-                        modifier = Modifier.height(60.dp)
+                        modifier = Modifier.height(67.dp)
                     )
                 }
             }
@@ -684,7 +685,7 @@ private fun DriftlyMorphingFab(
     }
 
     if (!renderGate) {
-        Spacer(modifier = Modifier.size(70.dp))
+        Spacer(modifier = Modifier.size(80.dp))
         return
     }
 
@@ -712,7 +713,7 @@ private fun DriftlyMorphingFab(
             spring(dampingRatio = 0.7f, stiffness = 500f)
         }
     ) { expanded ->
-        if (expanded) 70.dp else 70.dp
+        if (expanded) 80.dp else 80.dp
     }
 
     val fabWidth by transition.animateDp(
@@ -721,7 +722,7 @@ private fun DriftlyMorphingFab(
             spring(dampingRatio = 0.7f, stiffness = 500f)
         }
     ) { expanded ->
-        if (expanded) 70.dp else 165.dp
+        if (expanded) 80.dp else 175.dp
     }
 
     val cornerRadius by transition.animateDp(
@@ -730,7 +731,7 @@ private fun DriftlyMorphingFab(
             spring(dampingRatio = 0.7f, stiffness = 500f)
         }
     ) { expanded ->
-        if (expanded) 35.dp else 16.dp
+        if (expanded) 40.dp else 16.dp
     }
 
     Surface(
@@ -765,11 +766,12 @@ private fun DriftlyMorphingFab(
                 enter = fadeIn() + expandHorizontally(),
                 exit = fadeOut() + shrinkHorizontally()
             ) {
-                Text(
+                AutoResizeableText(
                     text = "+ Add Class",
                     color = contentColor,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }
         }

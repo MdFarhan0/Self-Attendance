@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package `in`.hridayan.driftly.calender.presentation.components.bottomsheet
 
@@ -24,6 +24,9 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +84,7 @@ fun DailyAttendanceBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
@@ -148,10 +152,10 @@ fun DailyAttendanceBottomSheet(
             Spacer(modifier = Modifier.height(25.dp))
 
             // Bottom action buttons: Absent | Present
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            val actionInteractionSources = remember { List(2) { MutableInteractionSource() } }
+
+            @Suppress("DEPRECATION")
+            ButtonGroup(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = {
                         weakHaptic()
@@ -161,8 +165,11 @@ fun DailyAttendanceBottomSheet(
                             onDismiss()
                         }
                     },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(50.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .animateWidth(actionInteractionSources[0]),
+                    interactionSource = actionInteractionSources[0],
+                    shapes = ButtonDefaults.shapes(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError
@@ -191,8 +198,11 @@ fun DailyAttendanceBottomSheet(
                             onDismiss()
                         }
                     },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(50.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .animateWidth(actionInteractionSources[1]),
+                    interactionSource = actionInteractionSources[1],
+                    shapes = ButtonDefaults.shapes(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary

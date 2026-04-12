@@ -22,6 +22,6 @@ val LocalSettings = compositionLocalOf {
         startWeekOnMonday = true,
         notificationPreference = true,
         notificationPermissionDialogShown = false,
-        fontFamily = CustomFontFamily.SYSTEM_FONT
+        fontFamily = CustomFontFamily.SIRIN_STENCIL
     )
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -31,9 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.calender.presentation.components.button.MonthNavigationButtons
 import `in`.hridayan.driftly.calender.presentation.components.color.getAttendanceColors
 import `in`.hridayan.driftly.calender.presentation.components.dialog.MonthYearPickerDialog
@@ -62,7 +59,6 @@ fun CalendarCanvas(
     onNavigate: (Int, Int) -> Unit,
     onResetMonth: () -> Unit,
 ) {
-    val context = LocalContext.current
     val weakHaptic = LocalWeakHaptic.current
     val yearMonth = YearMonth.of(year, month)
     val today = LocalDate.now()
@@ -76,7 +72,6 @@ fun CalendarCanvas(
 
     var showMonthYearDialog by remember { mutableStateOf(false) }
     val showStreakModifier = LocalSettings.current.showAttendanceStreaks
-    val months: List<String> = context.resources.getStringArray(R.array.month_names).toList()
 
     Column(
         modifier = modifier
@@ -87,49 +82,30 @@ fun CalendarCanvas(
                 )
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        MonthYearHeader(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(horizontal = 20.dp),
-            month = abbreviatedMonth,
-            year = year
-        )
-
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-            thickness = 1.dp,
-            modifier = Modifier.padding(horizontal = 5.dp)
-        )
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            MonthYearPicker(
-                modifier = Modifier
-                    .padding(start = 15.dp),
-                fullMonthName = months[month - 1],
+            MonthYearHeader(
+                month = abbreviatedMonth,
                 year = year,
                 onClick = {
-                    showMonthYearDialog = true
                     weakHaptic()
-                })
-
-            Spacer(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                    showMonthYearDialog = true
+                }
             )
 
             MonthNavigationButtons(
-                modifier = Modifier.padding(end = 20.dp),
                 onNavigatePrev = {
                     val prev = yearMonth.minusMonths(1)
                     onNavigate(prev.year, prev.monthValue)
-                }, onNavigateNext = {
+                },
+                onNavigateNext = {
                     val next = yearMonth.plusMonths(1)
                     onNavigate(next.year, next.monthValue)
                 },
@@ -137,94 +113,97 @@ fun CalendarCanvas(
             )
         }
 
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onSurface,
+            thickness = 1.dp,
+            modifier = Modifier.padding(horizontal = 5.dp)
+        )
+
         WeekDayLabels()
 
         val totalCells = ((firstDayOfWeek + daysInMonth + 6) / 7) * 7
-
         val rows = totalCells / 7
-        
+
         Column(modifier = Modifier.fillMaxWidth()) {
             for (row in 0 until rows) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     for (col in 0 until 7) {
                         val index = row * 7 + col
-                        
+                        val day = index - firstDayOfWeek + 1
+                        val date = if (day in 1..daysInMonth) yearMonth.atDay(day) else null
+                        val dateString = date?.format(DateTimeFormatter.ISO_DATE)
+
                         Box(modifier = Modifier.weight(1f)) {
-                val day = index - firstDayOfWeek + 1
-                val date = if (day in 1..daysInMonth) yearMonth.atDay(day) else null
-                val dateString = date?.format(DateTimeFormatter.ISO_DATE)
+                            if (dateString != null && date != null) {
+                                val status = markedDates[date] ?: AttendanceStatus.UNMARKED
+                                val streakType = streakMap[date] ?: StreakType.NONE
 
-                if (dateString != null) {
-                    val status = markedDates[date] ?: AttendanceStatus.UNMARKED
-                    val streakType = streakMap[date] ?: StreakType.NONE
+                                val attendanceColors = getAttendanceColors(status)
+                                val backgroundColor = attendanceColors.background
+                                val foregroundColor = attendanceColors.foreground
 
-                    val attendanceColors = getAttendanceColors(status)
-                    val backgroundColor = attendanceColors.background
-                    val foregroundColor = attendanceColors.foreground
+                                val animatedProgress = remember(dateString, status) { Animatable(0f) }
+                                val animatedScale = when (status) {
+                                    AttendanceStatus.UNMARKED -> 1f
+                                    else -> animatedProgress.value
+                                }
 
-                    val animatedProgress = remember(dateString, status) { Animatable(0f) }
-                    val animatedScale = when (status) {
-                        AttendanceStatus.UNMARKED -> 1f
-                        else -> animatedProgress.value
-                    }
+                                LaunchedEffect(dateString, status) {
+                                    if (status != AttendanceStatus.UNMARKED) {
+                                        animatedProgress.animateTo(
+                                            targetValue = 1f, animationSpec = tween(
+                                                durationMillis = 1000, easing = FastOutSlowInEasing
+                                            )
+                                        )
+                                    }
+                                }
 
-                    LaunchedEffect(dateString, status) {
-                        if (status != AttendanceStatus.UNMARKED) {
-                            animatedProgress.animateTo(
-                                targetValue = 1f, animationSpec = tween(
-                                    durationMillis = 1000, easing = FastOutSlowInEasing
+                                val isToday =
+                                    today.year == year && today.monthValue == month && today.dayOfMonth == day
+
+                                Box(
+                                    modifier = Modifier
+                                        .aspectRatio(1f)
+                                        .scale(animatedScale)
+                                        .streakModifier(
+                                            showStreak = showStreakModifier,
+                                            streakType = streakType,
+                                            circleBg = backgroundColor,
+                                            circleFg = foregroundColor,
+                                            streakBandColor = foregroundColor,
+                                            isToday = isToday
+                                        )
+                                        .clickable {
+                                            weakHaptic()
+                                            onDateClick(dateString)
+                                        },
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    val dayAggStatus = dayStatusMap[date]
+                                    if (dayAggStatus == DayAttendanceStatus.MIXED) {
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .offset(y = (-3).dp)
+                                                .size(5.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFFF9800))
+                                        )
+                                    }
+
+                                    Text(
+                                        text = "$day",
+                                        color = if (streakType == StreakType.MIDDLE && showStreakModifier) backgroundColor else foregroundColor,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .aspectRatio(1f)
+                                        .padding(4.dp)
                                 )
-                            )
-                        }
-                    }
-
-                    val isToday =
-                        today.year == year && today.monthValue == month && today.dayOfMonth == day
-
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .scale(animatedScale)
-                            .streakModifier(
-                                showStreak = showStreakModifier,
-                                streakType = streakType,
-                                circleBg = backgroundColor,
-                                circleFg = foregroundColor,
-                                streakBandColor = foregroundColor,
-                                isToday = isToday
-                            )
-                            .clickable {
-                                weakHaptic()
-                                onDateClick(dateString)
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        // Mixed indicator: small orange dot at bottom
-                        val dayAggStatus = dayStatusMap[date]
-                        if (dayAggStatus == DayAttendanceStatus.MIXED) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .offset(y = (-3).dp)
-                                    .size(5.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFFF9800)) // M3 orange/amber
-                            )
-                        }
-
-                        Text(
-                            text = "$day",
-                            color = if (streakType == StreakType.MIDDLE && showStreakModifier) backgroundColor else foregroundColor,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .padding(4.dp)
-                    )
-                }
+                            }
                         }
                     }
                 }

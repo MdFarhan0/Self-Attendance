@@ -51,6 +51,7 @@ fun AttendanceTargetBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),

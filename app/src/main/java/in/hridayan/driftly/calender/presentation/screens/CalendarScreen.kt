@@ -26,18 +26,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,8 +48,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +61,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -87,7 +95,7 @@ data class AttendanceInsight(
     val requiredCount: Int = 0
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
@@ -154,19 +162,7 @@ fun CalendarScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .basicMarquee(),
-                        text = subject,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                        ),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
-                },
+                title = { },
                 navigationIcon = { BackButton() }
             )
         }) { paddingValue ->
@@ -179,6 +175,22 @@ fun CalendarScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
+            // New large subject title
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 25.dp)
+                    .alpha(0.95f)
+                    .basicMarquee(),
+                text = subject,
+                style = MaterialTheme.typography.displaySmallEmphasized.copy(
+                    fontWeight = FontWeight.ExtraBold
+                ),
+                maxLines = 1
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             CalendarCanvas(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,33 +214,35 @@ fun CalendarScreen(
                 }
             )
 
+            Spacer(modifier = Modifier.height(3.dp)) // 3dp + 5dp root arrangement = 8dp gap
 
 
-            // -----------------------------------------------
-            // Button Grid: 2 rows × 2 cols with custom widths
-            // Row 1: Overview (55%) | Target (45%)
-            // Row 2: Monthly (45%) | Timetable (55%)
-            // -----------------------------------------------
+
+            // ── 4 Action Buttons in 2 Rows with animateWidth ──
+            val calendarBtnSources = remember { List(4) { MutableInteractionSource() } }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                // ── Row 1 ──
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                @Suppress("DEPRECATION")
+                ButtonGroup(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Overview button (55%)
+                    // Overview button (57%)
                     Button(
-                        modifier = Modifier.weight(0.55f),
+                        modifier = Modifier
+                            .weight(0.57f)
+                            .animateWidth(calendarBtnSources[0]),
+                        interactionSource = calendarBtnSources[0],
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             weakHaptic()
                             isMonthlyMode = false
                             showSubjectAttendanceDataBottomSheet = true
                         },
-                        shape = RoundedCornerShape(40.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -254,14 +268,17 @@ fun CalendarScreen(
                         }
                     }
 
-                    // Target button (45%)
+                    // Target button (43%)
                     Button(
-                        modifier = Modifier.weight(0.45f),
+                        modifier = Modifier
+                            .weight(0.43f)
+                            .animateWidth(calendarBtnSources[1]),
+                        interactionSource = calendarBtnSources[1],
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             weakHaptic()
                             showTargetBottomSheet = true
                         },
-                        shape = RoundedCornerShape(40.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -288,20 +305,22 @@ fun CalendarScreen(
                     }
                 }
 
-                // ── Row 2 ──
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                @Suppress("DEPRECATION")
+                ButtonGroup(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Monthly Attendance button (45%)
+                    // Monthly button (43%)
                     Button(
-                        modifier = Modifier.weight(0.45f),
+                        modifier = Modifier
+                            .weight(0.43f)
+                            .animateWidth(calendarBtnSources[2]),
+                        interactionSource = calendarBtnSources[2],
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             weakHaptic()
                             isMonthlyMode = true
                             showSubjectAttendanceDataBottomSheet = true
                         },
-                        shape = RoundedCornerShape(40.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary
@@ -327,14 +346,17 @@ fun CalendarScreen(
                         }
                     }
 
-                    // Timetable button (55%)
+                    // Timetable button (57%)
                     Button(
-                        modifier = Modifier.weight(0.55f),
+                        modifier = Modifier
+                            .weight(0.57f)
+                            .animateWidth(calendarBtnSources[3]),
+                        interactionSource = calendarBtnSources[3],
+                        shapes = ButtonDefaults.shapes(),
                         onClick = {
                             weakHaptic()
                             showTimetableBottomSheet = true
                         },
-                        shape = RoundedCornerShape(40.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -364,48 +386,34 @@ fun CalendarScreen(
 
             Spacer(modifier = Modifier.height(5.dp)) // Extra 5dp to make total 10dp from previous element
 
-            // Insight Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 0.dp
-                )
-            ) {
-                AnimatedContent(
-                    targetState = insight,
-                    transitionSpec = {
-                        (slideInVertically { it } + fadeIn()).togetherWith(
-                            slideOutVertically { -it } + fadeOut()
-                        )
-                    },
-                    label = "insight_animation"
-                ) { currentInsight ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = currentInsight.icon,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Text(
-                            text = currentInsight.message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+            // Insight Section (No Card)
+            AnimatedContent(
+                targetState = insight,
+                transitionSpec = {
+                    (slideInVertically { it } + fadeIn()).togetherWith(
+                        slideOutVertically { -it } + fadeOut()
+                    )
+                },
+                label = "insight_animation",
+                modifier = Modifier.padding(horizontal = 25.dp) // Adjusted padding for text look
+            ) { currentInsight ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = currentInsight.icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Text(
+                        text = currentInsight.message,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
@@ -487,27 +495,27 @@ fun calculateAttendanceInsight(
         C == 0 -> {
             AttendanceInsight(
                 message = "Attend your first class to get started",
-                icon = Icons.Rounded.Info
+                icon = Icons.Outlined.Info
             )
         }
         currentPercentage < T -> {
             AttendanceInsight(
                 message = "Attend the next $requiredAttend ${if (requiredAttend == 1) "class" else "classes"} to reach ${T.toInt()}%",
-                icon = Icons.Rounded.School,
+                icon = Icons.Outlined.School,
                 requiredCount = requiredAttend
             )
         }
         bunkCount >= 1 -> {
             AttendanceInsight(
                 message = "You can bunk $bunkCount more ${if (bunkCount == 1) "class" else "classes"} and still stay above ${T.toInt()}%",
-                icon = Icons.Rounded.CheckCircle,
+                icon = Icons.Outlined.CheckCircleOutline,
                 bunkCount = bunkCount
             )
         }
         else -> {
             AttendanceInsight(
                 message = "You're just safe at ${T.toInt()}%. Don't miss the next class",
-                icon = Icons.Rounded.Warning
+                icon = Icons.Outlined.Warning
             )
         }
     }

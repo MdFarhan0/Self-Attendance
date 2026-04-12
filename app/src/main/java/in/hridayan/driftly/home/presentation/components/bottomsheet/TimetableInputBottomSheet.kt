@@ -174,6 +174,7 @@ fun TimetableInputBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
@@ -198,49 +199,76 @@ fun TimetableInputBottomSheet(
                 textAlign = TextAlign.Center
             )
 
-            // Day Selector (4 days on top, 3 days below for quick entry)
+            // Day Selector — Row 1: Mon Tue Wed Thu (ButtonGroup + animateWidth)
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // First Row: Mon, Tue, Wed, Thu
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                val dayRowOneSources = remember { List(4) { MutableInteractionSource() } }
+                @Suppress("DEPRECATION")
+                ButtonGroup(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     days.take(4).forEachIndexed { i, day ->
-                        DayPill(
-                            day = day,
-                            isSelected = selectedDayIndex == i,
+                        val isSelected = selectedDayIndex == i
+                        Button(
                             onClick = {
                                 weakHaptic()
                                 selectedDayIndex = i
                             },
-                            modifier = Modifier.weight(1f)
-                        )
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateWidth(dayRowOneSources[i]),
+                            interactionSource = dayRowOneSources[i],
+                            shapes = ButtonDefaults.shapes(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = day,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(vertical = 6.dp)
+                            )
+                        }
                     }
                 }
-                
+
                 // Second Row: Fri, Sat, Sun
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                val dayRowTwoSources = remember { List(3) { MutableInteractionSource() } }
+                @Suppress("DEPRECATION")
+                ButtonGroup(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Spacer on left to center the 3 items if desired, or just space them equally
-                    // Let's space them equally for maximum tap target size
                     days.drop(4).forEachIndexed { i, day ->
                         val index = i + 4
-                        DayPill(
-                            day = day,
-                            isSelected = selectedDayIndex == index,
+                        val isSelected = selectedDayIndex == index
+                        Button(
                             onClick = {
                                 weakHaptic()
                                 selectedDayIndex = index
                             },
-                            modifier = Modifier.weight(1f)
-                        )
+                            modifier = Modifier
+                                .weight(1f)
+                                .animateWidth(dayRowTwoSources[i]),
+                            interactionSource = dayRowTwoSources[i],
+                            shapes = ButtonDefaults.shapes(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = day,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(vertical = 6.dp)
+                            )
+                        }
                     }
-                    // Add empty spacer if we want to nudge 3rd row (optional)
                 }
             }
 
@@ -410,53 +438,53 @@ fun TimetableInputBottomSheet(
             // VALIDATION: End time must be different from start time
             val isValid = endTotalMinutes != startTotalMinutes
 
-            // Add to Timetable Button
-            val addToTimetableInteraction = remember { MutableInteractionSource() }
-            Button(
-                onClick = {
-                    weakHaptic()
-                    val dayOfWeek = selectedDayIndex + 1
-                    
-                    // IMPORTANT: Convert 12-hour to 24-hour format WITHOUT using any Date/Calendar objects
-                    // This prevents timezone-related bugs on different devices
-                    // Direct integer calculation ensures the time is stored exactly as selected
-                    val startTime = String.format("%02d:%02d", startHour24, startMin)
-                    val endTime = String.format("%02d:%02d", endHour24, endMin)
-                    
-                    scope.launch {
-                        onSave(dayOfWeek, startTime, endTime, null)
-                        sheetState.hide()
-                        onDismiss()
-                    }
-                },
-                enabled = isValid,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                    shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-                )
-            ) {
-                Row(
-                   verticalAlignment = Alignment.CenterVertically,
-                   horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = if (isValid) "Add to Timetable" else "Check Times",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+            // Add to Timetable Button (with animateWidth)
+            val addBtnSource = remember { MutableInteractionSource() }
+            @Suppress("DEPRECATION")
+            ButtonGroup(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {
+                        weakHaptic()
+                        val dayOfWeek = selectedDayIndex + 1
+                        val startTime = String.format("%02d:%02d", startHour24, startMin)
+                        val endTime = String.format("%02d:%02d", endHour24, endMin)
+                        scope.launch {
+                            onSave(dayOfWeek, startTime, endTime, null)
+                            sheetState.hide()
+                            onDismiss()
+                        }
+                    },
+                    enabled = isValid,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .animateWidth(addBtnSource),
+                    interactionSource = addBtnSource,
+                    shapes = ButtonDefaults.shapes(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
                     )
-                    if (isValid) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = if (isValid) "Add to Timetable" else "Check Times",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
+                        if (isValid) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
