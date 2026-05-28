@@ -14,7 +14,9 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -35,8 +38,10 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.School
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.TrackChanges
+import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,6 +80,7 @@ import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.Attend
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.DailyAttendanceBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.SubjectAttendanceDataBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.bottomsheet.TimetableBottomSheet
+import `in`.hridayan.driftly.export.presentation.ExportReportBottomSheet
 import `in`.hridayan.driftly.calender.presentation.components.canvas.CalendarCanvas
 import `in`.hridayan.driftly.calender.presentation.viewmodel.CalendarViewModel
 import `in`.hridayan.driftly.core.common.LocalSettings
@@ -86,6 +92,7 @@ import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableTex
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
 import `in`.hridayan.driftly.navigation.CalendarScreen
 import `in`.hridayan.driftly.navigation.LocalNavController
+import androidx.compose.ui.layout.layout
 import kotlin.math.ceil
 
 data class AttendanceInsight(
@@ -120,6 +127,7 @@ fun CalendarScreen(
     var showSubjectAttendanceDataBottomSheet by rememberSaveable { mutableStateOf(false) }
     var showTargetBottomSheet by rememberSaveable { mutableStateOf(false) }
     var showTimetableBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showExportBottomSheet by rememberSaveable { mutableStateOf(false) }
     var selectedDateForBottomSheet by rememberSaveable { mutableStateOf<String?>(null) }
 
     val attendanceCounts by homeViewModel.getSubjectAttendanceCounts(subjectId)
@@ -163,7 +171,40 @@ fun CalendarScreen(
         topBar = {
             TopAppBar(
                 title = { },
-                navigationIcon = { BackButton() }
+                navigationIcon = {
+                    Box(modifier = Modifier.padding(start = 6.dp)) {
+                        BackButton()
+                    }
+                },
+                actions = {
+                    FilledTonalButton(
+                        onClick = {
+                            weakHaptic()
+                            showExportBottomSheet = true
+                        },
+                        shapes = ButtonDefaults.shapes(),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        modifier = Modifier.height(40.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "PDF Report",
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(15.dp))
+                }
             )
         }) { paddingValue ->
         val schedules by homeViewModel.getSchedulesForSubject(subjectId)
@@ -189,12 +230,17 @@ fun CalendarScreen(
                 maxLines = 1
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
-
             CalendarCanvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 15.dp),
+                    .padding(horizontal = 15.dp)
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val offsetPx = 6.dp.roundToPx()
+                        layout(placeable.width, placeable.height - offsetPx) {
+                            placeable.placeRelative(0, -offsetPx)
+                        }
+                    },
                 year = year,
                 month = month,
                 markedDates = markedDates,
@@ -229,7 +275,8 @@ fun CalendarScreen(
             ) {
                 @Suppress("DEPRECATION")
                 ButtonGroup(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     // Overview button (57%)
                     Button(
@@ -307,7 +354,8 @@ fun CalendarScreen(
 
                 @Suppress("DEPRECATION")
                 ButtonGroup(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     // Monthly button (43%)
                     Button(
@@ -462,6 +510,14 @@ fun CalendarScreen(
                 schedules = schedules,
                 onDismiss = {
                     showTimetableBottomSheet = false
+                }
+            )
+        }
+
+        if (showExportBottomSheet) {
+            ExportReportBottomSheet(
+                onDismiss = {
+                    showExportBottomSheet = false
                 }
             )
         }

@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import `in`.hridayan.driftly.core.domain.model.ClassSchedule
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -105,21 +104,11 @@ object ClassNotificationScheduler {
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        Log.d("ClassScheduler", "=== SCHEDULING ALARM ===")
-        Log.d("ClassScheduler", "Subject: $subjectName")
-        Log.d("ClassScheduler", "Schedule ID: $scheduleId")
-        Log.d("ClassScheduler", "Day of week: $dayOfWeek")
-        Log.d("ClassScheduler", "Start time: $startTime")
-        Log.d("ClassScheduler", "Trigger time: $triggerTimeMillis (${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date(triggerTimeMillis))})")
-        Log.d("ClassScheduler", "Current time: ${System.currentTimeMillis()} (${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(java.util.Date())})")
-        
         // Permission check for Android 12+ (S)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val canSchedule = alarmManager.canScheduleExactAlarms()
-            Log.d("ClassScheduler", "Can schedule exact alarms: $canSchedule")
             if (!canSchedule) {
-                Log.e("ClassScheduler", "FATAL: Cannot schedule exact alarms. Permission missing!")
-                return 
+                return
             }
         }
 
@@ -145,9 +134,6 @@ object ClassNotificationScheduler {
             triggerTimeMillis,
             pendingIntent
         )
-        
-        Log.d("ClassScheduler", "Alarm scheduled successfully!")
-        Log.d("ClassScheduler", "=============================")
     }
 
     fun cancelScheduleNotification(context: Context, scheduleId: Int) {

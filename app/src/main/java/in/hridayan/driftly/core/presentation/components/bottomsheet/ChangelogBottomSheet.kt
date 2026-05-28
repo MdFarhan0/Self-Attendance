@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import `in`.hridayan.driftly.R
+import `in`.hridayan.driftly.core.presentation.theme.adaptiveModalScrimColor
 import `in`.hridayan.driftly.settings.presentation.components.item.ChangelogItemLayout
 import `in`.hridayan.driftly.settings.presentation.page.changelog.viewmodel.ChangelogViewModel
 import kotlin.math.sin
@@ -42,7 +43,7 @@ fun ChangelogBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
+        scrimColor = adaptiveModalScrimColor(),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),

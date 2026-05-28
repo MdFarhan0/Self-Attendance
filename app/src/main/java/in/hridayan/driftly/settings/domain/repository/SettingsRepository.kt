@@ -18,6 +18,9 @@ interface SettingsRepository {
 
     fun getString(key: SettingsKeys): Flow<String>
     suspend fun setString(key: SettingsKeys, value: String)
+    
+    fun getLong(key: SettingsKeys): Flow<Long>
+    suspend fun setLong(key: SettingsKeys, value: Long)
 
     suspend fun getSettingsPageList(): List<PreferenceGroup>
     suspend fun getLookAndFeelPageList(): List<PreferenceGroup>
@@ -26,6 +29,8 @@ interface SettingsRepository {
     suspend fun getBehaviorPageList(): List<PreferenceGroup>
     suspend fun getBackupPageList(): List<PreferenceGroup>
     suspend fun getNotificationsPageList(): List<PreferenceGroup>
+    suspend fun getFeaturesPageList(): List<PreferenceGroup>
+
 
     fun getAllDefaultSettings(): Map<String, Any?>
     suspend fun getCurrentSettings(): Map<String, Any?>

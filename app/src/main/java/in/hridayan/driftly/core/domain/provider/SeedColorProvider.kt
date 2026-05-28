@@ -4,7 +4,7 @@ import `in`.hridayan.driftly.core.presentation.provider.AppSeedColors
 import `in`.hridayan.driftly.core.presentation.provider.SeedColor
 
 object SeedColorProvider {
-    val seed = AppSeedColors.GreenMedium.colors
+    val seed = AppSeedColors.Color05.colors
 
     var primary: Int = seed.primary
     var secondary: Int = seed.secondary

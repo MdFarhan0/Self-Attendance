@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Use system-wide dynamic colors for the splash screen on Android 12+ -->
+    <color name="splash_bg">@android:color/system_neutral1_10</color>
+    <color name="splash_icon_color">@android:color/system_accent1_600</color>
+</resources>

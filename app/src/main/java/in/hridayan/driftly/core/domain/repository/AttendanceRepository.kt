@@ -22,4 +22,8 @@ interface AttendanceRepository {
     fun getPresentCountForMonth(subjectId: Int, year: Int, month: Int): Flow<Int>
     fun getAbsentCountForMonth(subjectId: Int, year: Int, month: Int): Flow<Int>
     fun getTotalCountForMonth(subjectId: Int, year: Int, month: Int): Flow<Int>
+    suspend fun updateNote(id: Int, note: String?)
+    suspend fun getPresentCountForSubject(subjectId: Int): Int
+    suspend fun getAbsentCountForSubject(subjectId: Int): Int
 }
+

@@ -33,12 +33,14 @@ class MissedAttendanceAlertWorker(
             val hasUnmarked = attendanceRepository.hasUnmarkedAttendanceForDate(today)
 
             if (hasUnmarked) {
-                NotificationSetup.showMissedAttendanceNotification(applicationContext)
+                val isHoliday = `in`.hridayan.driftly.core.utils.HolidayHelper.isHolidayModeActive(applicationContext)
+                if (!isHoliday) {
+                    NotificationSetup.showMissedAttendanceNotification(applicationContext)
+                }
             }
 
             Result.success()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             Result.retry()
         }
     }

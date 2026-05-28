@@ -12,6 +12,31 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 
+// Tomato-style Settings navigation transitions
+fun tomatoForwardEnter(): EnterTransition {
+    return slideInHorizontally(
+        initialOffsetX = { it }
+    )
+}
+
+fun tomatoForwardExit(): ExitTransition {
+    return slideOutHorizontally(
+        targetOffsetX = { -it / 4 }
+    ) + fadeOut()
+}
+
+fun tomatoPopEnter(): EnterTransition {
+    return slideInHorizontally(
+        initialOffsetX = { -it / 4 }
+    ) + fadeIn()
+}
+
+fun tomatoPopExit(): ExitTransition {
+    return slideOutHorizontally(
+        targetOffsetX = { it }
+    )
+}
+
 fun slideFadeInFromRight(): EnterTransition {
     return slideInHorizontally(
         initialOffsetX = { (it * 0.15f).toInt() },

@@ -1,7 +1,6 @@
 package `in`.hridayan.driftly.core.utils
 
 import android.os.Build
-import android.util.Log
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -47,8 +46,7 @@ object MiUiCheck {
             BufferedReader(InputStreamReader(process.inputStream), 1024).use { input ->
                 return input.readLine()
             }
-        } catch (e: IOException) {
-            Log.e("MiuiCheck", "Unable to read property $property", e)
+        } catch (_: IOException) {
             return null
         }
     }

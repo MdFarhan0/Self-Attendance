@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,6 +49,7 @@ import `in`.hridayan.driftly.core.domain.model.SubjectError
 import `in`.hridayan.driftly.core.utils.TimeUtils
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
 import `in`.hridayan.driftly.core.presentation.components.dialog.ConfirmDeleteDialog
+import `in`.hridayan.driftly.core.presentation.components.button.BackButton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -92,23 +96,39 @@ fun AddSubjectDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
     ) {
         val scrollState = rememberScrollState()
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
             // Match HomeScreen: use surface (pure black in AMOLED dark)
             containerColor = MaterialTheme.colorScheme.surface,
             topBar = {
-                TopAppBar(
+                LargeTopAppBar(
                     title = {
+                        val collapsedFraction = scrollBehavior.state.collapsedFraction
+                        val expandedFontSize = MaterialTheme.typography.displaySmallEmphasized.fontSize
+                        val collapsedFontSize = MaterialTheme.typography.headlineSmall.fontSize
+
+                        val fontSize = lerp(expandedFontSize, collapsedFontSize, collapsedFraction)
+
                         Text(
+                            modifier = Modifier.basicMarquee(),
                             text = if (subjectId == null) stringResource(R.string.add_subject) else "Update Subject",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            maxLines = 1,
+                            fontSize = fontSize,
+                            style = MaterialTheme.typography.displaySmallEmphasized.copy(
+                                fontWeight = FontWeight.ExtraBold
+                            )
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { viewModel.resetInputFields(); onDismiss() }) {
-                            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Box(modifier = Modifier.padding(start = 5.dp, end = 6.dp)) {
+                            BackButton(
+                                onClick = {
+                                    viewModel.resetInputFields()
+                                    onDismiss()
+                                }
+                            )
                         }
                     },
                     actions = {
@@ -151,14 +171,15 @@ fun AddSubjectDialog(
                                     }
                                 }
                             },
-                            shape = RoundedCornerShape(100.dp),
+                            shapes = ButtonDefaults.shapes(),
                             modifier = Modifier.padding(end = 12.dp),
                             elevation = ButtonDefaults.filledTonalButtonElevation(defaultElevation = 0.dp)
                         ) {
                             Text(if (subjectId == null) "Save" else "Update", fontWeight = FontWeight.Bold)
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     )
                 )
@@ -546,7 +567,7 @@ fun AddSubjectDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(64.dp),
-                            shape = RoundedCornerShape(100.dp),
+                            shapes = ButtonDefaults.shapes(),
                             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

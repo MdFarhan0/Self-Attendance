@@ -4,24 +4,23 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.compositionLocalOf
 import `in`.hridayan.driftly.core.domain.model.SubjectCardStyle
 import `in`.hridayan.driftly.core.domain.provider.SeedColorProvider
-import `in`.hridayan.driftly.settings.domain.model.CustomFontFamily
 import `in`.hridayan.driftly.settings.domain.model.SettingsState
 
 val LocalSettings = compositionLocalOf {
     SettingsState(
-        themeMode = AppCompatDelegate.MODE_NIGHT_NO,
+        themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
         isHighContrastDarkMode = false,
         seedColor = SeedColorProvider.seed,
-        isDynamicColor = false,
+        isDynamicColor = true,
         isHapticEnabled = true,
-        subjectCardCornerRadius = 8f,
+        subjectCardCornerRadius = 12f,
         subjectCardStyle = SubjectCardStyle.CARD_STYLE_A,
+        homeSubjectCardLayoutMode = 0,
         savedVersionCode = 0,
         showAttendanceStreaks = true,
         rememberCalendarMonthYear = false,
         startWeekOnMonday = true,
         notificationPreference = true,
-        notificationPermissionDialogShown = false,
-        fontFamily = CustomFontFamily.SIRIN_STENCIL
+        notificationPermissionDialogShown = false
     )
 }

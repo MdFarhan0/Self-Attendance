@@ -22,6 +22,8 @@ import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.domain.model.ClassSchedule
 import `in`.hridayan.driftly.core.domain.model.SubjectError
+import `in`.hridayan.driftly.core.presentation.components.card.adaptiveCardColors
+import `in`.hridayan.driftly.core.presentation.components.card.adaptiveCardContainerColor
 import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableText
 import `in`.hridayan.driftly.core.presentation.theme.Shape
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
@@ -59,6 +61,7 @@ fun EditSubjectDialog(
     }
 
     val weakHaptic = LocalWeakHaptic.current
+    val updateInteraction = remember { MutableInteractionSource() }
     val currentSubject by viewModel.subject.collectAsState()
     val currentSubjectCode by viewModel.subjectCode.collectAsState()
     val histogramLabel by viewModel.histogramLabel.collectAsState()
@@ -76,7 +79,7 @@ fun EditSubjectDialog(
             modifier = modifier
                 .fillMaxWidth()
                 .clip(Shape.cardCornerLarge)
-                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .background(adaptiveCardContainerColor())
                 .padding(25.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -145,9 +148,7 @@ fun EditSubjectDialog(
             // Timetable Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                colors = adaptiveCardColors()
             ) {
                 Column(
                     modifier = Modifier
@@ -227,7 +228,9 @@ fun EditSubjectDialog(
                         )
                     },
                     modifier = Modifier
-                        .weight(1f),
+                        .weight(1f)
+                        .animateWidth(updateInteraction),
+                    interactionSource = updateInteraction,
                     ) {
                     AutoResizeableText(text = stringResource(R.string.update))
                 }

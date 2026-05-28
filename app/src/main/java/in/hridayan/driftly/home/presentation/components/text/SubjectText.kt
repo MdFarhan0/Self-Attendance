@@ -20,6 +20,7 @@ fun SubjectText(
     modifier: Modifier = Modifier,
     subject: String,
     subjectCode: String? = null,
+    lecturerName: String? = null,
     subjectTextColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Column(
@@ -42,7 +43,18 @@ fun SubjectText(
         if (!subjectCode.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "Code: $subjectCode",
+                text = subjectCode.uppercase(),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                ),
+                color = subjectTextColor.copy(alpha = 0.6f),
+            )
+        }
+
+        if (!lecturerName.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = lecturerName.uppercase(),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
                 ),

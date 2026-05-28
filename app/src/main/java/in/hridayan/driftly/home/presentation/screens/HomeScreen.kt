@@ -6,36 +6,32 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateColor
-import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,47 +41,44 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Analytics
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleFloatingActionButton
-import androidx.compose.material3.animateFloatingActionButton
-import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.layout.*
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -97,32 +90,30 @@ import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.domain.model.SubjectAttendance
 import `in`.hridayan.driftly.core.domain.model.TotalAttendance
 import `in`.hridayan.driftly.core.presentation.components.dialog.NotificationPermDialog
-import `in`.hridayan.driftly.core.presentation.components.progress.AnimatedHalfCircleProgress
-import `in`.hridayan.driftly.notification.isNotificationPermissionGranted
+import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableText
+import `in`.hridayan.driftly.core.presentation.theme.adaptiveStrongScrimColor
+import `in`.hridayan.driftly.home.presentation.components.dialog.TodayClass
 import `in`.hridayan.driftly.home.presentation.components.card.SubjectCard
 import `in`.hridayan.driftly.home.presentation.components.dialog.AddSubjectDialog
-import `in`.hridayan.driftly.home.presentation.components.drawer.SmartAttendanceDrawer
-import `in`.hridayan.driftly.home.presentation.components.bottomsheet.BunkDetailsBottomSheet
-import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TodaysClassesBottomSheet
-import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TomorrowsClassesBottomSheet
-import `in`.hridayan.driftly.home.presentation.components.bottomsheet.TodayClass
-import `in`.hridayan.driftly.home.presentation.components.histogram.AttendanceHistogramCard
-import `in`.hridayan.driftly.home.presentation.components.histogram.SubjectHistogramData
+import `in`.hridayan.driftly.home.presentation.components.dialog.FullTimetableDialog
+import `in`.hridayan.driftly.home.presentation.components.dialog.BunkDetailsDialog
+import `in`.hridayan.driftly.home.presentation.components.dialog.TodaysClassesDialog
+import `in`.hridayan.driftly.home.presentation.components.dialog.TomorrowsClassesDialog
+import `in`.hridayan.driftly.home.presentation.components.dialog.SecondaryTab
+import `in`.hridayan.driftly.home.presentation.components.dialog.SecondaryPagesDialog
+
 import `in`.hridayan.driftly.home.presentation.components.image.UndrawRelaxedReading
-import `in`.hridayan.driftly.home.presentation.components.label.Label
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
-import `in`.hridayan.driftly.core.presentation.components.text.AutoResizeableText
 import `in`.hridayan.driftly.navigation.CalendarScreen
 import `in`.hridayan.driftly.navigation.LocalNavController
 import `in`.hridayan.driftly.navigation.SettingsScreen
+import `in`.hridayan.driftly.notification.isNotificationPermissionGranted
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import androidx.compose.material3.ExperimentalMaterial3Api
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("DefaultLocale")
@@ -132,42 +123,29 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
+    val context = androidx.compose.ui.platform.LocalContext.current
     val weakHaptic = LocalWeakHaptic.current
     val navController = LocalNavController.current
-    // val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Drawer removed
-    val scope = rememberCoroutineScope()
-    
+
     val subjects by viewModel.subjectList.collectAsState(initial = emptyList())
-    val subjectCount by viewModel.subjectCount.collectAsState(initial = 0)
+    val subjectCount by viewModel.subjectCount.collectAsState(initial = -1)
     var isDialogOpen by rememberSaveable { mutableStateOf(false) }
+
     val totalAttendance by viewModel.getTotalAttendanceCounts()
         .collectAsState(initial = TotalAttendance())
     val totalPresent = totalAttendance.totalPresent
     val totalAbsent = totalAttendance.totalAbsent
     val totalCount = totalAttendance.totalCount
-    val totalProgress = totalPresent.toFloat() / totalCount.toFloat()
-    val totalProgressText = "${String.format("%.2f", totalProgress * 100)}%"
-
-
-
-    val progressColor = lerp(
-        start = MaterialTheme.colorScheme.error,
-        stop = MaterialTheme.colorScheme.primary,
-        fraction = totalProgress.coerceIn(0f, 1f)
-    )
 
     val subjectCardCornerRadius = LocalSettings.current.subjectCardCornerRadius
     var selectedCardsCount by rememberSaveable { mutableIntStateOf(0) }
+
     var showNotificationPermissionDialog by rememberSaveable { mutableStateOf(false) }
-    var showBunkBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showTodayBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var showTomorrowBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var activeSecondaryTab by rememberSaveable { mutableStateOf<SecondaryTab?>(null) }
     var isFabMenuExpanded by rememberSaveable { mutableStateOf(false) }
-    var showTimetableInputSheet by rememberSaveable { mutableStateOf(false) }
 
     // Build today's class list from all subjects' timetables
-    val todayDayOfWeek = LocalDate.now().dayOfWeek.value // 1=Mon … 7=Sun
+    val todayDayOfWeek = LocalDate.now().dayOfWeek.value
     val todaysClasses = subjects.flatMap { subject ->
         viewModel.getSchedulesForSubject(subject.id)
             .collectAsState(initial = emptyList()).value
@@ -180,18 +158,12 @@ fun HomeScreen(
                     LocalTime.parse(schedule.endTime, DateTimeFormatter.ofPattern("HH:mm"))
                 }.getOrElse { LocalTime.MIDNIGHT }
                 val durationMin = java.time.Duration.between(start, end).toMinutes()
-                TodayClass(
-                    subject = subject,
-                    startTime = start,
-                    endTime = end,
-                    duration = durationMin
-                )
+                TodayClass(subject = subject, startTime = start, endTime = end, duration = durationMin)
             }
     }.sortedBy { it.startTime }
 
     // Build tomorrow's class list
-    val tomorrowLocalDate = LocalDate.now().plusDays(1)
-    val tomorrowDayOfWeek = tomorrowLocalDate.dayOfWeek.value
+    val tomorrowDayOfWeek = LocalDate.now().plusDays(1).dayOfWeek.value
     val tomorrowsClasses = subjects.flatMap { subject ->
         viewModel.getSchedulesForSubject(subject.id)
             .collectAsState(initial = emptyList()).value
@@ -204,30 +176,14 @@ fun HomeScreen(
                     LocalTime.parse(schedule.endTime, DateTimeFormatter.ofPattern("HH:mm"))
                 }.getOrElse { LocalTime.MIDNIGHT }
                 val durationMin = java.time.Duration.between(start, end).toMinutes()
-                TodayClass(
-                    subject = subject,
-                    startTime = start,
-                    endTime = end,
-                    duration = durationMin
-                )
+                TodayClass(subject = subject, startTime = start, endTime = end, duration = durationMin)
             }
     }.sortedBy { it.startTime }
-    
-    // Track scroll state for FAB visibility
+
     val listState = rememberLazyListState()
-    val fabVisible by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex == 0 || 
-            listState.firstVisibleItemScrollOffset < 100
-        }
-    }
-    // Interaction source removed
+
     val notificationsEnabled by rememberSaveable {
-        mutableStateOf(
-            isNotificationPermissionGranted(
-                context
-            )
-        )
+        mutableStateOf(isNotificationPermissionGranted(context))
     }
 
     val notificationPreference = LocalSettings.current.notificationPreference
@@ -235,12 +191,10 @@ fun HomeScreen(
     val launcherReqPerm = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
-
             settingsViewModel.setBoolean(
                 key = SettingsKeys.ENABLE_NOTIFICATIONS,
                 value = isGranted || notificationPreference
             )
-
             settingsViewModel.refreshNotificationPermissionState()
         }
     )
@@ -249,18 +203,15 @@ fun HomeScreen(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
             val isGranted = isNotificationPermissionGranted(context)
-
             settingsViewModel.setBoolean(
                 key = SettingsKeys.ENABLE_NOTIFICATIONS,
                 value = isGranted || notificationPreference
             )
-
             settingsViewModel.refreshNotificationPermissionState()
         }
     )
 
     val notificationPermDialogShown = LocalSettings.current.notificationPermissionDialogShown
-
     LaunchedEffect(notificationsEnabled, notificationPermDialogShown, totalCount) {
         showNotificationPermissionDialog =
             !notificationsEnabled && !notificationPermDialogShown && totalCount != 0
@@ -270,9 +221,7 @@ fun HomeScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is SettingsUiEvent.RequestPermission -> launcherReqPerm.launch(event.permission)
-
                 is SettingsUiEvent.LaunchIntent -> launcherIntent.launch(event.intent)
-
                 else -> {}
             }
         }
@@ -283,231 +232,183 @@ fun HomeScreen(
         if (isFabMenuExpanded) isFabMenuExpanded = false
     }
 
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.surface
-    ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = { }
-        ) { innerPadding ->
+    // ── Driftly homescreen architecture ────────────────────────────────────
+    Scaffold(
+        modifier = modifier.fillMaxSize()
+    ) { innerPadding ->
 
         Box(modifier = Modifier.fillMaxSize()) {
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-                contentPadding = PaddingValues(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding() + 85.dp,
-                    start = 0.dp,
-                    end = 0.dp
-                ),
+                verticalArrangement = Arrangement.spacedBy(15.dp),
+                contentPadding = innerPadding,
             ) {
+
+                // ── Driftly header ──────────────────────────────────────────
                 item {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(start = 15.dp, end = 15.dp, top = 35.dp, bottom = 0.dp),
+                            .padding(start = 25.dp, end = 25.dp, top = 35.dp, bottom = 15.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.displaySmallEmphasized.copy(
-                                fontWeight = FontWeight.ExtraBold
-                            ),
+                            style = MaterialTheme.typography.displaySmallEmphasized,
                             modifier = Modifier.alpha(0.95f)
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        Surface(
+                        // Infinite rotation animation for the settings icon
+                        val rotationTransition = rememberInfiniteTransition(label = "settings_rotation_transition")
+                        val rotationAngle by rotationTransition.animateFloat(
+                            initialValue = 0f,
+                            targetValue = 360f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(durationMillis = 3000, easing = LinearEasing),
+                                repeatMode = RepeatMode.Restart
+                            ),
+                            label = "settings_rotation_angle"
+                        )
+
+                        FilledTonalIconButton(
                             onClick = {
                                 navController.navigate(SettingsScreen)
                                 weakHaptic()
                             },
-                            shape = CircleShape,
-                            color = androidx.compose.ui.graphics.Color.Transparent,
-                            contentColor = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(42.dp)
+                            shapes = IconButtonDefaults.shapes(),
+                            modifier = Modifier.size(40.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Settings,
-                                    contentDescription = "Settings",
-                                    modifier = Modifier.size(26.dp)
+                            Icon(
+                                painter = painterResource(R.drawable.ic_settings),
+                                contentDescription = "Settings",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .graphicsLayer(rotationZ = rotationAngle)
+                            )
+                        }
+                    }
+                }
+
+                // ── Empty state ─────────────────────────────────────────────
+                if (subjectCount == 0 || (subjectCount > 0 && totalCount == 0)) {
+                    item {
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .padding(horizontal = 25.dp)
+                                .then(
+                                    if (subjectCount == 0) Modifier.height(400.dp)
+                                    else Modifier.padding(vertical = 20.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            UndrawRelaxedReading()
+                        }
+                    }
+                }
+
+                if (subjectCount == 0) {
+                    item {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .padding(horizontal = 25.dp)
+                                .alpha(0.75f),
+                            text = stringResource(R.string.no_subject_yet),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+
+                // ── Subject cards (Driftly card dimensions + SA data) ───────
+                items(subjects.size, key = { index -> subjects[index].id }) { index ->
+
+                    val counts by viewModel.getSubjectAttendanceCounts(subjects[index].id)
+                        .collectAsState(initial = SubjectAttendance())
+
+                    val progress = counts.presentCount.toFloat() / counts.totalCount.toFloat()
+                    val cardShape = RoundedCornerShape(subjectCardCornerRadius.dp)
+
+                    SubjectCard(
+                        modifier = Modifier
+                            .padding(horizontal = 15.dp)
+                            .animateItem(),
+                        cardStyle = LocalSettings.current.subjectCardStyle,
+                        cornerRadius = subjectCardCornerRadius.dp,
+                        customShape = cardShape,
+                        subjectId = subjects[index].id,
+                        subject = subjects[index].subject,
+                        subjectCode = subjects[index].subjectCode,
+                        lecturerName = subjects[index].histogramLabel,
+                        progress = progress,
+                        isTotalCountZero = counts.totalCount == 0,
+                        selectedCardsCount = selectedCardsCount,
+                        navigate = {
+                            navController.navigate(
+                                CalendarScreen(
+                                    subjectId = subjects[index].id,
+                                    subject = subjects[index].subject
                                 )
+                            )
+                        },
+                        onLongClicked = { isLongClicked ->
+                            if (isLongClicked) selectedCardsCount++ else selectedCardsCount--
+                        },
+                        onMoveUp = {
+                            if (index > 0) {
+                                val newList = subjects.toMutableList()
+                                val temp = newList[index]
+                                newList[index] = newList[index - 1]
+                                newList[index - 1] = temp
+                                viewModel.updateSubjectsOrder(newList)
+                            }
+                        },
+                        onMoveDown = {
+                            if (index < subjects.size - 1) {
+                                val newList = subjects.toMutableList()
+                                val temp = newList[index]
+                                newList[index] = newList[index + 1]
+                                newList[index + 1] = temp
+                                viewModel.updateSubjectsOrder(newList)
+                            }
+                        },
+                        onMoveTop = {
+                            if (index > 0) {
+                                val newList = subjects.toMutableList()
+                                val item = newList.removeAt(index)
+                                newList.add(0, item)
+                                viewModel.updateSubjectsOrder(newList)
+                            }
+                        },
+                        onMoveBottom = {
+                            if (index < subjects.size - 1) {
+                                val newList = subjects.toMutableList()
+                                val item = newList.removeAt(index)
+                                newList.add(item)
+                                viewModel.updateSubjectsOrder(newList)
                             }
                         }
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(30.dp))
-                }
-
-            if (subjectCount == 0 || totalCount == 0) {
-                item {
-                    Box(
-                        modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 25.dp)
-                            .then(
-                                if (subjectCount == 0) Modifier.height(400.dp)
-                                else Modifier.padding(vertical = 20.dp)
-                            ), contentAlignment = Alignment.Center
-                    ) {
-                        UndrawRelaxedReading()
-                    }
-                }
-            }
-
-            if (subjectCount == 0) {
-                item {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 25.dp)
-                            .alpha(0.75f),
-                        text = stringResource(R.string.no_subject_yet),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center
                     )
                 }
-            }
-
-            if (subjectCount != 0 && totalCount != 0) {
-                item {
-                    // Prepare histogram data
-                    val histogramData = subjects.mapNotNull { subject ->
-                        val counts = viewModel.getSubjectAttendanceCounts(subject.id)
-                            .collectAsState(initial = SubjectAttendance()).value
-                        
-                        if (counts.totalCount > 0) {
-                            val percentage = (counts.presentCount.toFloat() / counts.totalCount.toFloat()) * 100
-                            SubjectHistogramData(
-                                subject = subject,
-                                percentage = percentage
-                            )
-                        } else null
-                    }
-
-                    AttendanceHistogramCard(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        histogramData = histogramData
-                    )
-                }
-            }
-
-            items(subjects.size, key = { index -> subjects[index].id }) { index ->
-
-                val counts by viewModel.getSubjectAttendanceCounts(subjects[index].id)
-                    .collectAsState(initial = SubjectAttendance())
-
-                val progress = counts.presentCount.toFloat() / counts.totalCount.toFloat()
-                
-                // Calculate grouped card corner radius
-                val isFirst = index == 0
-                val isLast = index == subjects.size - 1
-                val isOnly = subjects.size == 1
-                
-                val cornerRadius = when {
-                    isOnly -> 25.dp // Single card - all corners rounded
-                    isFirst -> 25.dp // First card - will use custom shape
-                    isLast -> 25.dp // Last card - will use custom shape
-                    else -> 10.dp // Middle cards - small corners
-                }
-                
-                // Determine the shape based on position
-                val cardShape = when {
-                    isOnly -> RoundedCornerShape(20.dp)
-                    isFirst -> RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 5.dp,
-                        bottomEnd = 5.dp
-                    )
-                    isLast -> RoundedCornerShape(
-                        topStart = 5.dp,
-                        topEnd = 5.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    )
-                    else -> RoundedCornerShape(5.dp)
-                }
-
-                SubjectCard(
-                    modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .animateItem(),
-                    cardStyle = LocalSettings.current.subjectCardStyle,
-                    cornerRadius = 20.dp,
-                    customShape = cardShape,
-                    subjectId = subjects[index].id,
-                    subject = subjects[index].subject,
-                    subjectCode = subjects[index].subjectCode,
-                    progress = progress,
-                    isTotalCountZero = counts.totalCount == 0,
-                    selectedCardsCount = selectedCardsCount,
-                    navigate = {
-                        navController.navigate(
-                            CalendarScreen(
-                                subjectId = subjects[index].id,
-                                subject = subjects[index].subject
-                            )
-                        )
-                    },
-                    onLongClicked = { isLongClicked ->
-                        if (isLongClicked) selectedCardsCount++ else selectedCardsCount--
-                    },
-                    onMoveUp = {
-                        if (index > 0) {
-                            val newList = subjects.toMutableList()
-                            val temp = newList[index]
-                            newList[index] = newList[index - 1]
-                            newList[index - 1] = temp
-                            viewModel.updateSubjectsOrder(newList)
-                        }
-                    },
-                    onMoveDown = {
-                        if (index < subjects.size - 1) {
-                            val newList = subjects.toMutableList()
-                            val temp = newList[index]
-                            newList[index] = newList[index + 1]
-                            newList[index + 1] = temp
-                            viewModel.updateSubjectsOrder(newList)
-                        }
-                    },
-                    onMoveTop = {
-                        if (index > 0) {
-                            val newList = subjects.toMutableList()
-                            val item = newList.removeAt(index)
-                            newList.add(0, item)
-                            viewModel.updateSubjectsOrder(newList)
-                        }
-                    },
-                    onMoveBottom = {
-                        if (index < subjects.size - 1) {
-                            val newList = subjects.toMutableList()
-                            val item = newList.removeAt(index)
-                            newList.add(item)
-                            viewModel.updateSubjectsOrder(newList)
-                        }
-                    }
-                )
-            }
 
                 item {
                     Spacer(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp)
+                            .height(25.dp)
                     )
                 }
             }
 
-            // Backdrop for FAB Menu focus and dismissal
+            // ── FAB backdrop overlay ────────────────────────────────────────
             AnimatedVisibility(
                 visible = isFabMenuExpanded && selectedCardsCount == 0,
                 enter = fadeIn(),
@@ -516,7 +417,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.9f))
+                        .background(adaptiveStrongScrimColor())
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -526,19 +427,13 @@ fun HomeScreen(
                 )
             }
 
-            // M3 Expressive FAB Menu
+            // ── M3 Expressive FAB Menu — preserved exactly ──────────────────
             AnimatedVisibility(
                 visible = selectedCardsCount == 0,
                 enter = fadeIn(animationSpec = tween(250)) +
-                        slideInVertically(
-                            initialOffsetY = { it / 2 },
-                            animationSpec = tween(250)
-                        ),
+                        slideInVertically(initialOffsetY = { it / 2 }, animationSpec = tween(250)),
                 exit = fadeOut(animationSpec = tween(250)) +
-                        slideOutVertically(
-                            targetOffsetY = { it / 2 },
-                            animationSpec = tween(250)
-                        ),
+                        slideOutVertically(targetOffsetY = { it / 2 }, animationSpec = tween(250)),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 43.dp, end = 14.dp)
@@ -548,7 +443,7 @@ fun HomeScreen(
                     button = {
                         DriftlyMorphingFab(
                             isExpanded = isFabMenuExpanded,
-                            isVisible = true, // Force fixed visibility
+                            isVisible = true,
                             onToggle = {
                                 isFabMenuExpanded = !isFabMenuExpanded
                                 weakHaptic()
@@ -556,67 +451,58 @@ fun HomeScreen(
                         )
                     }
                 ) {
-                    // Add Subject Action
                     FloatingActionButtonMenuItem(
                         onClick = {
                             isFabMenuExpanded = false
                             isDialogOpen = true
                             weakHaptic()
                         },
-                        icon = {
-                            Icon(Icons.Rounded.Add, contentDescription = null)
-                        },
-                        text = {
-                            Text(text = "Add Subject")
-                        },
+                        icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+                        text = { Text(text = "Add Subject") },
                         modifier = Modifier.height(67.dp)
                     )
-                    
-                    // Today's Class Action
+
                     FloatingActionButtonMenuItem(
                         onClick = {
                             isFabMenuExpanded = false
-                            showTodayBottomSheet = true
+                            activeSecondaryTab = SecondaryTab.Timetable
                             weakHaptic()
                         },
-                        icon = {
-                            Icon(Icons.Rounded.AccessTime, contentDescription = null)
-                        },
-                        text = {
-                            Text(text = "Today's Class")
-                        },
+                        icon = { Icon(Icons.Rounded.DateRange, contentDescription = null) },
+                        text = { Text(text = "Timetable") },
                         modifier = Modifier.height(67.dp)
                     )
-                    
-                    // Tomorrow's Class Action
+
                     FloatingActionButtonMenuItem(
                         onClick = {
                             isFabMenuExpanded = false
-                            showTomorrowBottomSheet = true
+                            activeSecondaryTab = SecondaryTab.Today
                             weakHaptic()
                         },
-                        icon = {
-                            Icon(Icons.Rounded.CalendarMonth, contentDescription = null)
-                        },
-                        text = {
-                            Text(text = "Tomorrow's Class")
-                        },
+                        icon = { Icon(Icons.Rounded.AccessTime, contentDescription = null) },
+                        text = { Text(text = "Today's Class") },
                         modifier = Modifier.height(67.dp)
                     )
-                    
-                    // Bunk Details Action
+
                     FloatingActionButtonMenuItem(
                         onClick = {
                             isFabMenuExpanded = false
-                            showBunkBottomSheet = true
+                            activeSecondaryTab = SecondaryTab.Tomorrow
                             weakHaptic()
                         },
-                        icon = {
-                            Icon(Icons.Rounded.Analytics, contentDescription = null)
+                        icon = { Icon(Icons.Rounded.CalendarMonth, contentDescription = null) },
+                        text = { Text(text = "Tomorrow's Class") },
+                        modifier = Modifier.height(67.dp)
+                    )
+
+                    FloatingActionButtonMenuItem(
+                        onClick = {
+                            isFabMenuExpanded = false
+                            activeSecondaryTab = SecondaryTab.Bunk
+                            weakHaptic()
                         },
-                        text = {
-                            Text(text = "Bunk Details")
-                        },
+                        icon = { Icon(Icons.Rounded.Analytics, contentDescription = null) },
+                        text = { Text(text = "Bunk Details") },
                         modifier = Modifier.height(67.dp)
                     )
                 }
@@ -624,30 +510,17 @@ fun HomeScreen(
         }
     }
 
+    // ── Dialogs & bottom sheets ─────────────────────────────────────────────
     if (isDialogOpen) {
-        AddSubjectDialog(
-            onDismiss = {
-                isDialogOpen = false
-            })
+        AddSubjectDialog(onDismiss = { isDialogOpen = false })
     }
 
-    if (showBunkBottomSheet) {
-        BunkDetailsBottomSheet(
-            onDismiss = { showBunkBottomSheet = false }
-        )
-    }
-
-    if (showTodayBottomSheet) {
-        TodaysClassesBottomSheet(
+    activeSecondaryTab?.let { tab ->
+        SecondaryPagesDialog(
+            initialTab = tab,
             todaysClasses = todaysClasses,
-            onDismiss = { showTodayBottomSheet = false }
-        )
-    }
-
-    if (showTomorrowBottomSheet) {
-        TomorrowsClassesBottomSheet(
             tomorrowsClasses = tomorrowsClasses,
-            onDismiss = { showTomorrowBottomSheet = false }
+            onDismiss = { activeSecondaryTab = null }
         )
     }
 
@@ -655,24 +528,19 @@ fun HomeScreen(
         NotificationPermDialog(
             onDismiss = {
                 showNotificationPermissionDialog = false
-                settingsViewModel.setBoolean(
-                    SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN,
-                    true
-                )
+                settingsViewModel.setBoolean(SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN, true)
             },
             onConfirm = {
                 viewModel.requestNotificationPermission()
                 showNotificationPermissionDialog = false
-                settingsViewModel.setBoolean(
-                    SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN,
-                    true
-                )
-            })
-    }
+                settingsViewModel.setBoolean(SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN, true)
+            }
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+// ── Driftly Morphing FAB — preserved exactly ───────────────────────────────
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun DriftlyMorphingFab(
     isExpanded: Boolean,
@@ -680,19 +548,14 @@ private fun DriftlyMorphingFab(
     onToggle: () -> Unit
 ) {
     var renderGate by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        renderGate = true
-    }
+    LaunchedEffect(Unit) { renderGate = true }
 
     if (!renderGate) {
         Spacer(modifier = Modifier.size(80.dp))
         return
     }
 
-    val transition = updateTransition(
-        targetState = isExpanded,
-        label = "fab_transition"
-    )
+    val transition = updateTransition(targetState = isExpanded, label = "fab_transition")
 
     val primary = MaterialTheme.colorScheme.primary
     val primaryContainer = MaterialTheme.colorScheme.primaryContainer
@@ -702,65 +565,37 @@ private fun DriftlyMorphingFab(
     val fabColor = remember(isExpanded, primary, primaryContainer) {
         if (isExpanded) primary else primaryContainer
     }
-
     val contentColor = remember(isExpanded, onPrimary, onPrimaryContainer) {
         if (isExpanded) onPrimary else onPrimaryContainer
     }
 
-    val fabHeight by transition.animateDp(
-        label = "fab_height",
-        transitionSpec = {
-            spring(dampingRatio = 0.7f, stiffness = 500f)
-        }
-    ) { expanded ->
-        if (expanded) 80.dp else 80.dp
-    }
-
     val fabWidth by transition.animateDp(
         label = "fab_width",
-        transitionSpec = {
-            spring(dampingRatio = 0.7f, stiffness = 500f)
-        }
-    ) { expanded ->
-        if (expanded) 80.dp else 175.dp
-    }
+        transitionSpec = { spring(dampingRatio = 0.7f, stiffness = 500f) }
+    ) { if (it) 75.dp else 170.dp }
 
     val cornerRadius by transition.animateDp(
         label = "corner_radius",
-        transitionSpec = {
-            spring(dampingRatio = 0.7f, stiffness = 500f)
-        }
-    ) { expanded ->
-        if (expanded) 40.dp else 16.dp
-    }
+        transitionSpec = { spring(dampingRatio = 0.7f, stiffness = 500f) }
+    ) { if (it) 37.5.dp else 16.dp }
 
     Surface(
-        modifier = Modifier
-            .size(width = fabWidth, height = fabHeight),
+        modifier = Modifier.size(width = fabWidth, height = 75.dp),
         shape = RoundedCornerShape(cornerRadius),
         color = fabColor,
         tonalElevation = 0.dp,
         shadowElevation = 0.dp,
         onClick = onToggle
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            // Circle state (Icon)
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AnimatedVisibility(
                 visible = isExpanded,
                 enter = fadeIn() + scaleIn(),
                 exit = fadeOut() + scaleOut()
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null,
-                    tint = contentColor
-                )
+                Icon(imageVector = Icons.Rounded.Close, contentDescription = null, tint = contentColor)
             }
 
-            // Extended state (Text)
             AnimatedVisibility(
                 visible = !isExpanded,
                 enter = fadeIn() + expandHorizontally(),

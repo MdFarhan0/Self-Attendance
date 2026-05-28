@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.BottomSheetDefaults
@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import `in`.hridayan.driftly.core.domain.model.ClassSchedule
+import `in`.hridayan.driftly.core.presentation.theme.adaptiveModalScrimColor
 import `in`.hridayan.driftly.core.utils.TimeUtils
 
 private fun getDayName(dayOfWeek: Int) = when (dayOfWeek) {
@@ -47,13 +48,12 @@ fun TimetableBottomSheet(
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scrollState = rememberScrollState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
+        scrimColor = adaptiveModalScrimColor(),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
@@ -62,7 +62,6 @@ fun TimetableBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState)
                 .padding(horizontal = 10.dp)
                 .padding(bottom = 28.dp, top = 16.dp)
                 .navigationBarsPadding(),
@@ -121,12 +120,12 @@ fun TimetableBottomSheet(
                 // Sort all schedules: by day first, then by start time within each day
                 val sorted = schedules.sortedWith(compareBy({ it.dayOfWeek }, { it.startTime }))
 
-                Column(
+                LazyColumn(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 3.dp),
                     verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
                     val total = sorted.size
-                    sorted.forEachIndexed { index, schedule ->
+                    itemsIndexed(sorted) { index, schedule ->
                         val shape = when {
                             total == 1 -> RoundedCornerShape(13.dp)
                             index == 0 -> RoundedCornerShape(topStart = 13.dp, topEnd = 13.dp, bottomStart = 2.dp, bottomEnd = 2.dp)

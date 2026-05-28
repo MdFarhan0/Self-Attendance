@@ -6,9 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import `in`.hridayan.driftly.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * BroadcastReceiver that fires at the exact scheduled time.
@@ -20,13 +22,8 @@ class TimetableAlarmReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        // 1. Mandatory Debug Log
-        Log.e("ALARM_DEBUG", "🔥 Timetable alarm RECEIVED 🔥")
-        Log.d(TAG, "Action: ${intent.action}")
-
         val appContext = context.applicationContext
-        
-        // Extract data
+
         val scheduleId = intent.getIntExtra("scheduleId", -1)
         val subjectId = intent.getIntExtra("subjectId", -1)
         val subjectName = intent.getStringExtra("subjectName") ?: "Unknown"
@@ -37,40 +34,40 @@ class TimetableAlarmReceiver : BroadcastReceiver() {
         val dayOfWeek = intent.getIntExtra("dayOfWeek", -1)
 
         if (scheduleId == -1 || subjectId == -1) {
-            Log.e(TAG, "❌ Invalid IDs, aborting.")
             return
         }
 
-        // Check settings
         val sharedPrefs = appContext.getSharedPreferences("driftly_settings", Context.MODE_PRIVATE)
         val notificationsEnabled = sharedPrefs.getBoolean("enable_timetable_notifications", true)
-        
+
         if (!notificationsEnabled) {
-            Log.d(TAG, "⚠️ Notifications disabled by user.")
             rescheduleForNextWeek(appContext, intent)
             return
         }
 
-        // 2. Runtime Permission Check (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, "❌ POST_NOTIFICATIONS permission missing! Notification dropped.")
                 rescheduleForNextWeek(appContext, intent)
                 return
             }
         }
 
-        // 3. Show Notification
         if (type == "START") {
-            try {
-                showNotification(appContext, subjectId, subjectName, startTime, endTime, location, scheduleId)
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Error showing notification", e)
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val isHoliday = `in`.hridayan.driftly.core.utils.HolidayHelper.isHolidayModeActive(appContext)
+                    if (!isHoliday) {
+                        showNotification(appContext, subjectId, subjectName, startTime, endTime, location, scheduleId)
+                    }
+                } finally {
+                    rescheduleForNextWeek(appContext, intent)
+                    pendingResult.finish()
+                }
             }
+        } else {
+            rescheduleForNextWeek(appContext, intent)
         }
-
-        // 4. Reschedule
-        rescheduleForNextWeek(appContext, intent)
     }
 
     private fun showNotification(
@@ -95,7 +92,6 @@ class TimetableAlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        // Use valid app icon
         val iconRes = R.drawable.ic_notifications
 
         `in`.hridayan.driftly.notification.helper.NotificationHelper.showNotificationWithActions(
@@ -123,8 +119,6 @@ class TimetableAlarmReceiver : BroadcastReceiver() {
         val dayOfWeek = intent.getIntExtra("dayOfWeek", -1)
 
         if (scheduleId == -1 || dayOfWeek == -1) return
-
-        Log.d(TAG, "🔄 Rescheduling $type for next week...")
         TimetableAlarmScheduler.scheduleAlarm(
             context = context,
             scheduleId = scheduleId,

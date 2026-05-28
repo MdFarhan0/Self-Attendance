@@ -71,4 +71,15 @@ class AttendanceRepositoryImpl @Inject constructor(
 
     override fun getTotalCountForMonth(subjectId: Int, year: Int, month: Int): Flow<Int> =
         dao.getTotalCountForMonth(subjectId, year, month)
+
+    override suspend fun updateNote(id: Int, note: String?) {
+        dao.updateNote(id, note)
+    }
+
+    override suspend fun getPresentCountForSubject(subjectId: Int): Int =
+        dao.getPresentCountForSubject(subjectId)
+
+    override suspend fun getAbsentCountForSubject(subjectId: Int): Int =
+        dao.getAbsentCountForSubject(subjectId)
 }
+

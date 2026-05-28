@@ -65,6 +65,7 @@ fun CompositionLocals(
     val subjectCardCornerRadius by settingsViewModel.floatState(SettingsKeys.SUBJECT_CARD_CORNER_RADIUS)
 
     val subjectCardStyle by settingsViewModel.intState(SettingsKeys.SUBJECT_CARD_STYLE)
+    val homeSubjectCardLayoutMode by settingsViewModel.intState(SettingsKeys.HOME_SUBJECT_CARD_LAYOUT_MODE)
 
     val savedVersionCode by settingsViewModel.getInt(SettingsKeys.SAVED_VERSION_CODE).collectAsState(initial = -1)
 
@@ -78,8 +79,6 @@ fun CompositionLocals(
 
     val notificationPermissionDialogShown by settingsViewModel.booleanState(SettingsKeys.NOTIFICATION_PERMISSION_DIALOG_SHOWN)
 
-    val fontStyle by settingsViewModel.intState(SettingsKeys.FONT_FAMILY)
-
     val state =
         remember(
             themeMode,
@@ -89,13 +88,13 @@ fun CompositionLocals(
             isHapticEnabled,
             subjectCardCornerRadius,
             subjectCardStyle,
+            homeSubjectCardLayoutMode,
             savedVersionCode,
             showAttendanceStreaks,
             rememberCalendarMonthYear,
             startWeekOnMonday,
             notificationPreference,
-            notificationPermissionDialogShown,
-            fontStyle
+            notificationPermissionDialogShown
         ) {
             SettingsState(
                 themeMode = themeMode,
@@ -105,13 +104,13 @@ fun CompositionLocals(
                 isHapticEnabled = isHapticEnabled,
                 subjectCardCornerRadius = subjectCardCornerRadius,
                 subjectCardStyle = subjectCardStyle,
+                homeSubjectCardLayoutMode = homeSubjectCardLayoutMode,
                 savedVersionCode = savedVersionCode,
                 showAttendanceStreaks = showAttendanceStreaks,
                 rememberCalendarMonthYear = rememberCalendarMonthYear,
                 startWeekOnMonday = startWeekOnMonday,
                 notificationPreference = notificationPreference,
-                notificationPermissionDialogShown = notificationPermissionDialogShown,
-                fontFamily = fontStyle
+                notificationPermissionDialogShown = notificationPermissionDialogShown
             )
         }
 
@@ -125,20 +124,26 @@ fun CompositionLocals(
         notificationPreference && isNotificationPermissionGranted(context)
 
     val tonalPalette = listOf(
-        // Green Shades
-        AppSeedColors.GreenLight,
-        AppSeedColors.GreenMedium,
-        AppSeedColors.GreenDark,
-        // Sky Blue Shades
-        AppSeedColors.SkyBlueLight,
-        AppSeedColors.SkyBlueMedium,
-        // Blue Shades
-        AppSeedColors.BlueLight,
-        AppSeedColors.BlueMedium,
-        // Navy Blue Shades
-        AppSeedColors.NavyBlueLight,
-        AppSeedColors.NavyBlueMedium,
-        AppSeedColors.NavyBlueDark
+        AppSeedColors.Color01,
+        AppSeedColors.Color02,
+        AppSeedColors.Color03,
+        AppSeedColors.Color04,
+        AppSeedColors.Color05,
+        AppSeedColors.Color06,
+        AppSeedColors.Color07,
+        AppSeedColors.Color08,
+        AppSeedColors.Color09,
+        AppSeedColors.Color10,
+        AppSeedColors.Color11,
+        AppSeedColors.Color12,
+        AppSeedColors.Color13,
+        AppSeedColors.Color14,
+        AppSeedColors.Color15,
+        AppSeedColors.Color16,
+        AppSeedColors.Color17,
+        AppSeedColors.Color18,
+        AppSeedColors.Color19,
+        AppSeedColors.Color20
     )
 
     val weakHaptic = remember(isHapticEnabled, view) {

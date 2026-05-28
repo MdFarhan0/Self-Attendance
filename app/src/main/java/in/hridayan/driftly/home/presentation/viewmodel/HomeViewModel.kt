@@ -16,6 +16,10 @@ import `in`.hridayan.driftly.core.domain.model.toDomain
 import `in`.hridayan.driftly.core.domain.repository.AttendanceRepository
 import `in`.hridayan.driftly.core.domain.repository.ClassScheduleRepository
 import `in`.hridayan.driftly.core.domain.repository.SubjectRepository
+import `in`.hridayan.driftly.settings.domain.repository.SettingsRepository
+import `in`.hridayan.driftly.settings.data.local.SettingsKeys
+import `in`.hridayan.driftly.core.utils.runAutoHandleUnmarkedDays
+import kotlinx.coroutines.Dispatchers
 import `in`.hridayan.driftly.notification.createAppNotificationSettingsIntent
 import `in`.hridayan.driftly.notification.ClassNotificationScheduler
 import `in`.hridayan.driftly.notification.TimetableAlarmScheduler
@@ -38,8 +42,24 @@ class HomeViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val subjectRepository: SubjectRepository,
     private val attendanceRepository: AttendanceRepository,
-    private val classScheduleRepository: ClassScheduleRepository
+    private val classScheduleRepository: ClassScheduleRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
+
+    init {
+        autoHandleUnmarkedDays()
+    }
+
+    fun autoHandleUnmarkedDays() {
+        viewModelScope.launch(Dispatchers.IO) {
+            runAutoHandleUnmarkedDays(
+                settingsRepository,
+                subjectRepository,
+                attendanceRepository,
+                classScheduleRepository
+            )
+        }
+    }
 
     private val _uiEvent = MutableSharedFlow<SettingsUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -78,10 +98,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onHistogramLabelChange(newValue: String) {
-        // Limit to 8 characters
-        if (newValue.length <= 8) {
-            _histogramLabel.value = newValue
-        }
+        _histogramLabel.value = newValue
     }
 
     fun onAttendedCountChange(newValue: String) {

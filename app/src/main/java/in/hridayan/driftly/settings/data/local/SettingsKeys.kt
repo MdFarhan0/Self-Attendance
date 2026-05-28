@@ -3,7 +3,6 @@ package `in`.hridayan.driftly.settings.data.local
 import androidx.appcompat.app.AppCompatDelegate
 import `in`.hridayan.driftly.core.domain.model.SubjectCardStyle
 import `in`.hridayan.driftly.core.domain.provider.SeedColorProvider
-import `in`.hridayan.driftly.settings.domain.model.CustomFontFamily
 
 enum class SettingsKeys(val default: Any?) {
     LOOK_AND_FEEL(null),
@@ -13,7 +12,7 @@ enum class SettingsKeys(val default: Any?) {
     LANGUAGE(null),
     THEME_MODE(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM),
     DARK_THEME(null),
-    HIGH_CONTRAST_DARK_MODE(true),
+    HIGH_CONTRAST_DARK_MODE(false),
     PRIMARY_SEED(SeedColorProvider.primary),
     SECONDARY_SEED(SeedColorProvider.secondary),
     TERTIARY_SEED(SeedColorProvider.tertiary),
@@ -23,11 +22,18 @@ enum class SettingsKeys(val default: Any?) {
     CHANGELOGS(null),
     REPORT(null),
     FEATURE_REQUEST(null),
+    PRIVACY_POLICY(null),
     GITHUB(null),
     LICENSE(null),
     CUSTOMISATION(null),
-    SUBJECT_CARD_CORNER_RADIUS(8f),
+    FEATURES(null),
+    LOCK_ATTENDANCE(false),
+    SUBJECT_CARD_CORNER_RADIUS(12f),
+    AUTO_HANDLE_UNMARKED_DAYS(false),
+    AUTO_HANDLE_UNMARKED_DAYS_BEHAVIOR(2),
+
     SUBJECT_CARD_STYLE(SubjectCardStyle.CARD_STYLE_A),
+    HOME_SUBJECT_CARD_LAYOUT_MODE(0),
     SAVED_VERSION_CODE(0),
     LAST_MIGRATED_VERSION(0),
     REMEMBER_CALENDAR_MONTH_YEAR(false),
@@ -45,10 +51,10 @@ enum class SettingsKeys(val default: Any?) {
     ENABLE_NOTIFICATIONS(true),
     NOTIFICATION_PERMISSION_DIALOG_SHOWN(false),
     SHOW_GITHUB_WARNING_DIALOG(true),
-    FONT_FAMILY(CustomFontFamily.ONE_UI_SANS),
-    ENABLE_TIMETABLE_NOTIFICATIONS(true),
-    PERSISTENT_NOTIFICATIONS(true),  // Keep notifications until user acts
+    ENABLE_TIMETABLE_NOTIFICATIONS(false),
+    PERSISTENT_NOTIFICATIONS(false),  // Keep notifications until user acts
     GRACE_PERIOD_MINUTES(60),  // Default: 1 hour
     DEFAULT_START_MINUTE(45), // Default start minute (e.g., 9:45)
-    DEFAULT_CLASS_DURATION(60) // Default duration in minutes
+    DEFAULT_CLASS_DURATION(60), // Default duration in minutes
+    FONT_FAMILY(null)
 }

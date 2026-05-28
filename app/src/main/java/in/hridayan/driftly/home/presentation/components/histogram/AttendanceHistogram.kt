@@ -1,10 +1,10 @@
 package `in`.hridayan.driftly.home.presentation.components.histogram
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
@@ -13,15 +13,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,55 +47,35 @@ fun AttendanceHistogramCard(
     modifier: Modifier = Modifier,
     histogramData: List<SubjectHistogramData>
 ) {
-    Card(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
-        )
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
+        if (histogramData.isEmpty()) {
             Text(
-                text = "Subject Performance",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                text = "No subjects yet. Add a subject to see performance.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
-
-            if (histogramData.isEmpty()) {
-                Text(
-                    text = "No subjects yet. Add a subject to see performance.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 20.dp)
-                )
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    histogramData.forEachIndexed { index, data ->
-                        HistogramBar(
-                            label = data.subject.histogramLabel
-                                ?: data.subject.subject.take(6),
-                            percentage = data.percentage,
-                            targetPercentage = data.subject.targetPercentage,
-                            animationDelay = index * 100L // Stagger animation
-                        )
-                    }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                histogramData.forEachIndexed { index, data ->
+                    HistogramBar(
+                        label = data.subject.histogramLabel
+                            ?: data.subject.subject.take(6),
+                        percentage = data.percentage,
+                        targetPercentage = data.subject.targetPercentage,
+                        animationDelay = index * 100L // Stagger animation
+                    )
                 }
             }
         }
@@ -112,13 +90,13 @@ private fun HistogramBar(
     animationDelay: Long = 0L
 ) {
     var isVisible by remember { mutableStateOf(false) }
-    
+
     // Trigger entrance animation with delay
     LaunchedEffect(Unit) {
         delay(animationDelay)
         isVisible = true
     }
-    
+
     val animatedHeight by animateFloatAsState(
         targetValue = if (isVisible) percentage else 0f,
         animationSpec = spring(
@@ -129,15 +107,15 @@ private fun HistogramBar(
     )
 
     val isBelowTarget = animatedHeight < targetPercentage
-    val barColor = if (isBelowTarget && isVisible) 
-        MaterialTheme.colorScheme.error 
-    else 
+    val barColor = if (isBelowTarget && isVisible)
+        MaterialTheme.colorScheme.error
+    else
         MaterialTheme.colorScheme.primary
     val textColor = barColor
 
     AnimatedVisibility(
         visible = isVisible,
-        enter = fadeIn(animationSpec = tween(500)) + 
+        enter = fadeIn(animationSpec = tween(500)) +
                 scaleIn(
                     initialScale = 0.8f,
                     animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
@@ -145,33 +123,38 @@ private fun HistogramBar(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(3.dp) // Gap between percentage & Bar: 3dp
         ) {
-            // Percentage text at top
-            Text(
-                text = "${String.format("%.2f", animatedHeight)}%",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = textColor,
-                textAlign = TextAlign.Center
-            )
-
-            // Histogram bar
+            // Container for both Text and Bar to maintain 3dp gap
             Box(
                 modifier = Modifier
                     .width(60.dp)
-                    .height(150.dp),
+                    .height(180.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 val barHeight = (animatedHeight.coerceIn(0f, 100f) * 1.5f).dp
 
-                Box(
-                    modifier = Modifier
-                        .width(60.dp)
-                        .height(barHeight)
-                        .clip(RoundedCornerShape(3.dp)) // Graph rounding: 3dp
-                        .background(barColor)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    // Percentage text that follows the bar
+                    Text(
+                        text = "${String.format("%.2f", animatedHeight)}%",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = textColor,
+                        textAlign = TextAlign.Center
+                    )
+
+                    // Histogram bar
+                    Box(
+                        modifier = Modifier
+                            .width(60.dp)
+                            .height(barHeight)
+                            .clip(RoundedCornerShape(3.dp)) // Graph rounding: 3dp
+                            .background(barColor)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(5.dp))

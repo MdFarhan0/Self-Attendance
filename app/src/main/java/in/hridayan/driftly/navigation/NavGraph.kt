@@ -5,11 +5,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavDestination.Companion.hasRoute
 import `in`.hridayan.driftly.calender.presentation.screens.CalendarScreen
 import `in`.hridayan.driftly.home.presentation.screens.HomeScreen
 import `in`.hridayan.driftly.settings.presentation.page.about.screens.AboutScreen
+import `in`.hridayan.driftly.settings.presentation.page.attendancewrapped.screens.AttendanceWrappedScreen
 import `in`.hridayan.driftly.settings.presentation.page.backup.screens.BackupAndRestoreScreen
 import `in`.hridayan.driftly.settings.presentation.page.behavior.screens.BehaviorScreen
+import `in`.hridayan.driftly.settings.presentation.page.customisation.screens.CustomisationScreen
+import `in`.hridayan.driftly.settings.presentation.page.features.screens.FeaturesScreen as FeaturesScreenComposable
 import `in`.hridayan.driftly.settings.presentation.page.lookandfeel.screens.DarkThemeScreen
 import `in`.hridayan.driftly.settings.presentation.page.lookandfeel.screens.LookAndFeelScreen
 import `in`.hridayan.driftly.settings.presentation.page.mainscreen.screen.SettingsScreen
@@ -24,60 +28,100 @@ fun Navigation() {
             navController = navController, startDestination = HomeScreen
         ) {
             composable<HomeScreen>(
-                exitTransition = { sharedAxisXExit() },
-                popEnterTransition = { sharedAxisXPopEnter() }
+                exitTransition = {
+                    if (targetState.destination.hasRoute<CalendarScreen>()) slideFadeOutToLeft()
+                    else tomatoForwardExit()
+                },
+                popEnterTransition = {
+                    if (initialState.destination.hasRoute<CalendarScreen>()) slideFadeInFromLeft()
+                    else tomatoPopEnter()
+                }
             ) {
                 HomeScreen()
             }
 
             composable<CalendarScreen>(
-                enterTransition = { sharedAxisXEnter() },
-                popExitTransition = { sharedAxisXPopExit() }
+                enterTransition = { slideFadeInFromRight() },
+                popExitTransition = { slideFadeOutToLeft() }
             ) {
                 CalendarScreen()
             }
 
             composable<SettingsScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                exitTransition = { slideFadeOutToLeft() },
-                popEnterTransition = { slideFadeInFromLeft() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 SettingsScreen()
             }
 
             composable<LookAndFeelScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                exitTransition = { slideFadeOutToLeft() },
-                popEnterTransition = { slideFadeInFromLeft() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 LookAndFeelScreen()
             }
 
+            composable<CustomisationScreen>(
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
+            ) {
+                CustomisationScreen()
+            }
+
+            composable<FeaturesScreen>(
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
+            ) {
+                FeaturesScreenComposable()
+            }
+
+            composable<AttendanceWrappedScreen>(
+                enterTransition = { tomatoForwardEnter() },
+                popExitTransition = { tomatoPopExit() }
+            ) {
+                AttendanceWrappedScreen()
+            }
+
             composable<DarkThemeScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 DarkThemeScreen()
             }
 
             composable<BehaviorScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                exitTransition = { slideFadeOutToLeft() },
-                popEnterTransition = { slideFadeInFromLeft() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 BehaviorScreen()
             }
 
             composable<AboutScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                exitTransition = { slideFadeOutToLeft() },
-                popEnterTransition = { slideFadeInFromLeft() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 AboutScreen()
+            }
+
+            composable<ChangelogScreen>(
+                enterTransition = { tomatoForwardEnter() },
+                exitTransition = { tomatoForwardExit() },
+                popEnterTransition = { tomatoPopEnter() },
+                popExitTransition = { tomatoPopExit() }
+            ) {
+                `in`.hridayan.driftly.settings.presentation.page.changelog.screens.ChangelogScreen()
             }
 
 
@@ -87,15 +131,15 @@ fun Navigation() {
 
 
             composable<BackupAndRestoreScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 BackupAndRestoreScreen()
             }
 
             composable<NotificationScreen>(
-                enterTransition = { slideFadeInFromRight() },
-                popExitTransition = { slideFadeOutToRight() }
+                enterTransition = { tomatoForwardEnter() },
+                popExitTransition = { tomatoPopExit() }
             ) {
                 NotificationScreen()
             }
@@ -118,10 +162,22 @@ object SettingsScreen
 object LookAndFeelScreen
 
 @Serializable
+object CustomisationScreen
+
+@Serializable
+object FeaturesScreen
+
+@Serializable
+object AttendanceWrappedScreen
+
+@Serializable
 object DarkThemeScreen
 
 @Serializable
 object AboutScreen
+
+@Serializable
+object ChangelogScreen
 
 
 

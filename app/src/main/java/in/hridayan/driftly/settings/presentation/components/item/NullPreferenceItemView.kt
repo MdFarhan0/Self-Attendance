@@ -43,8 +43,7 @@ fun NullPreferenceItemView(
 
     RoundedCornerCard(
         modifier = Modifier.fillMaxWidth(),
-        roundedCornerShape = roundedShape,
-        paddingValues = androidx.compose.foundation.layout.PaddingValues(vertical = 1.5.dp, horizontal = 15.dp)
+        roundedCornerShape = roundedShape
     )
     {
         Row(
@@ -83,7 +82,7 @@ fun NullPreferenceItemView(
                     Text(
                         text = descriptionText,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.alpha(0.90f)
+                        modifier = Modifier.alpha(0.6f)
                     )
                 }
             }

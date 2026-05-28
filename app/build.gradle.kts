@@ -15,9 +15,9 @@ android {
     defaultConfig {
         applicationId = "com.self.attendance"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 5
-        versionName = "2.3.0"
+        targetSdk = 36
+        versionCode = 6
+        versionName = "2.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -123,6 +123,10 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.material.icons.extended)
     implementation(libs.androidx.compose.animation)
+
+    // Google Play In-App Updates
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)

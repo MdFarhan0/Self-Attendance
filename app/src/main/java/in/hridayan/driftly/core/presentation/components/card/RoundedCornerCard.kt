@@ -26,7 +26,7 @@ fun RoundedCornerCard(
     ),
     elevation: CardElevation = CardDefaults.cardElevation(),
     border: BorderStroke? = null,
-    paddingValues: PaddingValues = PaddingValues(vertical = 2.5.dp, horizontal = 15.dp),
+    paddingValues: PaddingValues = PaddingValues(vertical = 1.dp, horizontal = 15.dp),
     onClick: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -42,4 +42,13 @@ fun RoundedCornerCard(
     ) {
         content()
     }
+}@Composable
+fun adaptiveCardContainerColor(): androidx.compose.ui.graphics.Color {
+    return androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
 }
+
+@Composable
+fun adaptiveCardColors(): androidx.compose.material3.CardColors = androidx.compose.material3.CardDefaults.cardColors(
+    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer,
+    contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+)

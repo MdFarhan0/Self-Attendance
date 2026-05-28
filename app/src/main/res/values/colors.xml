@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash Screen Base Colors (Standard Material 3) -->
+    <color name="splash_bg">#F3F3F3</color> 
+    <color name="splash_icon_color">#5BA053</color>
+</resources>

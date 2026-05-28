@@ -21,6 +21,9 @@ import `in`.hridayan.driftly.navigation.BehaviorScreen
 import `in`.hridayan.driftly.navigation.DarkThemeScreen
 import `in`.hridayan.driftly.navigation.LookAndFeelScreen
 import `in`.hridayan.driftly.navigation.NotificationScreen
+import `in`.hridayan.driftly.navigation.CustomisationScreen
+import `in`.hridayan.driftly.navigation.FeaturesScreen
+import `in`.hridayan.driftly.navigation.ChangelogScreen
 import `in`.hridayan.driftly.notification.createAppNotificationSettingsIntent
 import `in`.hridayan.driftly.notification.isNotificationPermissionGranted
 import `in`.hridayan.driftly.notification.scheduler.WorkScheduler
@@ -31,6 +34,11 @@ import `in`.hridayan.driftly.settings.domain.model.PreferenceGroup
 import `in`.hridayan.driftly.settings.domain.repository.SettingsRepository
 import `in`.hridayan.driftly.settings.domain.usecase.ToggleSettingUseCase
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
+import `in`.hridayan.driftly.core.domain.repository.SubjectRepository
+import `in`.hridayan.driftly.core.domain.repository.AttendanceRepository
+import `in`.hridayan.driftly.core.domain.repository.ClassScheduleRepository
+import `in`.hridayan.driftly.core.utils.runAutoHandleUnmarkedDays
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +55,9 @@ class SettingsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val toggleSettingUseCase: ToggleSettingUseCase,
+    private val subjectRepository: SubjectRepository,
+    private val attendanceRepository: AttendanceRepository,
+    private val classScheduleRepository: ClassScheduleRepository
 ) : ViewModel() {
     var settingsPageList by mutableStateOf<List<PreferenceGroup>>(emptyList())
         private set
@@ -71,6 +82,9 @@ class SettingsViewModel @Inject constructor(
     var notificationsPageList by mutableStateOf<List<PreferenceGroup>>(emptyList())
         private set
 
+    var featuresPageList by mutableStateOf<List<PreferenceGroup>>(emptyList())
+        private set
+
     fun loadSettings() {
         viewModelScope.launch {
             // Migration for version 18 to set new requested defaults (Follow System, Dynamic Colors & High Contrast)
@@ -89,6 +103,7 @@ class SettingsViewModel @Inject constructor(
             val darkTheme = settingsRepository.getDarkThemePageList()
             val backup = settingsRepository.getBackupPageList()
             val notifications = settingsRepository.getNotificationsPageList()
+            val features = settingsRepository.getFeaturesPageList()
 
             settingsPageList = settings
             lookAndFeelPageList = lookAndFeel
@@ -97,6 +112,7 @@ class SettingsViewModel @Inject constructor(
             darkThemePageList = darkTheme
             backupPageList = backup
             notificationsPageList = notifications
+            featuresPageList = features
         }
     }
 
@@ -110,16 +126,33 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun autoHandleUnmarkedDays() {
+        viewModelScope.launch(Dispatchers.IO) {
+            runAutoHandleUnmarkedDays(
+                settingsRepository,
+                subjectRepository,
+                attendanceRepository,
+                classScheduleRepository
+            )
+        }
+    }
+
     fun onToggle(key: SettingsKeys) {
         viewModelScope.launch {
             toggleSettingUseCase(key)
             loadSettings()
+            if (key == SettingsKeys.AUTO_HANDLE_UNMARKED_DAYS) {
+                autoHandleUnmarkedDays()
+            }
         }
     }
 
     fun setBoolean(key: SettingsKeys, value: Boolean) {
         viewModelScope.launch {
             settingsRepository.setBoolean(key, value)
+            if (key == SettingsKeys.AUTO_HANDLE_UNMARKED_DAYS) {
+                autoHandleUnmarkedDays()
+            }
         }
     }
 
@@ -128,6 +161,9 @@ class SettingsViewModel @Inject constructor(
     fun setInt(key: SettingsKeys, value: Int) {
         viewModelScope.launch {
             settingsRepository.setInt(key, value)
+            if (key == SettingsKeys.AUTO_HANDLE_UNMARKED_DAYS_BEHAVIOR) {
+                autoHandleUnmarkedDays()
+            }
         }
     }
 
@@ -156,8 +192,6 @@ class SettingsViewModel @Inject constructor(
                     SettingsUiEvent.Navigate(LookAndFeelScreen)
                 )
 
-
-
                 SettingsKeys.NOTIFICATION_SETTINGS -> _uiEvent.emit(
                     SettingsUiEvent.Navigate(NotificationScreen)
                 )
@@ -174,22 +208,36 @@ class SettingsViewModel @Inject constructor(
                     SettingsUiEvent.Navigate(AboutScreen)
                 )
 
+                SettingsKeys.CUSTOMISATION -> _uiEvent.emit(
+                    SettingsUiEvent.Navigate(CustomisationScreen)
+                )
 
+                SettingsKeys.FEATURES -> _uiEvent.emit(
+                    SettingsUiEvent.Navigate(FeaturesScreen)
+                )
 
+                SettingsKeys.REPORT -> _uiEvent.emit(
+                    SettingsUiEvent.OpenUrl(UrlConst.URL_GITHUB_ISSUE_REPORT)
+                )
 
+                SettingsKeys.FEATURE_REQUEST -> _uiEvent.emit(
+                    SettingsUiEvent.OpenUrl(UrlConst.URL_GITHUB_ISSUE_FEATURE_REQUEST)
+                )
 
+                SettingsKeys.PRIVACY_POLICY -> _uiEvent.emit(
+                    SettingsUiEvent.OpenUrl(UrlConst.URL_PRIVACY_POLICY)
+                )
 
-
-
-
-
+                SettingsKeys.LICENSE -> _uiEvent.emit(
+                    SettingsUiEvent.ShowBottomSheet(SettingsKeys.LICENSE)
+                )
 
                 SettingsKeys.FONT_FAMILY -> _uiEvent.emit(
                     SettingsUiEvent.ShowBottomSheet(SettingsKeys.FONT_FAMILY)
                 )
 
                 SettingsKeys.CHANGELOGS -> _uiEvent.emit(
-                    SettingsUiEvent.ShowBottomSheet(SettingsKeys.CHANGELOGS)
+                    SettingsUiEvent.Navigate(ChangelogScreen)
                 )
 
                 SettingsKeys.LANGUAGE -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

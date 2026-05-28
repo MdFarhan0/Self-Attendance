@@ -12,5 +12,6 @@ data class AttendanceEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val subjectId: Int,
     val date: String,
-    val status: AttendanceStatus = AttendanceStatus.UNMARKED
-)
+    val status: AttendanceStatus = AttendanceStatus.UNMARKED,
+    val note: String? = null
+)

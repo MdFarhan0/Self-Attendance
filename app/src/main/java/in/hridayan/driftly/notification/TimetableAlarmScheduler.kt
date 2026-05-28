@@ -6,12 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZonedDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.temporal.TemporalAdjusters
 
 /**
@@ -23,25 +22,18 @@ object TimetableAlarmScheduler {
     private const val TAG = "TimetableAlarmScheduler"
     private const val END_ALARM_OFFSET = 1_000_000
 
-    /**
-     * Convert timetable day + time to exact epoch milliseconds.
-     * If the calculated time is <= now, schedules for next week.
-     */
     fun timetableToMillis(dayOfWeek: Int, time: String): Long {
         val now = ZonedDateTime.now(ZoneId.systemDefault())
         val today = LocalDate.now()
         val targetDayOfWeek = DayOfWeek.of(dayOfWeek)
         val localTime = LocalTime.parse(time)
 
-        // Find next occurrence of this day
         var targetDate = today.with(TemporalAdjusters.nextOrSame(targetDayOfWeek))
         var targetDateTime = ZonedDateTime.of(targetDate, localTime, ZoneId.systemDefault())
 
-        // If the time is in the past (or now), schedule for next week
         if (!targetDateTime.isAfter(now)) {
             targetDate = today.with(TemporalAdjusters.next(targetDayOfWeek))
             targetDateTime = ZonedDateTime.of(targetDate, localTime, ZoneId.systemDefault())
-            Log.d(TAG, "⏰ Time was in past/now, scheduling for next week: $targetDate $localTime")
         }
 
         return targetDateTime.toInstant().toEpochMilli()
@@ -63,8 +55,7 @@ object TimetableAlarmScheduler {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 context.startActivity(intent)
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ Failed to open exact alarm settings", e)
+            } catch (_: Exception) {
             }
         }
     }
@@ -78,32 +69,24 @@ object TimetableAlarmScheduler {
         startTime: String,
         endTime: String,
         location: String?,
-        type: String // "START" or "END"
+        type: String
     ): Boolean {
-        // 1. Use Application Context
         val appContext = context.applicationContext
 
         val timeToUse = if (type == "START") startTime else endTime
         val triggerAtMillis = timetableToMillis(dayOfWeek, timeToUse)
         val now = System.currentTimeMillis()
 
-        Log.d(TAG, "📅 Scheduling $type alarm for $subjectName at ${java.util.Date(triggerAtMillis)}")
-
-        // 2. Safety check: never schedule in the past
         if (triggerAtMillis <= now) {
-            Log.e(TAG, "❌ CRITICAL: Time is in the past! Skipping.")
             return false
         }
 
-        // 3. Check exact alarm permission
         if (!canScheduleExactAlarms(appContext)) {
-            Log.e(TAG, "❌ Cannot schedule exact alarms - permission missing")
             return false
         }
 
         val alarmManager = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // 4. Explicit Intent ONLY (No action string)
         val intent = Intent(appContext, TimetableAlarmReceiver::class.java).apply {
             putExtra("scheduleId", scheduleId)
             putExtra("subjectId", subjectId)
@@ -131,10 +114,8 @@ object TimetableAlarmScheduler {
                 triggerAtMillis,
                 pendingIntent
             )
-            Log.d(TAG, "✅ Alarm set successfully! ReqCode: $requestCode")
             true
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Failed to schedule alarm", e)
+        } catch (_: Exception) {
             false
         }
     }
@@ -166,7 +147,6 @@ object TimetableAlarmScheduler {
         val appContext = context.applicationContext
         val alarmManager = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Explicit Intent matches
         val intent = Intent(appContext, TimetableAlarmReceiver::class.java)
 
         val startPendingIntent = PendingIntent.getBroadcast(
@@ -190,8 +170,6 @@ object TimetableAlarmScheduler {
             alarmManager.cancel(endPendingIntent)
             endPendingIntent.cancel()
         }
-
-        Log.d(TAG, "🗑️ Cancelled alarms for schedule ID: $scheduleId")
     }
 
     fun cancelAllAlarmsForSubject(context: Context, scheduleIds: List<Int>) {

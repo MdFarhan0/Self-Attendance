@@ -31,11 +31,11 @@ import `in`.hridayan.driftly.core.presentation.components.svg.vectors.themePicke
 import `in`.hridayan.driftly.navigation.LocalNavController
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.domain.model.PreferenceGroup
-import `in`.hridayan.driftly.settings.presentation.components.bottomsheet.FontStyleBottomSheet
 import `in`.hridayan.driftly.settings.presentation.components.item.PreferenceItemView
 import `in`.hridayan.driftly.settings.presentation.components.scaffold.SettingsScaffold
 import `in`.hridayan.driftly.settings.presentation.components.shape.CardCornerShape.getRoundedShape
 
+import `in`.hridayan.driftly.settings.presentation.components.tab.ColorTabs
 import `in`.hridayan.driftly.settings.presentation.event.SettingsUiEvent
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
 
@@ -47,7 +47,6 @@ fun LookAndFeelScreen(
     val navController = LocalNavController.current
     val settings = settingsViewModel.lookAndFeelPageList
     val context = LocalContext.current
-    var showFontStyleBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         settingsViewModel.uiEvent.collect { event ->
@@ -58,12 +57,6 @@ fun LookAndFeelScreen(
 
                 is SettingsUiEvent.Navigate -> {
                     navController.navigate(event.route)
-                }
-
-                is SettingsUiEvent.ShowBottomSheet -> {
-                    if (event.key == SettingsKeys.FONT_FAMILY) {
-                        showFontStyleBottomSheet = true
-                    }
                 }
 
                 else -> {}
@@ -96,7 +89,9 @@ fun LookAndFeelScreen(
                     )
                 }
 
-
+                item {
+                    ColorTabs(modifier = Modifier.padding(20.dp))
+                }
 
                 itemsIndexed(settings) { index, group ->
                     when (group) {
@@ -155,8 +150,4 @@ fun LookAndFeelScreen(
             }
         },
     )
-
-    if (showFontStyleBottomSheet) {
-        FontStyleBottomSheet(onDismiss = { showFontStyleBottomSheet = false })
-    }
 }

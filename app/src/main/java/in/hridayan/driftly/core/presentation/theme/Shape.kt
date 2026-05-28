@@ -11,12 +11,12 @@ object Shape {
     val cardStrokeLarge = 4.dp
 
     val cardCornerSmall = RoundedCornerShape(8.dp)
-    val cardCornerMedium = RoundedCornerShape(25.dp)
+    val cardCornerMedium = RoundedCornerShape(16.dp)
     val cardCornerLarge = RoundedCornerShape(25.dp)
 
     val cardTopCornersRounded = RoundedCornerShape(
-        topStart = 25.dp,
-        topEnd = 25.dp,
+        topStart = 16.dp,
+        topEnd = 16.dp,
         bottomStart = 2.dp,
         bottomEnd = 2.dp
     )
@@ -24,7 +24,7 @@ object Shape {
     val cardBottomCornersRounded = RoundedCornerShape(
         topStart = 2.dp,
         topEnd = 2.dp,
-        bottomStart = 25.dp,
-        bottomEnd = 25.dp
+        bottomStart = 16.dp,
+        bottomEnd = 16.dp
     )
 }

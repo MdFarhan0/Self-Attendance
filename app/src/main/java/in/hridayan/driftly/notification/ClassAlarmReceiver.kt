@@ -24,12 +24,7 @@ import kotlinx.coroutines.launch
 class ClassAlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        android.util.Log.d("ClassAlarmReceiver", "=== ALARM RECEIVED ===")
-        android.util.Log.d("ClassAlarmReceiver", "Action: ${intent.action}")
-        android.util.Log.d("ClassAlarmReceiver", "Subject: ${intent.getStringExtra("subjectName")}")
-        
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == "android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
-            android.util.Log.d("ClassAlarmReceiver", "Handling boot/permission change, scheduling worker")
             val request = OneTimeWorkRequestBuilder<RescheduleAlarmsWorker>().build()
             WorkManager.getInstance(context).enqueue(request)
             return
@@ -52,17 +47,14 @@ class ClassAlarmReceiver : BroadcastReceiver() {
                 val settings = context.settingsDataStore.data.first()
                 val isEnabled = settings[booleanPreferencesKey(SettingsKeys.ENABLE_TIMETABLE_NOTIFICATIONS.name)] ?: true
 
-                android.util.Log.d("ClassAlarmReceiver", "Timetable notifications enabled: $isEnabled")
-
                 if (isEnabled) {
-                    android.util.Log.d("ClassAlarmReceiver", "Showing notification for $subjectName")
-                    showNotification(context, subjectId, scheduleId, subjectName, startTime, endTime, location)
-                } else {
-                    android.util.Log.w("ClassAlarmReceiver", "Notifications disabled in settings, skipping")
+                    val isHoliday = `in`.hridayan.driftly.core.utils.HolidayHelper.isHolidayModeActive(context)
+                    if (!isHoliday) {
+                        showNotification(context, subjectId, scheduleId, subjectName, startTime, endTime, location)
+                    }
                 }
 
                 // Re-schedule for next week via WorkManager
-                android.util.Log.d("ClassAlarmReceiver", "Rescheduling for next week")
                 val workData = workDataOf(
                     "subjectId" to subjectId,
                     "scheduleId" to scheduleId,

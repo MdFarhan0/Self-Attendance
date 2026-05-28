@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
+import `in`.hridayan.driftly.core.presentation.theme.adaptiveModalScrimColor
 import `in`.hridayan.driftly.core.presentation.components.picker.WheelPicker
 import `in`.hridayan.driftly.settings.data.local.SettingsKeys
 import `in`.hridayan.driftly.settings.data.local.provider.settingsDataStore
@@ -174,7 +175,7 @@ fun TimetableInputBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
+        scrimColor = adaptiveModalScrimColor(),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
@@ -449,10 +450,10 @@ fun TimetableInputBottomSheet(
                         val startTime = String.format("%02d:%02d", startHour24, startMin)
                         val endTime = String.format("%02d:%02d", endHour24, endMin)
                         scope.launch {
-                            onSave(dayOfWeek, startTime, endTime, null)
                             sheetState.hide()
                             onDismiss()
                         }
+                        onSave(dayOfWeek, startTime, endTime, null)
                     },
                     enabled = isValid,
                     modifier = Modifier

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import `in`.hridayan.driftly.R
 import `in`.hridayan.driftly.core.domain.model.SubjectAttendance
+import `in`.hridayan.driftly.core.presentation.theme.adaptiveModalScrimColor
 import `in`.hridayan.driftly.home.presentation.viewmodel.HomeViewModel
 
 @Composable
@@ -48,7 +49,7 @@ fun SubjectAttendanceDataBottomSheet(
         sheetState = sheetState,
         modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f),
+        scrimColor = adaptiveModalScrimColor(),
         tonalElevation = 0.dp,
         shape = RoundedCornerShape(20.dp),
         dragHandle = null

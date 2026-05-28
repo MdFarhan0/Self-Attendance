@@ -88,6 +88,23 @@ class SettingsDataStore @Inject constructor(
         }
     }
 
+    private fun SettingsKeys.toLongKey(): Preferences.Key<Long> =
+        androidx.datastore.preferences.core.longPreferencesKey(this.name)
+
+    fun longFlow(key: SettingsKeys): Flow<Long> {
+        val preferencesKey = key.toLongKey()
+        val default = key.default as? Long ?: 0L
+        return ds.data
+            .map { prefs -> prefs[preferencesKey] ?: default }
+    }
+
+    suspend fun setLong(key: SettingsKeys, value: Long) {
+        val preferencesKey = key.toLongKey()
+        ds.edit { prefs ->
+            prefs[preferencesKey] = value
+        }
+    }
+
     private fun SettingsKeys.toStringKey(): Preferences.Key<String> =
         stringPreferencesKey(this.name)
 

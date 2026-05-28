@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import `in`.hridayan.driftly.core.common.LocalWeakHaptic
 import `in`.hridayan.driftly.core.presentation.components.card.PillShapedCard
 import `in`.hridayan.driftly.core.presentation.components.card.RoundedCornerCard
+import `in`.hridayan.driftly.core.presentation.components.card.adaptiveCardColors
 import `in`.hridayan.driftly.settings.domain.model.PreferenceItem
 import `in`.hridayan.driftly.settings.domain.model.SettingsType
 import `in`.hridayan.driftly.settings.domain.model.getResolvedDescription
@@ -66,10 +66,7 @@ fun BooleanPreferenceItemView(
                 .padding(start = 15.dp, end = 15.dp, top = 10.dp, bottom = 0.dp),
             clickable = enabled,
             onClick = onClick,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            colors = adaptiveCardColors()
         ) {
             Row(
                 modifier = Modifier
@@ -95,8 +92,7 @@ fun BooleanPreferenceItemView(
     if (item.type == SettingsType.Switch) {
         RoundedCornerCard(
             modifier = Modifier.fillMaxWidth(),
-            roundedCornerShape = roundedShape,
-            paddingValues = androidx.compose.foundation.layout.PaddingValues(vertical = 1.5.dp, horizontal = 15.dp)
+            roundedCornerShape = roundedShape
         )
         {
             Row(
@@ -135,7 +131,7 @@ fun BooleanPreferenceItemView(
                         Text(
                             text = descriptionText,
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.alpha(0.90f)
+                            modifier = Modifier.alpha(0.6f)
                         )
                     }
                 }

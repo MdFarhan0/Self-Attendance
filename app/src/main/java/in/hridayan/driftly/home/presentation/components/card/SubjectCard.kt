@@ -42,6 +42,7 @@ fun SubjectCard(
     subjectId: Int,
     subject: String,
     subjectCode: String? = null,
+    lecturerName: String? = null,
     progress: Float,
     isTotalCountZero: Boolean = false,
     selectedCardsCount: Int = 0,
@@ -119,32 +120,26 @@ fun SubjectCard(
                 CardStyleA(
                     subject = subject,
                     subjectCode = subjectCode,
+                    lecturerName = lecturerName,
                     isLongClicked = isLongClicked,
                     isTotalCountZero = isTotalCountZero,
                     progress = progress,
                     onEditButtonClicked = onEditButtonClicked,
                     onDeleteButtonClicked = onDeleteButtonClicked,
-                    onErrorIconClicked = onErrorIconClicked,
-                    onMoveUp = onMoveUp,
-                    onMoveDown = onMoveDown,
-                    onMoveTop = onMoveTop,
-                    onMoveBottom = onMoveBottom
+                    onErrorIconClicked = onErrorIconClicked
                 )
 
             SubjectCardStyle.CARD_STYLE_B ->
                 CardStyleB(
                     subject = subject,
                     subjectCode = subjectCode,
+                    lecturerName = lecturerName,
                     isLongClicked = isLongClicked,
                     isTotalCountZero = isTotalCountZero,
                     progress = progress,
                     onEditButtonClicked = onEditButtonClicked,
                     onDeleteButtonClicked = onDeleteButtonClicked,
-                    onErrorIconClicked = onErrorIconClicked,
-                    onMoveUp = onMoveUp,
-                    onMoveDown = onMoveDown,
-                    onMoveTop = onMoveTop,
-                    onMoveBottom = onMoveBottom
+                    onErrorIconClicked = onErrorIconClicked
                 )
         }
     }

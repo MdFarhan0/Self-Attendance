@@ -23,6 +23,9 @@ class SettingsRepositoryImpl(
     override fun getFloat(key: SettingsKeys): Flow<Float> = dataStore.floatFlow(key)
     override suspend fun setFloat(key: SettingsKeys, value: Float) = dataStore.setFloat(key, value)
 
+    override fun getLong(key: SettingsKeys): Flow<Long> = dataStore.longFlow(key)
+    override suspend fun setLong(key: SettingsKeys, value: Long) = dataStore.setLong(key, value)
+
     override fun getString(key: SettingsKeys): Flow<String> = dataStore.stringFlow(key)
     override suspend fun setString(key: SettingsKeys, value: String) =
         dataStore.setString(key, value)
@@ -53,6 +56,10 @@ class SettingsRepositoryImpl(
 
     override suspend fun getNotificationsPageList(): List<PreferenceGroup> {
         return SettingsProvider.notificationsPageList
+    }
+
+    override suspend fun getFeaturesPageList(): List<PreferenceGroup> {
+        return SettingsProvider.featuresPageList
     }
 
     override fun getAllDefaultSettings(): Map<String, Any?> {

@@ -10,7 +10,7 @@ import `in`.hridayan.driftly.settings.domain.model.PreferenceItem
 fun PreferenceItemView(
     item: PreferenceItem,
     modifier: Modifier = Modifier,
-    roundedShape: RoundedCornerShape = RoundedCornerShape(25.dp)
+    roundedShape: RoundedCornerShape = RoundedCornerShape(16.dp)
 ) {
     when (item) {
         is PreferenceItem.BoolPreferenceItem -> BooleanPreferenceItemView(

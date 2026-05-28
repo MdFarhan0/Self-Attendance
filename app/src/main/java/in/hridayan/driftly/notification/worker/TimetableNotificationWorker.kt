@@ -2,7 +2,6 @@ package `in`.hridayan.driftly.notification.worker
 
 import android.Manifest
 import android.content.Context
-import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -35,8 +34,6 @@ class TimetableNotificationWorker(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun doWork(): Result {
         return try {
-            Log.d("TimetableWorker", "=== Checking for classes starting soon ===")
-            
             val entryPoint = EntryPointAccessors.fromApplication(
                 applicationContext,
                 TimetableWorkerEntryPoint::class.java
@@ -47,8 +44,6 @@ class TimetableNotificationWorker(
             val now = LocalDateTime.now()
             val currentTime = now.toLocalTime()
             val currentDay = now.dayOfWeek.value // 1 = Monday, 7 = Sunday
-            
-            Log.d("TimetableWorker", "Current time: $currentTime, Day: $currentDay")
 
             // Get all subjects
             val subjects = subjectRepository.getAllSubjects().first()
@@ -68,12 +63,9 @@ class TimetableNotificationWorker(
                         // Check if class is starting within the next 5 minutes or currently ongoing
                         val minutesUntilStart = java.time.Duration.between(currentTime, classStartTime).toMinutes()
                         val minutesSinceStart = java.time.Duration.between(classStartTime, currentTime).toMinutes()
-                        
-                        Log.d("TimetableWorker", "Subject: ${subject.subject}, Minutes until start: $minutesUntilStart")
-                        
+
                         // Show notification if class starts within 5 minutes or just started (within 5 min)
                         if (minutesUntilStart in -5..5) {
-                            Log.d("TimetableWorker", "Showing notification for ${subject.subject}")
                             NotificationSetup.showTimetableNotification(
                                 context = applicationContext,
                                 subjectId = subject.id,
@@ -87,12 +79,9 @@ class TimetableNotificationWorker(
                     }
                 }
             }
-            
-            Log.d("TimetableWorker", "Check complete")
+
             Result.success()
-        } catch (e: Exception) {
-            Log.e("TimetableWorker", "Error checking timetable", e)
-            e.printStackTrace()
+        } catch (_: Exception) {
             Result.retry()
         }
     }

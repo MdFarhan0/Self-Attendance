@@ -16,10 +16,12 @@ class AttendanceReminderWorker(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override suspend fun doWork(): Result {
         return try {
-            NotificationSetup.showAttendanceReminderNotification(applicationContext)
+            val isHoliday = `in`.hridayan.driftly.core.utils.HolidayHelper.isHolidayModeActive(applicationContext)
+            if (!isHoliday) {
+                NotificationSetup.showAttendanceReminderNotification(applicationContext)
+            }
             Result.success()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             Result.retry()
         }
     }

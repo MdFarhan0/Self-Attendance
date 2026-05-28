@@ -9,9 +9,10 @@ object UrlConst {
     const val URL_GITHUB_REPO_LICENSE =
         "https://github.com/DP-Hridayan/Driftly/blob/master/LICENSE.md"
     const val URL_DEV_TELEGRAM = "https://t.me/hourslow"
-    const val URL_DEV_GITHUB = "https://github.com/xtractiion"
+    const val URL_DEV_GITHUB = "https://github.com/MdFarhan0/Self-Attendance.git"
     const val URL_DEV_EMAIL = "mailto:farhanfp20@gmail.com"
     const val URL_DEV_BM_COFFEE = "https://www.buymeacoffee.com/hridayan"
     const val URL_EMAIL_BUG = "mailto:farhanfp20@gmail.com?subject=Bug%20Report"
     const val URL_EMAIL_FEATURE = "mailto:farhanfp20@gmail.com?subject=Feature%20Suggestion"
+    const val URL_PRIVACY_POLICY = "https://extractiion.vercel.app/privacy_policy_blue/code.html"
 }

@@ -169,6 +169,11 @@ class CalendarViewModel @Inject constructor(
         return attendanceRepository.getAttendanceForSubjectAndDate(subjectId, date)
     }
 
+    // Update the note on a specific attendance entry
+    fun updateNote(id: Int, note: String?) {
+        viewModelScope.launch { attendanceRepository.updateNote(id, note) }
+    }
+
     fun onStatusChange(subjectId: Int, date: String, newStatus: AttendanceStatus?) {
         when (newStatus) {
             AttendanceStatus.PRESENT, AttendanceStatus.ABSENT -> {

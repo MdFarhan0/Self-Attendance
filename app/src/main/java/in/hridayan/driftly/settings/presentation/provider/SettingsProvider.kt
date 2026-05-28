@@ -42,6 +42,18 @@ object SettingsProvider {
                 iconVector = Icons.Outlined.Palette
             ),
             nullPreferenceItem(
+                key = SettingsKeys.CUSTOMISATION,
+                titleResId = R.string.customisation,
+                descriptionResId = R.string.des_customisation,
+                iconVector = Icons.Rounded.Tune
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.FEATURES,
+                titleResId = R.string.features,
+                descriptionResId = R.string.des_features,
+                iconResId = R.drawable.ic_settings
+            ),
+            nullPreferenceItem(
                 key = SettingsKeys.BEHAVIOR,
                 titleResId = R.string.behavior,
                 descriptionResId = R.string.des_behavior,
@@ -89,30 +101,28 @@ object SettingsProvider {
 
     val lookAndFeelPageList: List<PreferenceGroup> = listOf(
         uncategorizedItems(
-            nullPreferenceItem(
-                key = SettingsKeys.DARK_THEME,
-                titleResId = R.string.dark_theme,
-                descriptionResId = R.string.des_dark_theme,
-                iconVector = Icons.Outlined.DarkMode
-            ),
             boolPreferenceItem(
                 key = SettingsKeys.DYNAMIC_COLORS,
                 titleResId = R.string.dynamic_colors,
                 descriptionResId = R.string.des_dynamic_colors,
                 iconVector = Icons.Rounded.Colorize,
                 isLayoutVisible = !isSdkLowerThan12
-            ),
-            boolPreferenceItem(
-                key = SettingsKeys.HIGH_CONTRAST_DARK_MODE,
-                titleResId = R.string.high_contrast_dark_mode,
-                descriptionResId = R.string.des_high_contrast_dark_mode,
-                iconVector = Icons.Rounded.Contrast,
+            )
+        ),
+        categorizedItems(
+            categoryNameResId = R.string.additional_settings,
+            nullPreferenceItem(
+                key = SettingsKeys.DARK_THEME,
+                titleResId = R.string.dark_theme,
+                descriptionResId = R.string.system,
+                iconVector = Icons.Outlined.DarkMode,
             ),
             nullPreferenceItem(
                 key = SettingsKeys.LANGUAGE,
+                isLayoutVisible = !isMiUi && !isSdkLowerThan13,
                 titleResId = R.string.language,
                 descriptionResId = R.string.des_language,
-                iconVector = Icons.Rounded.Language
+                iconVector = Icons.Rounded.Language,
             )
         )
     )
@@ -121,16 +131,40 @@ object SettingsProvider {
         categorizedItems(
             categoryNameResId = R.string.app,
             nullPreferenceItem(
-                key = SettingsKeys.CHANGELOGS,
-                titleResId = R.string.whats_new,
-                descriptionResId = R.string.des_changelogs,
-                iconResId = R.drawable.ic_release_alert
+                key = SettingsKeys.VERSION,
+                titleResId = R.string.version,
+                descriptionString = BuildConfig.VERSION_NAME,
+                iconResId = R.drawable.ic_version,
             ),
             nullPreferenceItem(
-                key = SettingsKeys.VERSION,
-                titleResId = R.string.current_version,
-                descriptionString = "v${BuildConfig.VERSION_NAME}",
+                key = SettingsKeys.CHANGELOGS,
+                titleResId = R.string.changelogs,
+                descriptionResId = R.string.des_changelogs,
+                iconVector = Icons.Rounded.ChangeHistory,
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.REPORT,
+                titleResId = R.string.report_issue,
+                descriptionResId = R.string.des_report_issue,
+                iconResId = R.drawable.ic_report
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.FEATURE_REQUEST,
+                titleResId = R.string.feature_request,
+                descriptionResId = R.string.des_feature_request,
+                iconResId = R.drawable.ic_add_comment
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.PRIVACY_POLICY,
+                titleResId = R.string.privacy_policy,
+                descriptionResId = R.string.des_privacy_policy,
                 iconResId = R.drawable.ic_info
+            ),
+            nullPreferenceItem(
+                key = SettingsKeys.LICENSE,
+                titleResId = R.string.license,
+                descriptionResId = R.string.des_license,
+                iconResId = R.drawable.ic_license,
             )
         )
     )
@@ -192,6 +226,15 @@ object SettingsProvider {
                 descriptionResId = R.string.des_restore_app_data,
                 iconResId = R.drawable.ic_restore_page
             )
+        ),
+        categorizedItems(
+            categoryNameResId = R.string.reset,
+            nullPreferenceItem(
+                key = SettingsKeys.RESET_APP_SETTINGS,
+                titleResId = R.string.reset_app_settings,
+                descriptionResId = R.string.des_reset_app_settings,
+                iconResId = R.drawable.ic_reset_settings
+            )
         )
     )
 
@@ -235,4 +278,23 @@ object SettingsProvider {
             )
         )
     )
+
+    val featuresPageList: List<PreferenceGroup> = listOf(
+        categorizedItems(
+            categoryNameResId = R.string.attendance,
+            boolPreferenceItem(
+                key = SettingsKeys.LOCK_ATTENDANCE,
+                titleResId = R.string.lock_attendance,
+                descriptionResId = R.string.des_lock_attendance,
+                iconResId = R.drawable.ic_check_circle
+            ),
+            boolPreferenceItem(
+                key = SettingsKeys.AUTO_HANDLE_UNMARKED_DAYS,
+                titleResId = R.string.auto_handle_unmarked_days,
+                descriptionResId = R.string.des_auto_handle_unmarked_days,
+                iconVector = Icons.Rounded.EventAvailable
+            )
+        )
+    )
 }
+

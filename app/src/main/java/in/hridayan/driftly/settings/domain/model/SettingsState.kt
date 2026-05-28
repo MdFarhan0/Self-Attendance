@@ -10,11 +10,11 @@ data class SettingsState(
     val isHapticEnabled: Boolean,
     val subjectCardCornerRadius: Float,
     val subjectCardStyle: Int,
+    val homeSubjectCardLayoutMode: Int,
     val savedVersionCode: Int,
     val showAttendanceStreaks: Boolean,
     val rememberCalendarMonthYear: Boolean,
     val startWeekOnMonday: Boolean,
     val notificationPreference: Boolean,
     val notificationPermissionDialogShown: Boolean,
-    val fontFamily: Int
 )

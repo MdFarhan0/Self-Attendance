@@ -21,13 +21,29 @@ import `in`.hridayan.driftly.core.presentation.AppEntry
 import `in`.hridayan.driftly.core.presentation.theme.DriftlyTheme
 import `in`.hridayan.driftly.settings.presentation.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
+import `in`.hridayan.driftly.core.utils.update.InAppUpdateHelper
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()
+    private lateinit var updateHelper: InAppUpdateHelper
+
+    private val updateLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode != RESULT_OK) {
+            // Flexible update flow failed or cancelled by user
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        updateHelper = InAppUpdateHelper.getInstance(this)
+        updateHelper.registerListener()
+        updateHelper.checkUpdateAvailability { appUpdateInfo ->
+            updateHelper.startUpdateFlow(appUpdateInfo, updateLauncher)
+        }
 
         // Handle cutout mode for Edge-to-Edge display
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -58,6 +74,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateHelper.resumeCheck()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        updateHelper.unregisterListener()
     }
 }
 

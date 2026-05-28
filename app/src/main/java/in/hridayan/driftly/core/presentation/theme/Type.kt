@@ -6,54 +6,51 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontFamily
-import `in`.hridayan.driftly.core.presentation.provider.getFontFamily
 
 @Composable
-fun appTypography(fontFamily: Int): Typography {
-    val fontFamily = getFontFamily(fontFamily) ?: FontFamily.Default
+fun appTypography(): Typography {
     val base = MaterialTheme.typography
 
     return Typography(
-        displayLarge = base.displayLarge.copy(fontFamily = fontFamily),
-        displayMedium = base.displayMedium.copy(fontFamily = fontFamily),
-        displaySmall = base.displaySmall.copy(fontFamily = fontFamily),
+        displayLarge = base.displayLarge,
+        displayMedium = base.displayMedium,
+        displaySmall = base.displaySmall,
 
-        headlineLarge = base.headlineLarge.copy(fontFamily = fontFamily),
-        headlineMedium = base.headlineMedium.copy(fontFamily = fontFamily),
-        headlineSmall = base.headlineSmall.copy(fontFamily = fontFamily),
+        headlineLarge = base.headlineLarge,
+        headlineMedium = base.headlineMedium,
+        headlineSmall = base.headlineSmall,
 
-        titleLarge = base.titleLarge.copy(fontFamily = fontFamily),
-        titleMedium = base.titleMedium.copy(fontFamily = fontFamily),
-        titleSmall = base.titleSmall.copy(fontFamily = fontFamily),
+        titleLarge = base.titleLarge,
+        titleMedium = base.titleMedium,
+        titleSmall = base.titleSmall,
 
-        bodyLarge = base.bodyLarge.copy(fontFamily = fontFamily),
-        bodyMedium = base.bodyMedium.copy(fontFamily = fontFamily),
-        bodySmall = base.bodySmall.copy(fontFamily = fontFamily),
+        bodyLarge = base.bodyLarge,
+        bodyMedium = base.bodyMedium,
+        bodySmall = base.bodySmall,
 
-        labelLarge = base.labelLarge.copy(fontFamily = fontFamily),
-        labelMedium = base.labelMedium.copy(fontFamily = fontFamily),
-        labelSmall = base.labelSmall.copy(fontFamily = fontFamily),
+        labelLarge = base.labelLarge,
+        labelMedium = base.labelMedium,
+        labelSmall = base.labelSmall,
 
         // Emphasized variants
-        displayLargeEmphasized = base.displayLargeEmphasized.copy(fontFamily = fontFamily),
-        displayMediumEmphasized = base.displayMediumEmphasized.copy(fontFamily = fontFamily),
-        displaySmallEmphasized = base.displaySmallEmphasized.copy(fontFamily = fontFamily),
+        displayLargeEmphasized = base.displayLargeEmphasized,
+        displayMediumEmphasized = base.displayMediumEmphasized,
+        displaySmallEmphasized = base.displaySmallEmphasized,
 
-        headlineLargeEmphasized = base.headlineLargeEmphasized.copy(fontFamily = fontFamily),
-        headlineMediumEmphasized = base.headlineMediumEmphasized.copy(fontFamily = fontFamily),
-        headlineSmallEmphasized = base.headlineSmallEmphasized.copy(fontFamily = fontFamily),
+        headlineLargeEmphasized = base.headlineLargeEmphasized,
+        headlineMediumEmphasized = base.headlineMediumEmphasized,
+        headlineSmallEmphasized = base.headlineSmallEmphasized,
 
-        titleLargeEmphasized = base.titleLargeEmphasized.copy(fontFamily = fontFamily),
-        titleMediumEmphasized = base.titleMediumEmphasized.copy(fontFamily = fontFamily),
-        titleSmallEmphasized = base.titleSmallEmphasized.copy(fontFamily = fontFamily),
+        titleLargeEmphasized = base.titleLargeEmphasized,
+        titleMediumEmphasized = base.titleMediumEmphasized,
+        titleSmallEmphasized = base.titleSmallEmphasized,
 
-        bodyLargeEmphasized = base.bodyLargeEmphasized.copy(fontFamily = fontFamily),
-        bodyMediumEmphasized = base.bodyMediumEmphasized.copy(fontFamily = fontFamily),
-        bodySmallEmphasized = base.bodySmallEmphasized.copy(fontFamily = fontFamily),
+        bodyLargeEmphasized = base.bodyLargeEmphasized,
+        bodyMediumEmphasized = base.bodyMediumEmphasized,
+        bodySmallEmphasized = base.bodySmallEmphasized,
 
-        labelLargeEmphasized = base.labelLargeEmphasized.copy(fontFamily = fontFamily),
-        labelMediumEmphasized = base.labelMediumEmphasized.copy(fontFamily = fontFamily),
-        labelSmallEmphasized = base.labelSmallEmphasized.copy(fontFamily = fontFamily),
+        labelLargeEmphasized = base.labelLargeEmphasized,
+        labelMediumEmphasized = base.labelMediumEmphasized,
+        labelSmallEmphasized = base.labelSmallEmphasized,
     )
 }

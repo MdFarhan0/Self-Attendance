@@ -3,8 +3,10 @@
 package `in`.hridayan.driftly.settings.presentation.components.scaffold
 
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -20,6 +22,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import `in`.hridayan.driftly.core.presentation.components.button.BackButton
 
@@ -62,7 +65,11 @@ fun SettingsScaffold(
                         )
                     )
                 },
-                navigationIcon = { BackButton() },
+                navigationIcon = {
+                    Box(modifier = Modifier.padding(start = 5.dp, end = 6.dp)) {
+                        BackButton()
+                    }
+                },
                 scrollBehavior = scrollBehavior,
             )
         },
