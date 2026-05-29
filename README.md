@@ -29,130 +29,81 @@
   <img src="https://img.shields.io/badge/Android-10%2B-green?style=for-the-badge&logo=android" alt="Android 10+" />
   <img src="https://img.shields.io/badge/Kotlin-100%25-purple?style=for-the-badge&logo=kotlin" alt="Kotlin" />
 </p>
-**Self Attendance** is a comprehensive, privacy-first academic tracking tool designed for effortless attendance management. Built with modern Android technologies, it revolutionizes how students manage their class attendance by moving beyond simple counters to an intuitive **calendar-first approach**.
-Unlike traditional apps that only show percentages, Self Attendance provides an interactive visual calendar interface where you can mark attendance for specific dates, view streaks at a glance, and get smart **AI-powered bunk insights**.
----
-## 🚀 New in v2.4.0: Attendance Automation & Play Updates
-The latest version introduces significant functional upgrades, modern compliance, and an extremely lightweight optimized build:
-* 🤖 **Auto Handle Unmarked Days**: Never forget to mark attendance again! If enabled, the app automatically logs past scheduled classes based on your selected behavior (`Attended`, `Absent`, or `Do Nothing`) using a custom horizontal Material 3 segmented selector.
-* 🔄 **Flexible In-App Updates**: Officially integrated Google Play In-App Updates using the modern `StartIntentSenderForResult` API. Resumes interrupted background downloads on resume and alerts you via a floating Snackbar when ready to install.
-* 🎯 **Target SDK 36 (Android 16)**: Built with up-to-date SDK configurations to guarantee full future compatibility.
-* ⚡ **APK Footprint Slashed**: Removed unused code and redundant assets, dramatically shrinking the app installation size from **6 MB to 3.6 MB** for a rapid, lightweight download experience.
-* 🌊 **Enhanced Splash Wave Animation**: Welcome sheet wave motion is now thicker, stretches lengthier across the display width, and features smoother frequency transitions.
----
-## Why Self Attendance Stands Out
-Most attendance trackers are just simple counter clickers with no context. Self Attendance solves this:
-|
- Traditional Apps ❌ 
-|
- Self Attendance ✅ 
-|
-|
-:---
-|
-:---
-|
-|
-**
-No Date Association
-**
-: Can't see 
-*
-when
-*
- you attended. 
-|
-**
-Date-Specific Records
-**
-: Every attendance is logged to a calendar date. 
-|
-|
-**
-Just Numbers
-**
-: Simple counters with no visual logs. 
-|
-**
-Visual Calendar
-**
-: See streaks, gaps, and monthly patterns instantly. 
-|
-|
-**
-Manual Math
-**
-: You figure out bunking logic yourself. 
-|
-**
-AI Insights
-**
-: Smart cards calculate 
-*
-exactly
-*
- how many classes you can bunk. 
-|
-|
-**
-Limited History
-**
-: Can't view past months or schedules. 
-|
-**
-Monthly Navigation
-**
-: Browse complete historic logs easily. 
-|
----
-## Key Features
-### 📅 Calendar-Based Attendance
-* **Visual Overview**: See your entire month's attendance at a glance.
-* **Color-Coded Status**: Dates are marked Green (Present) or Red (Absent) for instant visual feedback.
-* **Streak Tracking**: Monitor your consecutive present or absent streaks automatically.
-### 🎯 Smart Attendance Insights
-The app doesn't just show a percentage. It tells you what to do:
-* *"You can bunk **3** more classes and still stay above 75%."*
-* *"You are safe at 75%. Don't miss the next class!"*
-* *"Attend the next **2** classes to reach your target."*
-### 🔔 Intelligent Timetable Notifications
-* **Exact Alarms**: Alerts fire precisely at class time using `AlarmManager`.
-* **Quick Logging**: Mark your status directly from the notification widget.
-* **Resilient**: Alarms automatically restore after device reboots.
-### 🎨 Modern Material You Design
-* **Dynamic Color Theming**: App colors dynamically adapt to match your active wallpaper.
-* **Expressive UI**: Premium backdrop blur glassmorphism and clean typography.
-### 💾 Local Backup & Restore
-* **Full Data Export**: Export and save your database and settings locally.
-* **Seamless Import**: Migrate logs to a new device instantly.
----
-## 🛠️ Usage
-### Quick Start
-1. **Add a Subject**: Tap the "+" button and enter subject details.
-2. **Set Target**: Choose your desired target attendance percentage (default: 75%).
-3. **Mark Attendance**: Click any date on the calendar to toggle Present/Absent/Holiday.
-4. **View Insights**: Read the smart messages cards to know your bunk status.
-### Pro Tips
-* **Floating Navigation Menu**: Smoothly switch between Bunk details, Today's schedule, Tomorrow's class, and the Full Timetable directly from the HomeScreen menu.
-* **Automation**: Toggle "Auto Handle Unmarked Days" in settings to let the app automatically manage unmarked classes.
-* **Weekly Grid**: Check the Full Timetable dialog to review your entire weekly schedule at a glance.
----
-## 🔧 Technical Specifications
-* **Language**: Kotlin (100%)
-* **UI Framework**: Jetpack Compose (Material 3 Expressive)
-* **Architecture**: MVVM + Clean Architecture + Hilt Dependency Injection
-* **Database**: Room SQLite (100% Offline-first)
-* **Background Tasks**: WorkManager & AlarmManager
----
-## Installation
-You can download the latest APK from the [Releases](https://github.com/MdFarhan0/Self-Attendance/releases) section.
-1. Download `app-release.apk` (Recommended).
-2. Install on your Android device.
-3. Grant Notification & Alarm permissions when prompted.
----
-## Contributing & Support
-If you find this app useful, please:
-* ⭐ **Star this repository** on GitHub.
-* 🐛 **Report bugs** in the Issues section.
-* 💡 **Suggest features** you'd like to see.
-**Built with ❤️ by Md Farhan**
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.self.attendance">
+    <img src="googleplay.png" width="220" alt="Get it on Google Play">
+  </a>
+</p>
+
+## Self Attendance
+
+Self Attendance is a privacy-first attendance tracker built for students who want more than simple attendance counters. Instead of only displaying percentages, the app provides a calendar-first experience where every attendance record is tied to a specific date, making attendance management more visual, accurate, and intuitive.
+
+### What's New in v2.4.0
+
+#### PDF Export
+
+Generate precise and professional offline PDF attendance reports with a clean, polished, and print-ready layout. Reports include detailed attendance statistics and subject-wise insights while remaining completely offline. The export system has been optimized to produce consistent and high-quality results every time.
+
+#### Stunning UI
+
+This update introduces numerous under-the-hood UI refinements throughout the application. Components, layouts, spacing, and interactions have been improved to create a cleaner and more modern experience inspired by Material 3 Expressive design principles. The result is a smoother and more polished interface across the entire app.
+
+#### Removed Bloat
+
+A major cleanup pass was performed across the codebase to remove unused code, redundant resources, and unnecessary assets. These optimizations reduced the application size from 6 MB to 3.8 MB while preserving all existing functionality. Users benefit from faster downloads, reduced storage consumption, and improved overall efficiency.
+
+#### Micro Animations
+
+Subtle micro animations have been added throughout the application to improve responsiveness and interaction feedback. Buttons, navigation elements, selectors, and other interactive components now feel smoother and more natural during everyday use. These improvements enhance the overall user experience without becoming distracting.
+
+#### More Customization & Features
+
+Several new customization options and quality-of-life improvements have been introduced across the app. Users can discover additional controls and personalization settings that provide greater flexibility over attendance management. These additions make the application more adaptable to different workflows and preferences.
+
+### Why Choose Self Attendance?
+
+- Calendar-based attendance tracking
+- Smart bunk and attendance calculations
+- AI-powered attendance insights
+- Professional PDF report generation
+- Attendance streak tracking
+- Timetable management
+- Attendance automation tools
+- Backup and restore support
+- Material 3 Expressive design
+- Fully offline and privacy-first
+
+### Key Features
+
+#### Calendar-Based Attendance
+
+Track attendance directly on a visual calendar where every attendance record is associated with a specific date. Easily identify attendance patterns, missed classes, and monthly trends at a glance.
+
+#### Smart Attendance Insights
+
+Receive intelligent attendance calculations that tell you exactly how many classes you can bunk or attend to reach your target attendance percentage. No manual calculations required.
+
+#### Attendance Automation
+
+Automatically handle unmarked attendance days using customizable behaviors. Choose whether unmarked classes should be marked as attended, absent, or ignored entirely.
+
+#### Timetable Management
+
+Create and manage a complete weekly timetable with support for daily schedules, upcoming classes, and quick attendance access.
+
+#### Intelligent Notifications
+
+Receive precise class reminders powered by AlarmManager and quickly mark attendance directly from notifications without opening the app.
+
+#### Professional PDF Reports
+
+Generate detailed offline PDF attendance reports with subject-wise statistics, attendance percentages, and a clean professional layout.
+
+#### Backup & Restore
+
+Securely export and restore your attendance data and settings locally, making migration between devices simple and reliable.
+
+#### Material 3 Expressive UI
+
+Enjoy a modern Android experience built with Jetpack Compose and Material 3 Expressive design principles, featuring smooth interactions and polished animations.
